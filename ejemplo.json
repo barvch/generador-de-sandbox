@@ -1,0 +1,68 @@
+{
+  "VMs": [
+    {
+      "Type": "Windows",
+      "Hostname": "Contoso",
+      "DiskSize": [
+        10,
+        20
+      ],
+      "InterfaceConfig": {
+        "VirtualSwitch" : "Juanito",
+        "Nombre": "Interna",
+        "IP": "192.168.1.30",
+        "Mask": "255.255.255.0",
+        "Gateway": null,
+        "DNS": null
+      },
+      "MemoryType": "Dynamic",
+      "MemoryMax": 2,
+      "MemoryMin": 0.5,
+      "MemorySize": "3",
+      "ProcessorNumber": 2,
+      "User": "Test",
+      "Password": "hola123.,",
+      "Services": [
+        "Apache",
+        "DHCP"
+      ],
+      "ImagePath": "C:\\Users\\Administrator\\Desktop\\Proyecto\\Windows.iso"
+    },
+    {
+      "Type": "Windows",
+      "Hostname": "Firewall",
+      "DiskSize": [
+        10
+      ],
+      "InterfaceConfig": [
+        {
+          "VirtualSwitch" : "Juanito",
+          "Nombre": "Interna",
+          "IP": "192.168.1.31",
+          "Mask": "255.255.255.0",
+          "Gateway": null,
+          "DNS": null
+        },
+        {
+          "VirtualSwitch" : "Juanito2",
+          "Nombre": "Externa",
+          "IP": "192.168.30.31",
+          "Mask": "255.255.255.0",
+          "Gateway": "192.168.1.255",
+          "DNS": "1.1.1.1"
+        }
+      ],
+      "MemoryType": "Static",
+      "MemorySize": 2,
+      "ProcessorNumber": 2,
+      "User": "Test",
+      "Password": "hola123.,",
+      "Services": [
+        "Apache",
+        "DHCP"
+      ],
+      "ImagePath": "C:\\Users\\Administrator\\Desktop\\Proyecto\\Windows.iso"
+    }
+  ],
+  "Root": "C:\\Users\\Rodolfo Baruch\\Desktop\\"
+}
