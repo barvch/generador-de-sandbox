@@ -1,14 +1,13 @@
 {
   "VMs": [
     {
-      "Type": "Windows",
-      "Hostname": "Contoso",
+      "Type": "Linux",
+      "Hostname": "CONTOSO",
       "DiskSize": [
-        10,
-        20
+        7
       ],
       "InterfaceConfig": {
-        "VirtualSwitch" : "Juanito",
+        "VirtualSwitch" : "TestJuanito",
         "Nombre": "Interna",
         "IP": "192.168.1.30",
         "Mask": "255.255.255.0",
@@ -23,20 +22,24 @@
       "User": "Test",
       "Password": "hola123.,",
       "Services": [
-        "Apache",
-        "DHCP"
+        {
+          "SSH": "2222",
+          "Apache": "",
+          "MySQL" : "",
+          "iptables" : "C:\\Users\\Administrador\\Desktop\\backupRules.txt"
+        }
       ],
-      "ImagePath": "C:\\Users\\Administrator\\Desktop\\Proyecto\\Windows.iso"
+      "ImagePath": "F:\\Plan de becas\\ISO\\Win10_1909_English_x64.iso"
     },
     {
       "Type": "Windows",
-      "Hostname": "Firewall",
+      "Hostname": "FIREWALL",
       "DiskSize": [
         10
       ],
       "InterfaceConfig": [
         {
-          "VirtualSwitch" : "Juanito",
+          "VirtualSwitch" : "Prueba",
           "Nombre": "Interna",
           "IP": "192.168.1.31",
           "Mask": "255.255.255.0",
@@ -44,7 +47,7 @@
           "DNS": null
         },
         {
-          "VirtualSwitch" : "Juanito2",
+          "VirtualSwitch" : "PruebaPrivado",
           "Nombre": "Externa",
           "IP": "192.168.30.31",
           "Mask": "255.255.255.0",
@@ -58,11 +61,14 @@
       "User": "Test",
       "Password": "hola123.,",
       "Services": [
-        "Apache",
-        "DHCP"
+        {
+          "AD": "CONTOSO",
+          "DHCP": "",
+          "" : ""
+        }
       ],
-      "ImagePath": "C:\\Users\\Administrator\\Desktop\\Proyecto\\Windows.iso"
+      "ImagePath": "F:\\Plan de becas\\ISO\\Win10_1909_English_x64.iso"
     }
   ],
-  "Root": "C:\\Users\\Rodolfo Baruch\\Desktop\\"
+  "Root": "C:\\Sandbox\\FlatEric"
 }
