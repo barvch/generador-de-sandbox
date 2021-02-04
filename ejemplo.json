@@ -3,9 +3,10 @@
   "VMs": [
     {
       "SO": "Windows10",
-      "Hostname": "LoveOfLesbian",
+      "Hostname": "ArcticMonkeys",
       "DiskSize": [
-        10
+        5,
+        5
       ],
       "InterfaceConfig": [
         {
@@ -26,7 +27,7 @@
         }
       ],
       "MemoryType": "Dynamic",
-      "MemorySize": 2,
+      "MemorySize": "3",
       "MemoryMax": 2,
       "MemoryMin": 0.5,
       "ProcessorNumber": 4,
@@ -34,7 +35,7 @@
       "Password": "hola123.,prueba",
       "Services": [
       ],
-      "ImagePath": "F:\\Plan de becas\\ISO\\Win10_1909_English_x64.iso"
+      "ImagePath": "C:\\Win10_1909_English_x64.iso"
     },
     {
       "SO": "Windows10",
