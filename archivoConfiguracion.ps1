@@ -1,6 +1,42 @@
-# Remove-VMSwitch "QoS Switch"
 # C:\ProgramData\Microsoft\Windows\Hyper-V
 
+function Validar-JSON {
+    param ([string]$rutaJSON)
+    if (Test-Path -Path $rutaJSON) {
+        try {
+            $contenido = Get-Content -Raw -Path $rutaJSON | ConvertFrom-Json
+            return $contenido
+        } catch {
+            Write-Host "El archivo $rutaJSON no cuenta con un formato JSON correcto."
+            exit
+        } 
+    } else { 
+        Write-Host "No se ha encontrado el archivo: $rutaJSON"
+        exit
+    }
+}
+
+function Validar-Raiz {
+    param ([string]$rutaRaiz)
+    if (Test-Path -Path $rutaRaiz) {
+        "Raiz del ambiente: $rutaRaiz"
+        return $rutaRaiz
+    } else {
+        $ficheroAnterior = Split-Path -Path $rutaRaiz
+        $leaf = Split-Path -Path $rutaRaiz -Leaf
+        if (Test-Path -Path $ficheroAnterior) {
+            $respuesta = Read-Host -Prompt "Desea crear el fichero $leaf dentro de $ficheroAnterior y usarlo como raiz para el ambiente? [S/N]"
+            if ($respuesta -eq "S" -or $respuesta -eq "s") {
+                New-Item -Path $rutaRaiz -ItemType "directory"
+                "Se ha creado la carpeta $leaf.`nRaiz del ambiente: $rutaRaiz"
+                return $rutaRaiz
+            }
+        } else {
+            "Error en el path ingresado como raiz del proyecto.`nNo existe el padre de la ruta proporcionada o no se tienen los permisos suficientes para poder crear el proyecto dentro de $ficheroAnterior. Revisar archivo JSON"
+            exit
+        }
+    }
+}
 # Función para consultar los Virtual Switches existentes dentro del Host Hyper-V
 function Consultar-VSwitchDisponibles {
     param ([string]$nombreVirtualSwitch)
@@ -78,31 +114,31 @@ function Consultar-Memoria {
     return $ram
 }
 
-# Funci�n para obtener par�metros de las m�quinas virtuales que desean ser creadas  
-function Datos-VM {
-    param ([int]$contador, [string]$os)
-
-    # Para obtener el hostname del equipo 
-    $hostname = $archivoEntrada.VMs[$contador].Hostname # String
-    if ($hostname -eq "") {
-        "ERROR: Ingresa un hostname para el equipo. Revisar el archivo JSON."
+function Validar-SistemaOperativo {
+    param ([string]$SOPorRevisar)
+    $poolSistemas = @("Windows Server 2019","Windows 10", "Ubuntu", "CentOS","CentOS Stream", "FortiOS", "RHEL", "Kali")
+    if ($poolSistemas -contains $SOPorRevisar) { 
+        return $true 
+    } else {
+        "ERROR: Ingresa el nombre de alguno de los siguientes sistemas operativos disponibles para la herramienta: "
+        foreach ($item in $poolSistemas) { Write-Host "$item" }
         exit
     }
-    Write-Host "DATOS DEL EQUIPO  $os | $hostname :"
+}
 
-    # Para obtener el tama�o en GB de los discos a crear y validar que se cuente con espacio sufiente para crearlos
+function Validar-VHDX {
+    param ([array]$listaDiscosPorCrear)
     Write-Host "Discos Virtuales"
-    $discos = $archivoEntrada.VMs[$contador].DiskSize # Array
-    if ($discos.Count -ne 0) { # Si se encuetra al menos un valor especificado dentro del arreglo de VHDs
-        if ($discos.Count -eq 1) {
-             Write-Host "`tVHD encontrado: $discos GB"
-             $postCreacionDisco = Almacenamiento-Disponible -diskSize $discos[0]
-             Write-Host "`tDespu�s de la creaci�n de este VHD, quedar�n $postCreacionDisco GB libres dentro del equipo."
+    if ($listaDiscosPorCrear.Count -ne 0) { # Si se encuetra al menos un valor especificado dentro del arreglo de VHDs
+        if ($listaDiscosPorCrear.Count -eq 1) {
+             Write-Host "`tVHD encontrado: $listaDiscosPorCrear GB"
+             $postCreacionDisco = Almacenamiento-Disponible -diskSize $listaDiscosPorCrear[0]
+             #Write-Host "`tQuedarán $postCreacionDisco GB libres dentro del equipo."
         } else {
-            for ($i=0; $i -le ($discos.Count-1); $i++) {
-                $temp = $discos[$i]
+            for ($i=0; $i -le ($postCreacionDisco.Count-1); $i++) {
+                $temp = $postCreacionDisco[$i]
                 if ($i -eq 0) {
-                    Write-Host "`tVHD encontrado: $temp GB"
+                    Write-Host "`tVHDX encontrado: $temp GB"
                     $postCreacionDisco = Almacenamiento-Disponible -diskSize $temp
                 } else {
                      Write-Host "`t VHD encontrado: $temp GB"
@@ -115,16 +151,17 @@ function Datos-VM {
                     $postCreacionDisco = $libre
                }
             }
-            Write-Host "`t`tDespu�s de crear todos los discos, quedar�n $postCreacionDisco GB libres dentro del equipo"
+            Write-Host "`t`tEspacio libre dentro del disco seleccionado como raiz al crear los VHDX: $postCreacionDisco GB"
         }
     } else {
-        "ERROR: No se han encontrado VHDs para el equipo $hostname. Revisar el archivo JSON"
+        "ERROR: No se ha especificado el tamaño del disco virtual (VHDX) a crear para el equipo."
         exit
     }
+}
 
-    # Para obtener las especificaciones de todas las interfaces de redes especificadas
-    Write-Host "Interfaces de red"
-    $interfaces = $archivoEntrada.VMs[$contador].InterfaceConfig # Array de objetos
+function Validar-Redes {
+    param ($interfaces)
+    Write-Host "Interfaces de red y VSwitches" 
     if ($interfaces.Count -ne 0) {
         $regexIPValida = '^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
         $nombresInterfacesEncontradas = @()
@@ -155,9 +192,187 @@ function Datos-VM {
             $nombresInterfacesEncontradas += $name
         }
     } else {
-        "`tNo se han encontrado interfaces de red para el equipo $hostname"
+        "`tNo se han encontrado interfaces de red para el equipo."
         exit
     }
+
+    
+}
+
+function Obtener-VersionesDeWindows {
+    param ([string]$WinIso)
+    Write-Progress "Mounting $WinIso ..."
+    $MountResult = Mount-DiskImage -ImagePath $WinIso -StorageType ISO -PassThru
+    $DriveLetter = ($MountResult | Get-Volume).DriveLetter
+    if (-not $DriveLetter) {
+      Write-Error "ISO file not loaded correctly" -ErrorAction Continue
+      Dismount-DiskImage -ImagePath $WinIso | Out-Null
+      return
+    }
+    Write-Progress "Mounting $WinIso ... Done"
+
+    $WimFile = "$($DriveLetter):\sources\install.wim"
+    Write-Host "Inspecting $WimFile"
+    $WimOutput = dism /get-wiminfo /wimfile:"$WimFile" | Out-String
+
+    $WimInfo = $WimOutput | Select-String "(?smi)Index : (?<Id>\d+).*?Name : (?<Name>[^`r`n]+)" -AllMatches
+    if (!$WimInfo.Matches) {
+      Write-Error "Images not found in install.wim`r`n$WimOutput" -ErrorAction Continue
+      Dismount-DiskImage -ImagePath $WinIso | Out-Null
+      return
+    }
+
+    $Items = @{ }
+    $Menu = ""
+    $DefaultIndex = 1
+    $WimInfo.Matches | ForEach-Object { 
+      $Items.Add([int]$_.Groups["Id"].Value, $_.Groups["Name"].Value)
+      $Menu += $_.Groups["Id"].Value + ") " + $_.Groups["Name"].Value + "`r`n"
+      if ($_.Groups["Name"].Value -eq $WinEdition) {
+        $DefaultIndex = [int]$_.Groups["Id"].Value
+      }
+    }
+
+    Write-Output $Menu
+    do {
+      try {
+        $err = $false
+        $WimIdx = if (([int]$val = Read-Host "Please select version [$DefaultIndex]") -eq "") { $DefaultIndex } else { $val }
+        if (-not $Items.ContainsKey($WimIdx)) { $err = $true }
+      }
+      catch {
+        $err = $true;
+      }
+    } while ($err)
+    Write-Output $Items[$WimIdx]
+}
+
+function Validar-RAM {
+    param ($tipoDeMemoria,  $tamanioMemoria)
+    Write-Host "Memoria RAM"
+    if ($tipoDeMemoria -eq "") {
+        "`tNo se ha encontrado el tipo de memoria a utilizar para el equipo '$hostname'. Revisar archivo JSON."
+        exit
+    }
+    if ($tamanioMemoria -eq "") {
+        "`tNo se ha encontrado el tama�o de la memoria a utilizar para el equipo '$hostname'. Revisar archivo JSON."
+        exit
+    }
+    $tamanioMemoria = Consultar-Memoria
+    if ([int]$tamanioMemoria -gt $totalRamDisponible) {
+        "`tSe ha ingresado una cantidad de memoria que excede el total de RAM del equipo`n`t`tMemororia total disponible en el equipo: $totalRamDisponible.`n`t`tMemoria ingresada para el equipo: $tamanioMemoria"
+        exit
+    }
+    if($tipoDeMemoria -eq "Dynamic"){
+        $maxMemoria = $archivoEntrada.VMs[$contador].MemoryMax #Int GB
+        $minMemoria = $archivoEntrada.VMs[$contador].MemoryMin #Int GB
+        if ([int]$maxMemoria -gt $totalRamDisponible) {
+            "`tSe ha ingresado una cantidad de memoria m�xima que excede el total de RAM del equipo`n`t`tMemororia total disponible en el equipo: $totalRamDisponible.`n`t`tMemoria ingresada para el equipo: $tamanioMemoria"
+            exit
+        }
+        if($minMemoria -gt $maxMemoria){
+            "`tSe ha ingresado una cantidad de memoria minima que excede el total de RAM de memoria m�xima ingresada`n`t`tMemoria m�xima: $maxMemoria GB.`n`t`tMemoria m�nima: $minMemoria MB"
+            exit
+        }
+        if([int]$tamanioMemoria -gt $maxMemoria){
+            $tamanioMemoria = [string]$maxMemoria
+        }
+        if($minMemoria -gt $tamanioMemoria ){
+            $tamanioMemoria = [string]$minMemoria
+        }
+        Write-Host "`tSe usar� una memoria del tipo $tipoDeMemoria con un tama�o de $tamanioMemoria GB."
+        Write-Host "`tMemoria maxima $maxMemoria GB."
+        Write-Host "`tMemoria minima $minMemoria GB."
+    }
+    else{
+        Write-Host "`tSe usar� una memoria del tipo $tipoDeMemoria con un tama�o de $tamanioMemoria GB."
+    }
+    
+}
+
+function Validar-Procesadores {
+    param ($numeroProcesadores)
+    Write-Host "Procesadores"
+    if ($numeroProcesadores -ne 0 -and $numeroProcesadores -ge 1) {
+        Write-Host "`tN�mero de procesadores: $numeroProcesadores" 
+        return $numeroProcesadores
+    } else {
+        Write-Host "`tIngrese un n�mero v�lido de procesadores para el equipo '$hostname'. Revisar archivo JSON."
+        exit
+    }
+}
+
+function Validar-Credenciales {
+    param ($usuario, $passwd)
+    Write-Host "Credenciales Administrativas"
+    if ($usuario -eq "") {
+        Write-Host "`tIngrese un nombre de usuario v�lido. Revisar archivo JSON."
+        exit
+    }
+    if ($passwd -eq "") {
+        Write-Host "`tIngrese una contrase�a v�lida. Revisar archivo JSON."
+        exit
+    }
+    Write-Host "`tSe usar�n las siguientes credenciales para el equipo:"
+    Write-Host "`t`tUsername: $usuario"
+    Write-Host "`t`tPassword: $passwd"
+    return $true
+}
+
+function Validar-ISO {
+    param ([string]$imagen)
+    Write-Host "Imagen a instalar dentro del equipo"
+    if ($imagen -ne "") {
+       if (Test-Path -Path $imagen) {
+           Write-Host "`tSe usar� la siguiente imagen para este equipo: $imagen"
+           return $true
+       } else {
+           Write-Host "`tNo se ha podido acceder a la ruta de la imagen dentro del archivo de entrada. Revisar el archivo JSON."
+           exit
+       }
+    } else {
+       Write-Host "`tIngrese una ruta para la imagen del SO a instalar dentro del equipo"
+       exit
+    }
+}
+
+# Funci�n para obtener par�metros de las m�quinas virtuales que desean ser creadas  
+function Datos-VM {
+    param ([int]$contador, [string]$os)
+    Write-Host "DATOS DEL EQUIPO  $os | $hostname :"
+
+    # Se recuperan los datos obligatorios independientemente del tipo de SO
+    $hostname = $archivoEntrada.VMs[$contador].Hostname # String
+    $sistemaOperativo = $archivoEntrada.VMs[$contador].SO # String
+    $usuario = $archivoEntrada.VMs[$contador].User
+    $passwd = $archivoEntrada.VMs[$contador].Password
+    $tipoDeMemoria = $archivoEntrada.VMs[$contador].MemoryType # String
+    $tamanioMemoria = $archivoEntrada.VMs[$contador].MemorySize # String
+    $discos = $archivoEntrada.VMs[$contador].DiskSize
+    $imagen = $archivoEntrada.VMs[$contador].ImagePath
+
+    # Se recuperan los datos individuales dependiendo del tipo de SO
+ 
+    ########
+    
+
+    # Validaciones de los datos generales ingresados 
+
+    if (Validar-SistemaOperativo -SOPorRevisar $sistemaOperativo) { # Se valida que se ingrese un sistema operativo dentro del pool de sistemas operativos permitidos
+        if (Validar-VHDX -listaDiscosPorCrear $discos) {
+            $interfaces = Validar-Redes -interfaces $archivoEntrada.VMs[$contador].InterfaceConfig # Se validan las configuraciones de red para todas las interfaces
+            if (Validar-RAM -tipoDeMemoria $tipoDeMemoria -tamanioMemoria  $tamanioMemoria) {
+                $numeroProcesadores = Validar-Procesadores -numeroProcesadores $archivoEntrada.VMs[$contador].ProcessorNumber
+                if (Validar-Credenciales -usuario $usuario -passwd $passwd) {
+                    if (Validar-ISO -imagen $imagen) {
+
+                    }
+                }
+            }
+        }
+    }
+
+    # Validaciones de los datos individuales ingresados 
 
     # Apartado para seleccionar la interfaz administrativa para el equipo
     if ($os -eq "FortiOS") {
@@ -191,73 +406,9 @@ function Datos-VM {
         }
     }
 
-    # Para obtener el tama�o en GB y tipo de memoria RAM que ocupar� el equipo
-    Write-Host "Memoria RAM"
-    $tipoDeMemoria = $archivoEntrada.VMs[$contador].MemoryType # String
-    if ($tipoDeMemoria -eq "") {
-        "`tNo se ha encontrado el tipo de memoria a utilizar para el equipo '$hostname'. Revisar archivo JSON."
-        exit
-    }
-    $tamanioMemoria = $archivoEntrada.VMs[$contador].MemorySize # String
-    if ($tamanioMemoria -eq "") {
-        "`tNo se ha encontrado el tama�o de la memoria a utilizar para el equipo '$hostname'. Revisar archivo JSON."
-        exit
-    }
-    $totalRamDisponible = Consultar-Memoria
-    if ([int]$tamanioMemoria -gt $totalRamDisponible) {
-        "`tSe ha ingresado una cantidad de memoria que excede el total de RAM del equipo`n`t`tMemororia total disponible en el equipo: $totalRamDisponible.`n`t`tMemoria ingresada para el equipo: $tamanioMemoria"
-        exit
-    }
-    if($tipoDeMemoria -eq "Dynamic"){
-        $maxMemoria = $archivoEntrada.VMs[$contador].MemoryMax #Int GB
-        $minMemoria = $archivoEntrada.VMs[$contador].MemoryMin #Int GB
-        if ([int]$maxMemoria -gt $totalRamDisponible) {
-            "`tSe ha ingresado una cantidad de memoria m�xima que excede el total de RAM del equipo`n`t`tMemororia total disponible en el equipo: $totalRamDisponible.`n`t`tMemoria ingresada para el equipo: $tamanioMemoria"
-            exit
-        }
-        if($minMemoria -gt $maxMemoria){
-            "`tSe ha ingresado una cantidad de memoria minima que excede el total de RAM de memoria m�xima ingresada`n`t`tMemoria m�xima: $maxMemoria GB.`n`t`tMemoria m�nima: $minMemoria MB"
-            exit
-        }
-        if([int]$tamanioMemoria -gt $maxMemoria){
-            $tamanioMemoria = [string]$maxMemoria
-        }
-        if($minMemoria -gt $tamanioMemoria ){
-            $tamanioMemoria = [string]$minMemoria
-        }
-        Write-Host "`tSe usar� una memoria del tipo $tipoDeMemoria con un tama�o de $tamanioMemoria GB."
-        Write-Host "`tMemoria maxima $maxMemoria GB."
-        Write-Host "`tMemoria minima $minMemoria GB."
-    }
-    else{
-        Write-Host "`tSe usar� una memoria del tipo $tipoDeMemoria con un tama�o de $tamanioMemoria GB."
-    }
-
-    # Para obtener el n�mero de procesadores que tendr� el equipo
-    Write-Host "Procesadores"
-    $numeroProcesadores = $archivoEntrada.VMs[$contador].ProcessorNumber # Number
-    if ($numeroProcesadores -ne 0 -and $numeroProcesadores -ge 1) {
-        Write-Host "`tN�mero de procesadores: $numeroProcesadores" 
-    } else {
-        Write-Host "`tIngrese un n�mero v�lido de procesadores para el equipo '$hostname'. Revisar archivo JSON."
-        exit
-    }
 
     # Para obtener las credenciales administrativas del equipo 
-    Write-Host "Credenciales Administrativas"
-    $usuario = $archivoEntrada.VMs[$contador].User
-    $passwd = $archivoEntrada.VMs[$contador].Password
-    if ($usuario -eq "") {
-        Write-Host "`tIngrese un nombre de usuario v�lido. Revisar archivo JSON."
-        exit
-    }
-    if ($passwd -eq "") {
-        Write-Host "`tIngrese una contrase�a v�lida. Revisar archivo JSON."
-        exit
-    }
-    Write-Host "`tSe usar�n las siguientes credenciales para el equipo:"
-    Write-Host "`t`tUsername: $usuario"
-    Write-Host "`t`tPassword: $passwd"
+    
     
     # Para obtener los servicios a instalar dentro del equipo  
     Write-Host "Servicios a instalar dentro del equipo"
@@ -276,21 +427,6 @@ function Datos-VM {
         }
     } else {
         Write-Host "`tNo se han encontrados servicios a instalar para este equipo"
-    }
-
-    # Para obtener y validar el path de la imagen que ser� instalada dentro del equipo
-    Write-Host "Imagen a instalar dentro del equipo"
-    $imagen = $archivoEntrada.VMs[$contador].ImagePath
-    if ($imagen -ne "") {
-       if (Test-Path -Path $imagen) {
-           Write-Host "`tSe usar� la siguiente imagen para este equipo: $imagen"
-       } else {
-           Write-Host "`tNo se ha podido acceder a la ruta de la imagen dentro del archivo de entrada. Revisar el archivo JSON."
-           exit
-       }
-    } else {
-       Write-Host "`tIngrese una ruta para la imagen del SO a instalar dentro del equipo"
-       exit
     }
 
     # Para obtener y validar el path del archivio de respaldo (en caso de existir)
@@ -330,16 +466,24 @@ function Datos-VM {
                 }else{
                     Set-VMMemory -VMName $vname -DynamicMemoryEnabled $false -StartupBytes $tamanioMemoria
                 }
+                $discoRaizVM = ($discos | Measure-Object -Maximum) # Se obtiene el disco de mayor tamaño para instalar el SO
                 foreach ($disk in $discos){
-                    $pathDisk = $raiz+'\'+$vname+$disk+'.vhdx'
-                    # Se revisa que la ruta del disco virtual no exista, en el caso de existir se genera un numero random para nombrarlo
-                    while(Test-Path -Path $pathDisk){
-                        $random = Get-Random
-                        $pathDisk = $raiz+'\'+$vname+$disk+$random+'.vhdx'
+                    if ($disk -eq $discoRaizVM) {
+                        ":)"
+                        if ($sistemaOperativo -eq ("Windows Server 2019" -or "Windows 10")) {
+                            Obtener-VersionesDeWindows -WinIso $imagen
+                        }
+                    } else {
+                        $pathDisk = $raiz+'\'+$vname+$disk+'.vhdx'
+                        # Se revisa que la ruta del disco virtual no exista, en el caso de existir se genera un numero random para nombrarlo
+                        while(Test-Path -Path $pathDisk){
+                            $random = Get-Random
+                            $pathDisk = $raiz+'\'+$vname+$disk+$random+'.vhdx'
+                        }
+                        $disk = [int]$disk * 1Gb
+                        New-VHD -Path $pathDisk -SizeBytes $disk
+                        Add-VMHardDiskDrive -VMName $vname -Path $pathDisk
                     }
-                    $disk = [int]$disk * 1Gb
-                    New-VHD -Path $pathDisk -SizeBytes $disk
-                    Add-VMHardDiskDrive -VMName $vname -Path $pathDisk
                 }
                 Set-VMDvdDrive -VMName $vname -Path $imagen
             } else {
@@ -355,43 +499,22 @@ function Datos-VM {
            exit
        }
     } while ($true)
-
     Write-Host "`n`n"
+
+
 }
 
-# Creacion del proyecto (folder ra�z, caracter�sticas de las VMs a crear para el ambiente, validaciones).
+
 if ($args.Count -eq 1) {
     $rutaJSON = $args[0] # Se lee la ruta donde est� el archivo de entrada
-    if (Test-Path -Path $rutaJSON) { # Se valida que el archivo exista
-        $archivoEntrada = Get-Content -Raw -Path $rutaJSON | ConvertFrom-Json # Se lee el archivo de entrada en formato JSON
-        
-        # Revision de la ruta raiz del proyecto
-        $raiz = $archivoEntrada[0].Root
-        if (Test-Path -Path $raiz) {
-            "Raiz del ambiente: $raiz"
-        } else {
-            $ficheroAnterior = Split-Path -Path $raiz
-            $leaf = Split-Path -Path $raiz -Leaf
-            if (Test-Path -Path $ficheroAnterior) {
-                $respuesta = Read-Host -Prompt "Desea crear el fichero $leaf dentro de $ficheroAnterior y usarlo como raiz para el ambiente? [S/N]"
-                if ($respuesta -eq "S" -or $respuesta -eq "s") {
-                    New-Item -Path $raiz -ItemType "directory"
-                    "Se ha creado la carpeta $leaf.`nRaiz del ambiente: $raiz" 
-                }
-            } else {
-                "Error en el path ingresado como raiz del proyecto.`nNo existe el padre de la ruta proporcionada o no se tienen los permisos suficientes para poder crear el proyecto dentro de $ficheroAnterior. Revisar archivo JSON"
-                exit
-            }
-        }
-
-        # Revision de las especificaciones de las maquinas virtuales
-        $numeroMaquinas = ($ArchivoEntrada[0].VMs | Measure-Object).Count # Numero de Maquinas por instalar
-        for($i=0; $i -le $numeroMaquinas-1;$i++) {
-            Write-Host $archivoEntrada.VMs[$i].Type
-            Datos-VM -contador $i -os $archivoEntrada.VMs[$i].Type
-        }
-    } else {
-        "No se ha logrado encontrar el archivo de entrada ingresado"   
+    $archivoEntrada = Validar-JSON -rutaJSON $rutaJSON # Se lee y valida que exista el archivo y que esté en formato JSON
+    $raiz = Validar-Raiz -rutaRaiz $archivoEntrada[0].Root # Se lee y valida la ruta raiz del proyecto a ser creado.
+    
+    # Revision de las especificaciones de las maquinas virtuales
+    $numeroMaquinas = ($ArchivoEntrada[0].VMs | Measure-Object).Count # Numero de Maquinas por instalar
+    for($i=0; $i -le $numeroMaquinas-1;$i++) {
+        Write-Host $archivoEntrada.VMs[$i].Type
+        Datos-VM -contador $i -os $archivoEntrada.VMs[$i].SO
     }
 } else {
     "Sólo se debe de ingrear como algumento, la ruta donde se encuentre el archivo de entrada en formato JSON"

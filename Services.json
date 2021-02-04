@@ -23,7 +23,7 @@
       "ProcessorNumber": 2,
       "User": "Test",
       "Password": "hola123.,",
-	 "Domain":"contoso.local",
+	  "Domain":"contoso.local",
       "Services": [{
        "Name": "IIS",
        "Config":{

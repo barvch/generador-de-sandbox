@@ -1,10 +1,12 @@
 {
+  "Root": "C:\\Users\\Rodolfo Baruch\\Desktop\\proyecto1",
   "VMs": [
     {
-      "Type": "Linux",
+      "SO": "Linux",
       "Hostname": "CONTOSO",
       "DiskSize": [
-        7
+        7,
+        2
       ],
       "InterfaceConfig": {
         "VirtualSwitch" : "TestJuanito",
@@ -63,12 +65,10 @@
       "Services": [
         {
           "AD": "CONTOSO",
-          "DHCP": "",
-          "" : ""
+          "DHCP": ""
         }
       ],
       "ImagePath": "F:\\Plan de becas\\ISO\\Win10_1909_English_x64.iso"
     }
-  ],
-  "Root": "C:\\Sandbox\\FlatEric"
+  ]
 }
