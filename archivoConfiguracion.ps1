@@ -285,18 +285,25 @@ function Validar-Procesadores {
 function Validar-Credenciales {
     param ($usuario, $passwd)
     Write-Host "Credenciales Administrativas"
-    if ($usuario -eq "") {
-        Write-Host "`tIngrese un nombre de usuario v�lido. Revisar archivo JSON."
+    if (($usuario -or $passwd) -ne "") {
+        if($usuario -match "^[a-zA-Z0-9]{5,20}[a-zA-Z]$"){
+            if($passwd -match "^[\x20-\x7E]{10,30}$"){
+                Write-Host "`tSe usaron las siguientes credenciales para el equipo:"
+                Write-Host "`t`tUsername: $usuario"
+                Write-Host "`t`tPassword: $passwd"
+                return $usuario, $passwd
+            }else{
+                Write-Host "La contrasena  debe tener una longitud de entre 10 y 30 caracteres"
+                exit
+            }
+        }else{
+            Write-Host "El usuario debe: `nContener solo letras y numeros `nTener una longitud de entre 5 y 20 caracteres"
+            exit
+        }
+    }else{
+        Write-Host "`tEl campo no debe estar vacio, ingresan credenciales validas"
         exit
     }
-    if ($passwd -eq "") {
-        Write-Host "`tIngrese una contrase�a v�lida. Revisar archivo JSON."
-        exit
-    }
-    Write-Host "`tSe usar�n las siguientes credenciales para el equipo:"
-    Write-Host "`t`tUsername: $usuario"
-    Write-Host "`t`tPassword: $passwd"
-    return $true
 }
 
 function Validar-ISO {
@@ -328,15 +335,13 @@ function Validar-Hostname {
 
 # Funci�n para obtener par�metros de las m�quinas virtuales que desean ser creadas  
 function Datos-VM {
-    param ([int]$contador, [string]$os)
+    param ([int]$contador)
   
-
     # Se recuperan los datos obligatorios independientemente del tipo de SO y se valida que sean correctos
     $hostname = Validar-Hostname -hostname $archivoEntrada.VMs[$contador].Hostname # String
-    Write-Host "DATOS DEL EQUIPO  $os | $hostname :"
     $sistemaOperativo = Validar-SistemaOperativo -SOPorRevisar $archivoEntrada.VMs[$contador].SO # String
-    $usuario = $archivoEntrada.VMs[$contador].User
-    $passwd = $archivoEntrada.VMs[$contador].Password
+    Write-Host "DATOS DEL EQUIPO  $sistemaOperativo | $hostname :"
+    $usuario, $passwd = Validar-Credenciales -usuario $archivoEntrada.VMs[$contador].User -passwd $archivoEntrada.VMs[$contador].Password
     $tipoDeMemoria = $archivoEntrada.VMs[$contador].MemoryType
     if($tipoDeMemoria -eq "Static"){
         $tamanioMemoria = Validar-RAM -tamanioMemoria $archivoEntrada.VMs[$contador].MemorySize
@@ -358,7 +363,8 @@ function Datos-VM {
     # Validaciones de los datos individuales ingresados 
 
     # Apartado para seleccionar la interfaz administrativa para el equipo
-    if ($os -eq "FortiOS") {
+    <#
+    if ($sistemaOperativo -eq "FortiOS") {
         $interfazAdministrativa = $archivoEntrada.VMs[$contador].InterfazAdministrativa
         if ($interfazAdministrativa -eq "" -and $nombresInterfacesEncontradas.Count -ge 2) {
             "`tNo se ha indicado una interfaz administrativa dentro del archivo de entrada"
@@ -390,6 +396,24 @@ function Datos-VM {
     }
 
 
+
+    # Para obtener y validar el path del archivio de respaldo (en caso de existir)
+    if ($os -eq "FortiOS") { 
+        Write-Host "Archivo de Respaldo"
+        $respaldo = $archivoEntrada.VMs[$contador].ArchivoRespaldo
+        if ($respaldo -ne "") {
+            if (Test-Path -Path $respaldo) {
+                Write-Host "`tSe usar� el siguiente archivo de respaldo para este equipo: $respaldo"
+            } else {
+                Write-Host "`tNo se ha podido acceder a la ruta de la imagen dentro del archivo de entrada. Revisar el archivo JSON."
+                exit
+            }
+        } else {
+            Write-Host "`tNo se ha indicado un archivo de respaldo para este equipo"
+        }
+    }
+#>
+
     # Para obtener las credenciales administrativas del equipo 
     
     
@@ -412,21 +436,7 @@ function Datos-VM {
         Write-Host "`tNo se han encontrados servicios a instalar para este equipo"
     }
 
-    # Para obtener y validar el path del archivio de respaldo (en caso de existir)
-    if ($os -eq "FortiOS") { 
-        Write-Host "Archivo de Respaldo"
-        $respaldo = $archivoEntrada.VMs[$contador].ArchivoRespaldo
-        if ($respaldo -ne "") {
-            if (Test-Path -Path $respaldo) {
-                Write-Host "`tSe usar� el siguiente archivo de respaldo para este equipo: $respaldo"
-            } else {
-                Write-Host "`tNo se ha podido acceder a la ruta de la imagen dentro del archivo de entrada. Revisar el archivo JSON."
-                exit
-            }
-        } else {
-            Write-Host "`tNo se ha indicado un archivo de respaldo para este equipo"
-        }
-    }
+
 
     # Confirmaci�n de los datos que han sido le�dos para la VM
     Do {
@@ -452,7 +462,6 @@ function Datos-VM {
                 $discoRaizVM = ($discos | Measure-Object -Maximum) # Se obtiene el disco de mayor tamaño para instalar el SO
                 foreach ($disk in $discos){
                     if ($disk -eq $discoRaizVM) {
-                        ":)"
                         if ($sistemaOperativo -eq ("Windows Server 2019" -or "Windows 10")) {
                             Obtener-VersionesDeWindows -WinIso $imagen
                         }

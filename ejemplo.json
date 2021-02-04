@@ -20,8 +20,8 @@
       "MemoryMax": 2,
       "MemoryMin": 0.5,
       "ProcessorNumber": 2,
-      "User": "Test",
-      "Password": "hola123.,",
+      "User": "Testeando",
+      "Password": "hola123.,prueba",
       "Services": [
         {
           "SSH": "2222",
@@ -30,7 +30,7 @@
           "iptables" : "C:\\Users\\Administrador\\Desktop\\backupRules.txt"
         }
       ],
-      "ImagePath": "F:\\Plan de becas\\ISO\\Win10_1909_English_x64.iso"
+      "ImagePath": "E:\\VMware\\Maquinas virtuales\\Test\\Win10_20H2_v2_English_x64.iso"
     },
     {
       "SO": "Windows 10",
