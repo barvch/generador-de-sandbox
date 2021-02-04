@@ -453,12 +453,18 @@ function Datos-VM {
             if($instalados.Count -ge 1) {
                 $vname = $sistemaOperativo + $hostname
                 $switchesVirtualesAsociados = @()
+                $nombreInterfazAsociada = @()
                 foreach ($interfaz in $interfaces) {
+                    $interfaz
                     $nombreVSwitch = $interfaz.VirtualSwitch
+                    $nombreInterfazAsociada += $interfaz.Nombre
+                    Write-Host "$nombreVSwitch - $nombreInterfazAsociada"
                     if (Consultar-VSwitchDisponibles -nombreVirtualSwitch $nombreVSwitch) {
-                        $switchesVirtualesAsociados += $nombreVSwitch
+                        $switchesVirtualesAsociados += $nombreVSwitch  
                     }
                 }
+                $switchesVirtualesAsociados.GetType()
+                $switchesVirtualesAsociados.Count
                 "Creando VM..."
                 try {
                     New-VM -VMName $vname -Generation 1 -Force
@@ -467,7 +473,15 @@ function Datos-VM {
                 } catch{
                     "No c puede bro"
                 }
-                foreach ($vs in $switchesVirtualesAsociados) {Add-VMNetworkAdapter -VMName $vname -SwitchName $vs}
+                "Asociando VSWitches"
+                for ($i = 0;$i -le ($switchesVirtualesAsociados.Count-1); $i++) {
+                    $VMSwitch = Get-VMSwitch -Name $switchesVirtualesAsociados[$i]
+                    Add-VMSwitchTeamMember -VMSwitch $VMSwitch -NetAdapterName $nombreInterfazAsociada[$i]
+
+
+                    #Add-VMNetworkAdapter -VMName $vname -SwitchName $switchesVirtualesAsociados[$i] -Name $nombreInterfazAsociada[$i]
+                    #Set-VMSwitch $switchesVirtualesAsociados[$i] -NetAdapterName $nombreInterfazAsociada[$i]
+                }
                 "VSwitches asociados"
                 Set-VMProcessor -VMName $vname -Count $numeroProcesadores
                 "Se ha asignado el procesador"
@@ -498,7 +512,7 @@ function Datos-VM {
                         $disk = [int]$disk * 1Gb
                         New-VHD -Path $pathDisk -SizeBytes $disk
                         Add-VMHardDiskDrive -VMName $vname -Path $pathDisk
-                    #}
+                    }
                 }
                 "Se han creado los discos"
                 Set-VMDvdDrive -VMName $vname -Path $imagen
