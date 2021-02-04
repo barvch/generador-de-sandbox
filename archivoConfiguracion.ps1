@@ -16,43 +16,6 @@ function Validar-JSON {
     }
 }
 
-function Validar-Raiz {
-    param ([string]$rutaRaiz)
-    if (Test-Path -Path $rutaRaiz) {
-        "Raiz del ambiente: $rutaRaiz"
-        return $rutaRaiz
-    } else {
-        $ficheroAnterior = Split-Path -Path $rutaRaiz
-        $leaf = Split-Path -Path $rutaRaiz -Leaf
-        if (Test-Path -Path $ficheroAnterior) {
-            $respuesta = Read-Host -Prompt "Desea crear el fichero $leaf dentro de $ficheroAnterior y usarlo como raiz para el ambiente? [S/N]"
-            if ($respuesta -eq "S" -or $respuesta -eq "s") {
-                New-Item -Path $rutaRaiz -ItemType "directory"
-                "Se ha creado la carpeta $leaf.`nRaiz del ambiente: $rutaRaiz"
-                return $rutaRaiz
-            }
-        } else {
-            "Error en el path ingresado como raiz del proyecto.`nNo existe el padre de la ruta proporcionada o no se tienen los permisos suficientes para poder crear el proyecto dentro de $ficheroAnterior. Revisar archivo JSON"
-            exit
-        }
-    }
-}
-# Función para consultar los Virtual Switches existentes dentro del Host Hyper-V
-function Consultar-VSwitchDisponibles {
-    param ([string]$nombreVirtualSwitch)
-    $existentes = Get-VMSwitch
-    $encontrados = @()
-    foreach ($switch in $existentes) {
-        $encontrados += $switch.Name        
-    }
-    if ($encontrados -contains $nombreVirtualSwitch) {
-        return $true
-    } else {
-        return $false
-    }
-}
-
-# Función para crear un Virtual Switch cuando se ingresa el nombre de un VS que no está presente dentro del equipo
 function Crear-VSwitch {
     param ([string]$nombre)
     $tiposVirtualSwitch = @("Interno", "Privado", "Externo")
@@ -87,7 +50,47 @@ function Crear-VSwitch {
         }
     }
     "`tSe ha creado satisfactoriamente el VSwitch $nombre"
+    return $true
 }
+
+function Validar-Raiz {
+    param ([string]$rutaRaiz)
+    if (Test-Path -Path $rutaRaiz) {
+        "Raiz del ambiente: $rutaRaiz"
+        return $rutaRaiz
+    } else {
+        $ficheroAnterior = Split-Path -Path $rutaRaiz
+        $leaf = Split-Path -Path $rutaRaiz -Leaf
+        if (Test-Path -Path $ficheroAnterior) {
+            $respuesta = Read-Host -Prompt "Desea crear el fichero $leaf dentro de $ficheroAnterior y usarlo como raiz para el ambiente? [S/N]"
+            if ($respuesta -eq "S" -or $respuesta -eq "s") {
+                New-Item -Path $rutaRaiz -ItemType "directory"
+                "Se ha creado la carpeta $leaf.`nRaiz del ambiente: $rutaRaiz"
+                return $rutaRaiz
+            }
+        } else {
+            "Error en el path ingresado como raiz del proyecto.`nNo existe el padre de la ruta proporcionada o no se tienen los permisos suficientes para poder crear el proyecto dentro de $ficheroAnterior. Revisar archivo JSON"
+            exit
+        }
+    }
+}
+# Función para consultar los Virtual Switches existentes dentro del Host Hyper-V
+function Consultar-VSwitchDisponibles {
+    param ([string]$nombreVirtualSwitch)
+    $existentes = Get-VMSwitch
+    $encontrados = @()
+    foreach ($switch in $existentes) {
+        $encontrados += $switch.Name        
+    }
+    if ($encontrados -contains $nombreVirtualSwitch) {
+        return $true
+    } else {
+        Crear-VSwitch -nombre $nombreVirtualSwitch
+    }
+}
+
+# Función para crear un Virtual Switch cuando se ingresa el nombre de un VS que no está presente dentro del equipo
+
 
 # Funcion para revisar el almacenamiento disponible en disco y validar que exista suficiente espacio para crear el VHD 
 
@@ -116,7 +119,7 @@ function Consultar-Memoria {
 
 function Validar-SistemaOperativo {
     param ([string]$SOPorRevisar)
-    $poolSistemas = @("Windows Server 2019","Windows 10", "Ubuntu", "CentOS","CentOS Stream", "FortiOS", "RHEL", "Kali")
+    $poolSistemas = @("Windows Server 2019","Windows10", "Ubuntu", "CentOS","CentOS Stream", "FortiOS", "RHEL", "Kali")
     if ($poolSistemas -contains $SOPorRevisar) { 
         return $SOPorRevisar 
     } else {
@@ -447,26 +450,37 @@ function Datos-VM {
        if ($confirmacion.Equals("S") -or $confirmacion.Equals("s")) {
             # Se verifica la instalaci�n del rol de Hyper-V
             $instalados = Get-WindowsFeature -Name  Hyper-V | Where-Object { $_.InstallState -eq "Installed"}
-            if($instalados.Count -ge 1){
-                $vname  = $sistemaOperativo + ' ' + $hostname
+            if($instalados.Count -ge 1) {
+
+                $vname = $sistemaOperativo + $hostname
+                $switchesVirtualesAsociados = @()
+                foreach ($interfaz in $interfaces) {
+                    $nombreVSwitch = $interfaz.VirtualSwitch
+                    if (Consultar-VSwitchDisponibles -nombreVirtualSwitch $nombreVSwitch) {
+                        $switchesVirtualesAsociados += $nombreVSwitch
+                    }
+                }
                 "Creando VM..."
-                New-VM -VMName $vname -Generation 1 # -SwitchName $virtualSwitch[$j]
-                "Se ha creado la VM"
+                try {
+                    New-VM -VMName $vname -Generation 1
+                    "Se ha creado la VM"
+                } catch{
+                    "No c puede bro"
+                }
                 foreach ($vs in $switchesVirtualesAsociados) {Add-VMNetworkAdapter -VMName $vname -SwitchName $vs}
-                "Se han creado los vswitches"
+                "VSwitches asociados"
                 Set-VMProcessor -VMName $vname -Count $numeroProcesadores
                 "Se ha asignado el procesador"
                 # Si se establece memoria dinamica se obtienen los valores maximos y minimos
-                "ACAWE"
+                $tamanioMemoria = [int]$tamanioMemoria * 1Gb
                 if($tipoDeMemoria -eq "Dynamic"){
-                    $minMemoria = [int]$minMemoria * 1Gb
-                    $maxMemoria = [int]$maxMemoria * 1Gb
-                    Set-VMMemory -VMName $vname -DynamicMemoryEnabled $True -MaximumBytes $maxMemoria -MinimumBytes $minMemoria -StartupBytes $minMemoria
+                    $minMemoria = $minMemoria * 1Gb
+                    $maxMemoria = $maxMemoria * 1Gb
+                    Set-VMMemory -VMName $vname -DynamicMemoryEnabled $True -MaximumBytes $maxMemoria -MinimumBytes $minMemoria -StartupBytes tamanioMemoria
                 }else{
-                    $tamanioMemoria = [int]$tamanioMemoria * 1Gb
                     Set-VMMemory -VMName $vname -DynamicMemoryEnabled $false -StartupBytes $tamanioMemoria
                 }
-                "NOWE:("
+
                 $discoRaizVM = ($discos | Measure-Object -Maximum) # Se obtiene el disco de mayor tamaño para instalar el SO
                 foreach ($disk in $discos){
                     if ($disk -eq $discoRaizVM) {
@@ -518,5 +532,3 @@ if ($args.Count -eq 1) {
 } else {
     "Sólo se debe de ingrear como algumento, la ruta donde se encuentre el archivo de entrada en formato JSON"
 }
-
-

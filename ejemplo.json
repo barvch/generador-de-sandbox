@@ -2,13 +2,13 @@
   "Root": "C:\\Sandbox\\FlatEric",
   "VMs": [
     {
-      "SO": "Windows 10",
-      "Hostname": "CONTOCITO",
+      "SO": "Windows10",
+      "Hostname": "Yawe",
       "DiskSize": [
         10
       ],
       "InterfaceConfig": {
-        "VirtualSwitch" : "Foco",
+        "VirtualSwitch" : "Foco2",
         "Nombre": "Interna",
         "IP": "192.168.1.30",
         "Mask": "255.255.255.0",
@@ -16,6 +16,7 @@
         "DNS": null
       },
       "MemoryType": "Dynamic",
+      "MemorySize": 2,
       "MemoryMax": 2,
       "MemoryMin": 0.5,
       "ProcessorNumber": 2,
@@ -26,7 +27,7 @@
       "ImagePath": "F:\\Plan de becas\\ISO\\Win10_1909_English_x64.iso"
     },
     {
-      "SO": "Windows 10",
+      "SO": "Windows10",
       "Hostname": "FIREWALL",
       "DiskSize": [
         10
