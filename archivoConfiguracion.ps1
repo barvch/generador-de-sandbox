@@ -252,7 +252,7 @@ function Obtener-VersionesDeWindows {
 }
 
 function Validar-RAM {
-    param ($tamanioMemoria=0, $minMemoria=0, $maxMemoria=0)
+    param ($tamanioMemoria=1024, $minMemoria=0, $maxMemoria=0)
     Write-Host "Memoria RAM"
     if(($tamanioMemoria -or ($minMemoria -and $maxMemoria)) -in 1..(Consultar-Memoria)){
         if($PSBoundParameters.Count -eq 1){
@@ -445,13 +445,11 @@ function Datos-VM {
 
 
     # Confirmaci�n de los datos que han sido le�dos para la VM
-    Do {
+    #Do {
        $confirmacion = Read-Host -Prompt "¿Son los datos presentados correctos para el equipo $hostname? (S/N)"
        if ($confirmacion.Equals("S") -or $confirmacion.Equals("s")) {
-            # Se verifica la instalaci�n del rol de Hyper-V
             $instalados = Get-WindowsFeature -Name  Hyper-V | Where-Object { $_.InstallState -eq "Installed"}
             if($instalados.Count -ge 1) {
-
                 $vname = $sistemaOperativo + $hostname
                 $switchesVirtualesAsociados = @()
                 foreach ($interfaz in $interfaces) {
@@ -462,8 +460,9 @@ function Datos-VM {
                 }
                 "Creando VM..."
                 try {
-                    New-VM -VMName $vname -Generation 1
+                    New-VM -VMName $vname -Generation 1 -Force
                     "Se ha creado la VM"
+                    #Start-Sleep -s 2
                 } catch{
                     "No c puede bro"
                 }
@@ -471,34 +470,34 @@ function Datos-VM {
                 "VSwitches asociados"
                 Set-VMProcessor -VMName $vname -Count $numeroProcesadores
                 "Se ha asignado el procesador"
-                # Si se establece memoria dinamica se obtienen los valores maximos y minimos
-                $tamanioMemoria = [int]$tamanioMemoria * 1Gb
-                if($tipoDeMemoria -eq "Dynamic"){
-                    $minMemoria = $minMemoria * 1Gb
-                    $maxMemoria = $maxMemoria * 1Gb
-                    Set-VMMemory -VMName $vname -DynamicMemoryEnabled $True -MaximumBytes $maxMemoria -MinimumBytes $minMemoria -StartupBytes tamanioMemoria
-                }else{
-                    Set-VMMemory -VMName $vname -DynamicMemoryEnabled $false -StartupBytes $tamanioMemoria
-                }
-
-                $discoRaizVM = ($discos | Measure-Object -Maximum) # Se obtiene el disco de mayor tamaño para instalar el SO
-                foreach ($disk in $discos){
-                    if ($disk -eq $discoRaizVM) {
-                        if ($sistemaOperativo -eq ("Windows Server 2019" -or "Windows 10")) {
-                            Obtener-VersionesDeWindows -WinIso $imagen
-                        }
-                    } else {
-                        $pathDisk = $raiz+'\'+$vname+$disk+'.vhdx'
-                        # Se revisa que la ruta del disco virtual no exista, en el caso de existir se genera un numero random para nombrarlo
-                        while(Test-Path -Path $pathDisk){
-                            $random = Get-Random
-                            $pathDisk = $raiz+'\'+$vname+$disk+$random+'.vhdx'
-                        }
-                        $disk = [int]$disk * 1Gb
-                        New-VHD -Path $pathDisk -SizeBytes $disk
-                        Add-VMHardDiskDrive -VMName $vname -Path $pathDisk
-                    }
-                }
+                ## Si se establece memoria dinamica se obtienen los valores maximos y minimos
+                #$tamanioMemoria = $tamanioMemoria * 1GB
+                #if($tipoDeMemoria -eq "Dynamic"){
+                #    $minMemoria = $minMemoria * 1GB
+                #    $maxMemoria = $maxMemoria * 1GB
+                #    Set-VMMemory -VMName $vname -DynamicMemoryEnabled $True -MaximumBytes $maxMemoria -MinimumBytes $minMemoria -StartupBytes [int]$tamanioMemoria
+                #}else{
+                #    Set-VMMemory -VMName $vname -DynamicMemoryEnabled $false -StartupBytes $tamanioMemoria
+                #}
+#
+                #$discoRaizVM = ($discos | Measure-Object -Maximum) # Se obtiene el disco de mayor tamaño para instalar el SO
+                #foreach ($disk in $discos){
+                #    if ($disk -eq $discoRaizVM) {
+                #        if ($sistemaOperativo -eq ("Windows Server 2019" -or "Windows 10")) {
+                #            Obtener-VersionesDeWindows -WinIso $imagen
+                #        }
+                #    } else {
+                #        $pathDisk = $raiz+'\'+$vname+$disk+'.vhdx'
+                #        # Se revisa que la ruta del disco virtual no exista, en el caso de existir se genera un numero random para nombrarlo
+                #        while(Test-Path -Path $pathDisk){
+                #            $random = Get-Random
+                #            $pathDisk = $raiz+'\'+$vname+$disk+$random+'.vhdx'
+                #        }
+                #        $disk = [int]$disk * 1Gb
+                #        New-VHD -Path $pathDisk -SizeBytes $disk
+                #        Add-VMHardDiskDrive -VMName $vname -Path $pathDisk
+                #    }
+                #}
                 Set-VMDvdDrive -VMName $vname -Path $imagen
             } else {
                 # En caso de no encontrar el rol de Hyper-V procede a su instalacion
@@ -512,7 +511,7 @@ function Datos-VM {
            Write-Host "Aplique los cambios necesarios sobre el archivo de entrada y ejecute el script de nuevo."
            exit
        }
-    } while ($true)
+    #} while ($true)
     Write-Host "`n`n"
 
 

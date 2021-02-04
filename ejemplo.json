@@ -3,23 +3,33 @@
   "VMs": [
     {
       "SO": "Windows10",
-      "Hostname": "Yawe",
+      "Hostname": "LoveOfLesbian",
       "DiskSize": [
         10
       ],
-      "InterfaceConfig": {
-        "VirtualSwitch" : "Foco2",
-        "Nombre": "Interna",
-        "IP": "192.168.1.30",
-        "Mask": "255.255.255.0",
-        "Gateway": null,
-        "DNS": null
-      },
+      "InterfaceConfig": [
+        {
+          "VirtualSwitch" : "Prueba",
+          "Nombre": "Interna",
+          "IP": "192.168.1.31",
+          "Mask": "255.255.255.0",
+          "Gateway": null,
+          "DNS": null
+        },
+        {
+          "VirtualSwitch" : "PruebaPrivado",
+          "Nombre": "Externa",
+          "IP": "192.168.30.31",
+          "Mask": "255.255.255.0",
+          "Gateway": "192.168.1.255",
+          "DNS": "1.1.1.1"
+        }
+      ],
       "MemoryType": "Dynamic",
       "MemorySize": 2,
       "MemoryMax": 2,
       "MemoryMin": 0.5,
-      "ProcessorNumber": 2,
+      "ProcessorNumber": 4,
       "User": "Testeando",
       "Password": "hola123.,prueba",
       "Services": [
