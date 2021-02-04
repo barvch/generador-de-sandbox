@@ -1,15 +1,14 @@
 {
-  "Root": "C:\\Users\\AValv\\OneDrive\\Escritorio\\proyecto1",
+  "Root": "C:\\Sandbox\\FlatEric",
   "VMs": [
     {
       "SO": "Windows 10",
-      "Hostname": "CONTOSO",
+      "Hostname": "CONTOCITO",
       "DiskSize": [
-        7,
-        2
+        10
       ],
       "InterfaceConfig": {
-        "VirtualSwitch" : "TestJuanito",
+        "VirtualSwitch" : "Foco",
         "Nombre": "Interna",
         "IP": "192.168.1.30",
         "Mask": "255.255.255.0",
@@ -23,14 +22,8 @@
       "User": "Testeando",
       "Password": "hola123.,prueba",
       "Services": [
-        {
-          "SSH": "2222",
-          "Apache": "",
-          "MySQL" : "",
-          "iptables" : "C:\\Users\\Administrador\\Desktop\\backupRules.txt"
-        }
       ],
-      "ImagePath": "E:\\VMware\\Maquinas virtuales\\Test\\Win10_20H2_v2_English_x64.iso"
+      "ImagePath": "F:\\Plan de becas\\ISO\\Win10_1909_English_x64.iso"
     },
     {
       "SO": "Windows 10",

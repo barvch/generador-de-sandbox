@@ -133,7 +133,7 @@ function Validar-VHDX {
         if ($listaDiscosPorCrear.Count -eq 1) {
              Write-Host "`tVHD encontrado: $listaDiscosPorCrear GB"
              $postCreacionDisco = Almacenamiento-Disponible -diskSize $listaDiscosPorCrear[0]
-             #Write-Host "`tQuedarán $postCreacionDisco GB libres dentro del equipo."
+             return $listaDiscosPorCrear
         } else {
             for ($i=0; $i -le ($postCreacionDisco.Count-1); $i++) {
                 $temp = $postCreacionDisco[$i]
@@ -152,6 +152,7 @@ function Validar-VHDX {
                }
             }
             Write-Host "`t`tEspacio libre dentro del disco seleccionado como raiz al crear los VHDX: $postCreacionDisco GB"
+            return $listaDiscosPorCrear
         }
     } else {
         "ERROR: No se ha especificado el tamaño del disco virtual (VHDX) a crear para el equipo."
@@ -312,7 +313,7 @@ function Validar-ISO {
     if ($imagen -ne "") {
        if (Test-Path -Path $imagen) {
            Write-Host "`tSe usar� la siguiente imagen para este equipo: $imagen"
-           return $true
+           return $imagen
        } else {
            Write-Host "`tNo se ha podido acceder a la ruta de la imagen dentro del archivo de entrada. Revisar el archivo JSON."
            exit
@@ -345,16 +346,18 @@ function Datos-VM {
     $tipoDeMemoria = $archivoEntrada.VMs[$contador].MemoryType
     if($tipoDeMemoria -eq "Static"){
         $tamanioMemoria = Validar-RAM -tamanioMemoria $archivoEntrada.VMs[$contador].MemorySize
+        Write-Host "$tamanioMemoria`n$tipoDeMemoria"
     }elseif($tipoDeMemoria -eq "Dynamic"){
         $minMemoria, $maxMemoria = Validar-RAM -minMemoria $archivoEntrada.VMs[$contador].MemoryMin -maxMemoria $archivoEntrada.VMs[$contador].MemoryMax
+        #Write-Host "$maxMemoria - $minMemoria`n$tipoDeMemoria"
     }else{
-        Write-Host "Se debe especificar alguno de los siguientes tipos de memoria:`nStatic`nDynamic"
+        #Write-Host "Se debe especificar alguno de los siguientes tipos de memoria:`nStatic`nDynamic"
         exit
     }
     $discos = Validar-VHDX -listaDiscosPorCrear $archivoEntrada.VMs[$contador].DiskSize
     $imagen = Validar-ISO -imagen $archivoEntrada.VMs[$contador].ImagePath
     $interfaces = Validar-Redes -interfaces $archivoEntrada.VMs[$contador].InterfaceConfig # Se validan las configuraciones de red para todas las interfaces
-
+    $numeroProcesadores = Validar-Procesadores -numeroProcesadores $archivoEntrada.VMs[$contador].ProcessorNumber
     # Se recuperan los datos individuales dependiendo del tipo de SO
  
     ########
@@ -442,23 +445,28 @@ function Datos-VM {
     Do {
        $confirmacion = Read-Host -Prompt "¿Son los datos presentados correctos para el equipo $hostname? (S/N)"
        if ($confirmacion.Equals("S") -or $confirmacion.Equals("s")) {
-
             # Se verifica la instalaci�n del rol de Hyper-V
             $instalados = Get-WindowsFeature -Name  Hyper-V | Where-Object { $_.InstallState -eq "Installed"}
             if($instalados.Count -ge 1){
-                $vname  = $os + $hostname
+                $vname  = $sistemaOperativo + ' ' + $hostname
+                "Creando VM..."
                 New-VM -VMName $vname -Generation 1 # -SwitchName $virtualSwitch[$j]
+                "Se ha creado la VM"
                 foreach ($vs in $switchesVirtualesAsociados) {Add-VMNetworkAdapter -VMName $vname -SwitchName $vs}
+                "Se han creado los vswitches"
                 Set-VMProcessor -VMName $vname -Count $numeroProcesadores
-                $tamanioMemoria = [int]$tamanioMemoria * 1Gb
+                "Se ha asignado el procesador"
                 # Si se establece memoria dinamica se obtienen los valores maximos y minimos
+                "ACAWE"
                 if($tipoDeMemoria -eq "Dynamic"){
-                    $maxMemoria = $maxMemoria * 1Gb
-                    $minMemoria = $minMemoria * 1Gb
-                    Set-VMMemory -VMName $vname -DynamicMemoryEnabled $True -MaximumBytes $maxMemoria -MinimumBytes $minMemoria -StartupBytes $tamanioMemoria
+                    $minMemoria = [int]$minMemoria * 1Gb
+                    $maxMemoria = [int]$maxMemoria * 1Gb
+                    Set-VMMemory -VMName $vname -DynamicMemoryEnabled $True -MaximumBytes $maxMemoria -MinimumBytes $minMemoria -StartupBytes $minMemoria
                 }else{
+                    $tamanioMemoria = [int]$tamanioMemoria * 1Gb
                     Set-VMMemory -VMName $vname -DynamicMemoryEnabled $false -StartupBytes $tamanioMemoria
                 }
+                "NOWE:("
                 $discoRaizVM = ($discos | Measure-Object -Maximum) # Se obtiene el disco de mayor tamaño para instalar el SO
                 foreach ($disk in $discos){
                     if ($disk -eq $discoRaizVM) {
