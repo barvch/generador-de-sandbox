@@ -118,7 +118,7 @@ function Validar-SistemaOperativo {
     param ([string]$SOPorRevisar)
     $poolSistemas = @("Windows Server 2019","Windows 10", "Ubuntu", "CentOS","CentOS Stream", "FortiOS", "RHEL", "Kali")
     if ($poolSistemas -contains $SOPorRevisar) { 
-        return $true 
+        return $SOPorRevisar 
     } else {
         "ERROR: Ingresa el nombre de alguno de los siguientes sistemas operativos disponibles para la herramienta: "
         foreach ($item in $poolSistemas) { Write-Host "$item" }
@@ -248,46 +248,26 @@ function Obtener-VersionesDeWindows {
 }
 
 function Validar-RAM {
-    param ($tipoDeMemoria,  $tamanioMemoria)
+    param ($tamanioMemoria=0, $minMemoria=0, $maxMemoria=0)
     Write-Host "Memoria RAM"
-    if ($tipoDeMemoria -eq "") {
-        "`tNo se ha encontrado el tipo de memoria a utilizar para el equipo '$hostname'. Revisar archivo JSON."
+    if(($tamanioMemoria -or ($minMemoria -and $maxMemoria)) -in 1..(Consultar-Memoria)){
+        if($PSBoundParameters.Count -eq 1){
+            Write-Host "`tTamano de memoria $tamanioMemoria GB."
+            return $tamanioMemoria
+        }else{
+            if($minMemoria -lt $maxMemoria){
+                Write-Host "`tMemoria maxima $maxMemoria GB."
+                Write-Host "`tMemoria minima $minMemoria GB."
+                return $minMemoria, $maxMemoria
+            }else{
+                Write-Host "La memoria minima debe ser menor a la memoria maxima ingresada`nMemoria minima: $minMemoria`nMemoria maxima: $maxMemoria"
+                exit
+            }
+        }
+    }else{
+        "Se debe ingresar un tamanio menor al de la memoria RAM disponible"
         exit
     }
-    if ($tamanioMemoria -eq "") {
-        "`tNo se ha encontrado el tama�o de la memoria a utilizar para el equipo '$hostname'. Revisar archivo JSON."
-        exit
-    }
-    $tamanioMemoria = Consultar-Memoria
-    if ([int]$tamanioMemoria -gt $totalRamDisponible) {
-        "`tSe ha ingresado una cantidad de memoria que excede el total de RAM del equipo`n`t`tMemororia total disponible en el equipo: $totalRamDisponible.`n`t`tMemoria ingresada para el equipo: $tamanioMemoria"
-        exit
-    }
-    if($tipoDeMemoria -eq "Dynamic"){
-        $maxMemoria = $archivoEntrada.VMs[$contador].MemoryMax #Int GB
-        $minMemoria = $archivoEntrada.VMs[$contador].MemoryMin #Int GB
-        if ([int]$maxMemoria -gt $totalRamDisponible) {
-            "`tSe ha ingresado una cantidad de memoria m�xima que excede el total de RAM del equipo`n`t`tMemororia total disponible en el equipo: $totalRamDisponible.`n`t`tMemoria ingresada para el equipo: $tamanioMemoria"
-            exit
-        }
-        if($minMemoria -gt $maxMemoria){
-            "`tSe ha ingresado una cantidad de memoria minima que excede el total de RAM de memoria m�xima ingresada`n`t`tMemoria m�xima: $maxMemoria GB.`n`t`tMemoria m�nima: $minMemoria MB"
-            exit
-        }
-        if([int]$tamanioMemoria -gt $maxMemoria){
-            $tamanioMemoria = [string]$maxMemoria
-        }
-        if($minMemoria -gt $tamanioMemoria ){
-            $tamanioMemoria = [string]$minMemoria
-        }
-        Write-Host "`tSe usar� una memoria del tipo $tipoDeMemoria con un tama�o de $tamanioMemoria GB."
-        Write-Host "`tMemoria maxima $maxMemoria GB."
-        Write-Host "`tMemoria minima $minMemoria GB."
-    }
-    else{
-        Write-Host "`tSe usar� una memoria del tipo $tipoDeMemoria con un tama�o de $tamanioMemoria GB."
-    }
-    
 }
 
 function Validar-Procesadores {
@@ -336,41 +316,44 @@ function Validar-ISO {
     }
 }
 
+function Validar-Hostname {
+    param ($hostname)
+    if($hostname -match "^([a-zA-z]+[0-9]*[.-]?)+[a-zA-Z]+$"){
+        return $hostname
+    }else{
+        Write-Host 'El hostname solamente puede contener letras, numeros y los siguientes caracteres especiales: "." (punto) y "-" (guion)'
+        exit
+    }
+}
+
 # Funci�n para obtener par�metros de las m�quinas virtuales que desean ser creadas  
 function Datos-VM {
     param ([int]$contador, [string]$os)
-    Write-Host "DATOS DEL EQUIPO  $os | $hostname :"
+  
 
-    # Se recuperan los datos obligatorios independientemente del tipo de SO
-    $hostname = $archivoEntrada.VMs[$contador].Hostname # String
-    $sistemaOperativo = $archivoEntrada.VMs[$contador].SO # String
+    # Se recuperan los datos obligatorios independientemente del tipo de SO y se valida que sean correctos
+    $hostname = Validar-Hostname -hostname $archivoEntrada.VMs[$contador].Hostname # String
+    Write-Host "DATOS DEL EQUIPO  $os | $hostname :"
+    $sistemaOperativo = Validar-SistemaOperativo -SOPorRevisar $archivoEntrada.VMs[$contador].SO # String
     $usuario = $archivoEntrada.VMs[$contador].User
     $passwd = $archivoEntrada.VMs[$contador].Password
-    $tipoDeMemoria = $archivoEntrada.VMs[$contador].MemoryType # String
-    $tamanioMemoria = $archivoEntrada.VMs[$contador].MemorySize # String
-    $discos = $archivoEntrada.VMs[$contador].DiskSize
-    $imagen = $archivoEntrada.VMs[$contador].ImagePath
+    $tipoDeMemoria = $archivoEntrada.VMs[$contador].MemoryType
+    if($tipoDeMemoria -eq "Static"){
+        $tamanioMemoria = Validar-RAM -tamanioMemoria $archivoEntrada.VMs[$contador].MemorySize
+    }elseif($tipoDeMemoria -eq "Dynamic"){
+        $minMemoria, $maxMemoria = Validar-RAM -minMemoria $archivoEntrada.VMs[$contador].MemoryMin -maxMemoria $archivoEntrada.VMs[$contador].MemoryMax
+    }else{
+        Write-Host "Se debe especificar alguno de los siguientes tipos de memoria:`nStatic`nDynamic"
+        exit
+    }
+    $discos = Validar-VHDX -listaDiscosPorCrear $archivoEntrada.VMs[$contador].DiskSize
+    $imagen = Validar-ISO -imagen $archivoEntrada.VMs[$contador].ImagePath
+    $interfaces = Validar-Redes -interfaces $archivoEntrada.VMs[$contador].InterfaceConfig # Se validan las configuraciones de red para todas las interfaces
 
     # Se recuperan los datos individuales dependiendo del tipo de SO
  
     ########
     
-
-    # Validaciones de los datos generales ingresados 
-
-    if (Validar-SistemaOperativo -SOPorRevisar $sistemaOperativo) { # Se valida que se ingrese un sistema operativo dentro del pool de sistemas operativos permitidos
-        if (Validar-VHDX -listaDiscosPorCrear $discos) {
-            $interfaces = Validar-Redes -interfaces $archivoEntrada.VMs[$contador].InterfaceConfig # Se validan las configuraciones de red para todas las interfaces
-            if (Validar-RAM -tipoDeMemoria $tipoDeMemoria -tamanioMemoria  $tamanioMemoria) {
-                $numeroProcesadores = Validar-Procesadores -numeroProcesadores $archivoEntrada.VMs[$contador].ProcessorNumber
-                if (Validar-Credenciales -usuario $usuario -passwd $passwd) {
-                    if (Validar-ISO -imagen $imagen) {
-
-                    }
-                }
-            }
-        }
-    }
 
     # Validaciones de los datos individuales ingresados 
 
@@ -504,7 +487,6 @@ function Datos-VM {
 
 }
 
-
 if ($args.Count -eq 1) {
     $rutaJSON = $args[0] # Se lee la ruta donde est� el archivo de entrada
     $archivoEntrada = Validar-JSON -rutaJSON $rutaJSON # Se lee y valida que exista el archivo y que esté en formato JSON
@@ -519,3 +501,5 @@ if ($args.Count -eq 1) {
 } else {
     "Sólo se debe de ingrear como algumento, la ruta donde se encuentre el archivo de entrada en formato JSON"
 }
+
+

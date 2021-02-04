@@ -1,8 +1,8 @@
 {
-  "Root": "C:\\Users\\Rodolfo Baruch\\Desktop\\proyecto1",
+  "Root": "C:\\Users\\AValv\\OneDrive\\Escritorio\\proyecto1",
   "VMs": [
     {
-      "SO": "Linux",
+      "SO": "Windows 10",
       "Hostname": "CONTOSO",
       "DiskSize": [
         7,
@@ -19,7 +19,6 @@
       "MemoryType": "Dynamic",
       "MemoryMax": 2,
       "MemoryMin": 0.5,
-      "MemorySize": "3",
       "ProcessorNumber": 2,
       "User": "Test",
       "Password": "hola123.,",
@@ -34,7 +33,7 @@
       "ImagePath": "F:\\Plan de becas\\ISO\\Win10_1909_English_x64.iso"
     },
     {
-      "Type": "Windows",
+      "SO": "Windows 10",
       "Hostname": "FIREWALL",
       "DiskSize": [
         10
