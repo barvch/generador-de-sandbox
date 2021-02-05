@@ -362,15 +362,16 @@ function Datos-VM {
         Write-Host "$tamanioMemoria`n$tipoDeMemoria"
     }elseif($tipoDeMemoria -eq "Dynamic"){
         $minMemoria, $maxMemoria = Validar-RAM -minMemoria $archivoEntrada.VMs[$contador].MemoryMin -maxMemoria $archivoEntrada.VMs[$contador].MemoryMax
-        #Write-Host "$maxMemoria - $minMemoria`n$tipoDeMemoria"
     }else{
-        #Write-Host "Se debe especificar alguno de los siguientes tipos de memoria:`nStatic`nDynamic"
+        "Los unicos tipos de memorias aceptadas son 'Dynamic' y 'Static'.`nRevise archivo JSON."
         exit
     }
     $discos = Validar-VHDX -listaDiscosPorCrear $archivoEntrada.VMs[$contador].DiskSize
     $imagen = Validar-ISO -imagen $archivoEntrada.VMs[$contador].ImagePath
     $interfaces = Validar-Redes -interfaces $archivoEntrada.VMs[$contador].InterfaceConfig # Se validan las configuraciones de red para todas las interfaces
     $numeroProcesadores = Validar-Procesadores -numeroProcesadores $archivoEntrada.VMs[$contador].ProcessorNumber
+    
+    
     # Se recuperan los datos individuales dependiendo del tipo de SO
  
     ########
@@ -449,17 +450,13 @@ function Datos-VM {
         Write-Host "`tNo se han encontrados servicios a instalar para este equipo"
     }
 
-
-
-    # Confirmaci�n de los datos que han sido le�dos para la VM
-    #Do {
+    # Confirmacion de los datos que han sido le�dos para la VM
+    Do {
        $confirmacion = Read-Host -Prompt "¿Son los datos presentados correctos para el equipo $hostname? (S/N)"
-       if ($confirmacion.Equals("S") -or $confirmacion.Equals("s")) {
+       if ($confirmacion.toUpper().Equals("S")) {
             $vname = $sistemaOperativo + $hostname
-
             $switchesVirtualesAsociados = @()
             $nombreInterfazAsociada = @()
-            "Contenido Interfaces: "
             foreach ($interfaz in $interfaces) {
                 $nombreVSwitch = $interfaz.VirtualSwitch
                 $nombreInterfazAsociada += $interfaz.Nombre
@@ -467,22 +464,12 @@ function Datos-VM {
                     $switchesVirtualesAsociados += $nombreVSwitch  
                 }
             }
-            "Creando VM..."
-            #try {
-                (New-VM -VMName $vname -Generation 2)
-                "Se ha creado la VM"
-                (Remove-VMNetworkAdapter -VMName $vname -VMNetworkAdapterName (Get-VMNetworkAdapter -VMName $vname).Name)
-            #} catch {
-            #    "ERROR: No se pudo crear la VM."
-            #}
-
-            Add-VMDvdDrive -VMName $vname -Path $imagen
-            "Se ha agregado el ISO"
-
+            $crearVM = New-VM -VMName $vname -Generation 2 -Force
+            $eliminarInterfazDefault = Remove-VMNetworkAdapter -VMName $vname -VMNetworkAdapterName (Get-VMNetworkAdapter -VMName $vname).Name
+            $agregarISO = Add-VMDvdDrive -VMName $vname -Path $imagen
             for ($i = 0;$i -le ($switchesVirtualesAsociados.Count-1); $i++) {Add-VMNetworkAdapter -VMName $vname -SwitchName $switchesVirtualesAsociados[$i] -Name $nombreInterfazAsociada[$i]}
-            "VSwitches asociados"
             Set-VMProcessor -VMName $vname -Count $numeroProcesadores
-            "Se ha asignado el procesador"
+
             ## Si se establece memoria dinamica se obtienen los valores maximos y minimos
             $tamanioMemoria = [int]$tamanioMemoria * 1GB
             if($tipoDeMemoria -eq "Dynamic"){
@@ -491,48 +478,47 @@ function Datos-VM {
                 Set-VMMemory -VMName $vname -DynamicMemoryEnabled $True -MaximumBytes $maxMemoria -MinimumBytes $minMemoria -StartupBytes 1024MB
             }else{
                 Set-VMMemory -VMName $vname -DynamicMemoryEnabled $false -StartupBytes $tamanioMemoria
-            }
-            "Memoria asignada"                   
+            }                  
             $discoRaizVM = ($discos | Measure-Object -Maximum) # Se obtiene el disco de mayor tamaño para instalar el SO
-            Write-Host "Maximo: "$discoRaizVM.Maximum
+            
             foreach ($disk in $discos){
-                $disk
                 if ([int]$disk -eq [int]$discoRaizVM.Maximum) {
                     if ($sistemaOperativo -eq "Windows10") {
                         "Presentando Versiones de Windows Disponibles dentro de ISO:"
                         Obtener-VersionesDeWindows -WinIso $imagen
                     }
                 } else {
-                    #$pathDisk = $raiz+'\'+$vname+$disk+'.vhdx'
+                    $pathDisk = $raiz+'\'+$vname+$disk+'.vhdx'
                     # Se revisa que la ruta del disco virtual no exista, en el caso de existir se genera un numero random para nombrarlo
-                    #while(Test-Path -Path $pathDisk){
+                    if (Test-Path -Path $pathDisk) {
                         $random = Get-Random
                         $pathDisk = $raiz+'\'+$vname+$disk+$random+'.vhdx'
-                    #}
+                    }
                     $disk = [int]$disk * 1Gb
+                    "Creando disco de $disk"
                     New-VHD -Path $pathDisk -SizeBytes $disk
-                    Add-VMHardDiskDrive -VMName $vname -Path $pathDisk
+                    Add-VMHardDiskDrive -VMName $vname -Path $pathDisk  
                 }
             }
-            "Se han creado los discos"
+            "Se ha creado satisfactoriamente la VM: $vmname"
         } 
         break
-       if ($confirmacion.Equals("N") -or $confirmacion.Equals("n")) {
+       if ($confirmacion.ToUpper().Equals("N")) {
            Write-Host "Aplique los cambios necesarios sobre el archivo de entrada y ejecute el script de nuevo."
            exit
        }
-    #} while ($true)
+    } while ($true)
 }
 
 
 # Psedo Main
 if ($args.Count -eq 1) {
+    Consultar-RolHyperV # Revisar si está o no el rol de Hyper-V dentro del Host Hyper-V. Lo instala en caso de que no este presente
     $rutaJSON = $args[0] # Se lee la ruta donde est� el archivo de entrada
     $archivoEntrada = Validar-JSON -rutaJSON $rutaJSON # Se lee y valida que exista el archivo y que esté en formato JSON
     $raiz = Validar-Raiz -rutaRaiz $archivoEntrada[0].Root # Se lee y valida la ruta raiz del proyecto a ser creado.
-    
-    # Revision de las especificaciones de las maquinas virtuales
-    Consultar-RolHyperV # Revisar si está o no el rol de Hyper-V dentro del Host Hyper-V. Lo instala en caso de que no este presente
+
+    # Revision de las especificaciones de las maquinas virtuales    
     $numeroMaquinas = ($ArchivoEntrada[0].VMs | Measure-Object).Count # Numero de Maquinas por instalar
     for($i=0; $i -le $numeroMaquinas-1;$i++) {
         Write-Host $archivoEntrada.VMs[$i].Type
