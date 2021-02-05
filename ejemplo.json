@@ -1,12 +1,11 @@
 {
-  "Root": "F:\\test",
+  "Root": "E:\\SanboxTest",
   "VMs": [
     {
       "SO": "Windows 10",
       "Hostname": "DHCP",
       "DiskSize": [
-        3,
-        4
+        10
       ],
       "InterfaceConfig": [
         {
@@ -35,7 +34,7 @@
       "Password": "hola123.,prueba",
       "Services": [
       ],
-      "ImagePath": "C:\\Users\\Administrator\\Downloads\\Win10_20H2_v2_English_x64.iso"
+      "ImagePath": "C:\\Win10_1909_English_x64.iso"
     },
     {
       "SO": "Windows 10",

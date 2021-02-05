@@ -266,8 +266,9 @@ function Obtener-VersionesDeWindows {
 
     Write-Host "Preparando la instalacion..."
 
-    Invoke-Expression $VirtualWinLetter+":\Windows\System32\bcdboot.exe "+$VirtualWinLetter+":\Windows /f uefi /s "+$EfiLetter+":"
-    Invoke-Expression "bcdedit /store "+$EfiLetter+":\EFI\Microsoft\Boot\BCD"
+    #Invoke-Expression $VirtualWinLetter":\Windows\System32\bcdboot.exe "$VirtualWinLetter":\Windows /f uefi /s "$EfiLetter":"
+    Invoke-Expression $VirtualWinLetter":\Windows\System32\bcdboot.exe" #$VirtualWinLetter":\Windows /f uefi /s "$EfiLetter":"
+    Invoke-Expression "bcdedit /store "$EfiLetter":\EFI\Microsoft\Boot\BCD"
 
     $UnattendFile = ".\unattend.xml"
 
