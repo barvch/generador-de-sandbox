@@ -1,17 +1,17 @@
 {
-  "Root": "C:\\Sandbox\\FlatEric",
+  "Root": "C:\\Sandbox\\AmbienteDePruebas1",
   "VMs": [
     {
       "SO": "Windows10",
-      "Hostname": "ArcticMonkeys",
+      "Hostname": "DHCP",
       "DiskSize": [
-        2,
-        2
+        3,
+        4
       ],
       "InterfaceConfig": [
         {
           "VirtualSwitch" : "Prueba",
-          "Nombre": "Interna",
+          "Nombre": "Interfaz No 1",
           "IP": "192.168.1.31",
           "Mask": "255.255.255.0",
           "Gateway": null,
@@ -19,7 +19,7 @@
         },
         {
           "VirtualSwitch" : "PruebaPrivado",
-          "Nombre": "Externa",
+          "Nombre": "Interfaz Privada",
           "IP": "192.168.30.31",
           "Mask": "255.255.255.0",
           "Gateway": "192.168.1.255",
