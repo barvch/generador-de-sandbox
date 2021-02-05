@@ -52,7 +52,6 @@ function Crear-VSwitch {
     "`tSe ha creado satisfactoriamente el VSwitch $nombre"
     return $true
 }
-
 function Validar-Raiz {
     param ([string]$rutaRaiz)
     if (Test-Path -Path $rutaRaiz) {
@@ -119,7 +118,7 @@ function Consultar-Memoria {
 
 function Validar-SistemaOperativo {
     param ([string]$SOPorRevisar)
-    $poolSistemas = @("Windows Server 2019","Windows10", "Ubuntu", "CentOS","CentOS Stream", "FortiOS", "RHEL", "Kali")
+    $poolSistemas = @("Windows Server 2019","Windows 10", "Ubuntu", "CentOS","CentOS Stream", "FortiOS", "RHEL", "Kali")
     if ($poolSistemas -contains $SOPorRevisar) { 
         return $SOPorRevisar 
     } else {
@@ -203,7 +202,7 @@ function Validar-Redes {
 }
 
 function Obtener-VersionesDeWindows {
-    param ([string]$WinIso)
+    param ([string]$WinIso, [string]$VhdFile)
     Write-Progress "Mounting $WinIso ..."
     $MountResult = Mount-DiskImage -ImagePath $WinIso -StorageType ISO -PassThru
     $DriveLetter = ($MountResult | Get-Volume).DriveLetter
@@ -248,6 +247,39 @@ function Obtener-VersionesDeWindows {
       }
     } while ($err)
     Write-Output $Items[$WimIdx]
+
+    [char] $VirtualWinLetter = $DriveLetter
+    $VirtualWinLetter = [byte] $VirtualWinLetter + 1
+
+    Mount-DiskImage -ImagePath $VhdFile
+    $disknumber = (Get-DiskImage -ImagePath $VhdFile | Get-Disk).Number
+
+    $EfiLetter = [byte] $VirtualWinLetter + 1
+    
+    Write-Host "Montando discos..."
+
+    "select disk $DiskNumber`nconvert gpt`nselect partition 1`ndelete partition override`ncreate partition primary size=300`nformat quick fs=ntfs `
+    create partition efi size=100`nformat quick fs=fat32`nassign letter=$EfiLetter`ncreate partition msr size=128`ncreate partition primary`nformat quick fs=ntfs `
+    assign letter=$VirtualWinLetter`nexit`n" | diskpart | Out-Null
+
+    Invoke-Expression "dism /apply-image /imagefile:`"$WimFile`" /index:$WimIdx /applydir:$($VirtualWinLetter):\"
+
+    Write-Host "Preparando la instalacion..."
+
+    Invoke-Expression $VirtualWinLetter+":\Windows\System32\bcdboot.exe "+$VirtualWinLetter+":\Windows /f uefi /s "+$EfiLetter+":"
+    Invoke-Expression "bcdedit /store "+$EfiLetter+":\EFI\Microsoft\Boot\BCD"
+
+    $UnattendFile = ".\unattend.xml"
+
+    if($UnattendFile) {
+        Write-Host "Copying unattend.xml"
+        New-Item -ItemType "directory" -Path $VirtualWinLetter+":\Windows\Panther\" | Out-Null
+        Copy-Item $UnattendFile $VirtualWinLetter+":\Windows\Panther\unattend.xml" | Out-Null
+      }
+
+    "select disk $disknumber`nselect partition 2`nremove letter=$EfiLetter`nselect partition 4`nremove letter=$VirtualWinLetter`nexit`n" | diskpart | Out-Null
+    Dismount-DiskImage -ImagePath $VhdFile | Out-Null
+    Dismount-DiskImage -ImagePath $WinIso | Out-Null
 }
 
 function Validar-RAM {
@@ -465,7 +497,8 @@ function Datos-VM {
                 }
             }
             $crearVM = New-VM -VMName $vname -Generation 2 -Force
-            $eliminarInterfazDefault = Remove-VMNetworkAdapter -VMName $vname -VMNetworkAdapterName (Get-VMNetworkAdapter -VMName $vname).Name
+            [string] $adaptador = Get-VMNetworkAdapter -VMName $vname
+            $eliminarInterfazDefault = Remove-VMNetworkAdapter -VMName $vname -VMNetworkAdapterName $adaptador.Name
             $agregarISO = Add-VMDvdDrive -VMName $vname -Path $imagen
             for ($i = 0;$i -le ($switchesVirtualesAsociados.Count-1); $i++) {Add-VMNetworkAdapter -VMName $vname -SwitchName $switchesVirtualesAsociados[$i] -Name $nombreInterfazAsociada[$i]}
             Set-VMProcessor -VMName $vname -Count $numeroProcesadores
@@ -480,24 +513,23 @@ function Datos-VM {
                 Set-VMMemory -VMName $vname -DynamicMemoryEnabled $false -StartupBytes $tamanioMemoria
             }                  
             $discoRaizVM = ($discos | Measure-Object -Maximum) # Se obtiene el disco de mayor tamaño para instalar el SO
-            
+            $vhdFlag = $false
             foreach ($disk in $discos){
-                if ([int]$disk -eq [int]$discoRaizVM.Maximum) {
-                    if ($sistemaOperativo -eq "Windows10") {
+                $pathDisk = $raiz+'\'+$vname+$disk+'.vhdx'
+                # Se revisa que la ruta del disco virtual no exista, en el caso de existir se genera un numero random para nombrarlo
+                if (Test-Path -Path $pathDisk) {
+                    $random = Get-Random
+                    $pathDisk = $raiz+'\'+$vname+$disk+$random+'.vhdx'
+                }
+                $disk = [int]$disk * 1GB
+                New-VHD -Path $pathDisk -SizeBytes $disk
+                Add-VMHardDiskDrive -VMName $vname -Path $pathDisk 
+                if (($disk/1GB) -eq [int]$discoRaizVM.Maximum -and $vhdFlag -eq $false) {
+                    if ($sistemaOperativo -eq "Windows 10") {
                         "Presentando Versiones de Windows Disponibles dentro de ISO:"
-                        Obtener-VersionesDeWindows -WinIso $imagen
+                        Obtener-VersionesDeWindows -WinIso $imagen -VhdFile $pathDisk
+                        $vhdFlag = $true
                     }
-                } else {
-                    $pathDisk = $raiz+'\'+$vname+$disk+'.vhdx'
-                    # Se revisa que la ruta del disco virtual no exista, en el caso de existir se genera un numero random para nombrarlo
-                    if (Test-Path -Path $pathDisk) {
-                        $random = Get-Random
-                        $pathDisk = $raiz+'\'+$vname+$disk+$random+'.vhdx'
-                    }
-                    $disk = [int]$disk * 1Gb
-                    "Creando disco de $disk"
-                    New-VHD -Path $pathDisk -SizeBytes $disk
-                    Add-VMHardDiskDrive -VMName $vname -Path $pathDisk  
                 }
             }
             "Se ha creado satisfactoriamente la VM: $vmname"

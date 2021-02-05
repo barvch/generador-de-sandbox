@@ -1,8 +1,8 @@
 {
-  "Root": "C:\\Sandbox\\AmbienteDePruebas1",
+  "Root": "F:\\test",
   "VMs": [
     {
-      "SO": "Windows10",
+      "SO": "Windows 10",
       "Hostname": "DHCP",
       "DiskSize": [
         3,
@@ -35,10 +35,10 @@
       "Password": "hola123.,prueba",
       "Services": [
       ],
-      "ImagePath": "C:\\Win10_1909_English_x64.iso"
+      "ImagePath": "C:\\Users\\Administrator\\Downloads\\Win10_20H2_v2_English_x64.iso"
     },
     {
-      "SO": "Windows10",
+      "SO": "Windows 10",
       "Hostname": "FIREWALL",
       "DiskSize": [
         10
@@ -72,7 +72,7 @@
           "DHCP": ""
         }
       ],
-      "ImagePath": "F:\\Plan de becas\\ISO\\Win10_1909_English_x64.iso"
+      "ImagePath": "C:\\Users\\Administrator\\Downloads\\Win10_20H2_v2_English_x64.iso"
     }
   ]
 }
