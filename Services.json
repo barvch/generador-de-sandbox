@@ -1,31 +1,73 @@
 {
+  "Root": "E:\\SanboxTest",
   "VMs": [
     {
-      "Type": "Windows",
-      "Hostname": "Contoso",
+      "SO": "Windows 10",
+      "Hostname": "DHCP",
       "DiskSize": [
-        30
+        10
       ],
-      "VirtualSwitch": [
-        "Switch_Externo"
+      "InterfaceConfig": [
+        {
+          "VirtualSwitch" : "Prueba",
+          "Nombre": "Interfaz No 1",
+          "IP": "192.168.1.31",
+          "Mask": "255.255.255.0",
+          "Gateway": null,
+          "DNS": null
+        },
+        {
+          "VirtualSwitch" : "PruebaPrivado",
+          "Nombre": "Interfaz Privada",
+          "IP": "192.168.30.31",
+          "Mask": "255.255.255.0",
+          "Gateway": "192.168.1.255",
+          "DNS": "1.1.1.1"
+        }
       ],
-      "InterfaceConfig": {
-        "Nombre": "Interna",
-        "IP": "192.168.1.30",
-        "Mask": "255.255.255.0",
-        "Gateway": null,
-        "DNS": null
-      },
       "MemoryType": "Dynamic",
+      "MemorySize": "3",
       "MemoryMax": 2,
       "MemoryMin": 0.5,
-      "MemorySize": "3",
+      "ProcessorNumber": 4,
+      "User": "Testeando",
+      "Password": "hola123.,prueba",
+      "Services": [
+      ],
+      "ImagePath": "C:\\Win10_1909_English_x64.iso"
+    },
+    {
+      "SO": "Windows 10",
+      "Hostname": "FIREWALL",
+      "DiskSize": [
+        10
+      ],
+      "InterfaceConfig": [
+        {
+          "VirtualSwitch" : "Prueba",
+          "Nombre": "Interna",
+          "IP": "192.168.1.31",
+          "Mask": "255.255.255.0",
+          "Gateway": null,
+          "DNS": null
+        },
+        {
+          "VirtualSwitch" : "PruebaPrivado",
+          "Nombre": "Externa",
+          "IP": "192.168.30.31",
+          "Mask": "255.255.255.0",
+          "Gateway": "192.168.1.255",
+          "DNS": "1.1.1.1"
+        }
+      ],
+      "MemoryType": "Static",
+      "MemorySize": 2,
       "ProcessorNumber": 2,
       "User": "Test",
       "Password": "hola123.,",
-	  "Domain":"contoso.local",
-      "Services": [{
-       "Name": "IIS",
+      "Services": [
+        {
+          "Name": "IIS",
        "Config":{
 		"Sites":[{
 			"Name":"Prueba1",
@@ -115,9 +157,60 @@
 			}]
 		}]
 	}
+	},{
+	"Name":"Certificate Services"
+	},{
+	"Name":"Active Directory",
+	"Config":{
+		"DomainMode":"Windows Server 2008",
+		"ForestMode":"Windows Server 2008",
+		"Netbios":"PRUEBA",
+		"Domain":"prueba.local"
 	}
-	],
-      "ImagePath": "C:\\Users\\Administrator.WIN-0CCMCU093U9\\Desktop\\Proyecto\\Windows.iso"
+	},{
+	"Name":"Windows Defender",
+	"Config":{
+		"ExclusionPath":[
+			"C:\\Viideo",
+			"C:\\Install"
+		],
+		"ExclusionProcess":[
+			"word.exe",
+			"calc.exe"
+		],
+		"ExclusionExtension":[
+			"exe",
+			"pdf"
+		]
 	}
+	},{
+	"Name":"WebDAV",
+	"Config":{
+		"Groups":[{
+			"Name":"WebDAVGroup1",
+			"Members":[
+				"DNS",
+				"DHCP"]
+			},{
+			"Name":"WebDAVGroup2",
+			"Members":[
+				"DNS",
+				"DHCP"],
+			"Locations":{
+				"Name":"Web",
+				"Path":"C:\\inetpub\\webdav",
+				"Site":"Prueba1",
+				"Info":{
+					"Folders":"webdav",
+					"Permiso": "Read,Write,Source"
+				}	
+			}
+			}
+			]
+	}
+        }
+      ],
+      "ImagePath": "C:\\Users\\Administrator\\Downloads\\Win10_20H2_v2_English_x64.iso"
+    }
   ]
 }
