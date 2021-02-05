@@ -3,13 +3,13 @@
   "VMs": [
     {
       "SO": "Windows 10",
-      "Hostname": "DHCP",
+      "Hostname": "Teeeeeeeeeest",
       "DiskSize": [
-        10
+        13
       ],
       "InterfaceConfig": [
         {
-          "VirtualSwitch" : "Prueba",
+          "VirtualSwitch" : "SalidaInternet",
           "Nombre": "Interfaz No 1",
           "IP": "192.168.1.31",
           "Mask": "255.255.255.0",
@@ -30,8 +30,8 @@
       "MemoryMax": 2,
       "MemoryMin": 0.5,
       "ProcessorNumber": 4,
-      "User": "Testeando",
-      "Password": "hola123.,prueba",
+      "User": "Magumbosito",
+      "Password": "hola12344.,prueba",
       "Services": [
       ],
       "ImagePath": "C:\\Win10_1909_English_x64.iso"

@@ -202,7 +202,7 @@ function Validar-Redes {
 }
 
 function Obtener-VersionesDeWindows {
-    param ([string]$WinIso, [string]$VhdFile)
+    param ([string]$WinIso, [string]$VhdFile, [string]$UnattendFile)
     Write-Progress "Mounting $WinIso ..."
     $MountResult = Mount-DiskImage -ImagePath $WinIso -StorageType ISO -PassThru
     $DriveLetter = ($MountResult | Get-Volume).DriveLetter
@@ -270,7 +270,7 @@ function Obtener-VersionesDeWindows {
     #Invoke-Expression $VirtualWinLetter":\Windows\System32\bcdboot.exe" #$VirtualWinLetter":\Windows /f uefi /s "$EfiLetter":"
     Invoke-Expression "bcdedit /store $($EfiLetter):\EFI\Microsoft\Boot\BCD"
 
-    $UnattendFile = ".\unattend.xml"
+    #$UnattendFile = ".\unattend.xml"
 
     if($UnattendFile) {
         Write-Host "Copying unattend.xml"
@@ -380,6 +380,28 @@ function Consultar-RolHyperV {
     }
 }
 
+function Modificar-Unattend {
+    param ([string]$username ,[string]$passwd, [string]$rutaXML)
+    if (Test-Path -Path $rutaXML) {
+        try {
+            [XML]$xml = Get-Content $rutaXML
+            $xml.unattend.settings.component.AutoLogon.Password.Value = $passwd 
+            $xml.unattend.settings.component.UserAccounts.LocalAccounts.LocalAccount.Password.Value = $passwd
+            $xml.unattend.settings.component.UserAccounts.LocalAccounts.LocalAccount.DisplayName = $username
+            $xml.unattend.settings.component.UserAccounts.LocalAccounts.LocalAccount.Name = $username
+            $xml.unattend.settings.component.AutoLogon.Username = $username
+            $xml.Save($rutaXML)
+            "Arhivo $rutaXML modificado correctamente"
+        } catch {
+            "Error al aplicar cambios dentro del XML"
+            exit
+        }
+    } else {
+        "No se encuentra la ruta del archivo XML para 'Unattend'"
+        exit
+    }
+}
+
 # Funci�n para obtener par�metros de las m�quinas virtuales que desean ser creadas  
 function Datos-VM {
     param ([int]$contador)
@@ -403,6 +425,7 @@ function Datos-VM {
     $imagen = Validar-ISO -imagen $archivoEntrada.VMs[$contador].ImagePath
     $interfaces = Validar-Redes -interfaces $archivoEntrada.VMs[$contador].InterfaceConfig # Se validan las configuraciones de red para todas las interfaces
     $numeroProcesadores = Validar-Procesadores -numeroProcesadores $archivoEntrada.VMs[$contador].ProcessorNumber
+    $rutaUnattend = "C:\Users\Administrator\Desktop\generador-de-sandbox\unattend.xml"
     
     
     # Se recuperan los datos individuales dependiendo del tipo de SO
@@ -527,8 +550,9 @@ function Datos-VM {
                 Add-VMHardDiskDrive -VMName $vname -Path $pathDisk 
                 if (($disk/1GB) -eq [int]$discoRaizVM.Maximum -and $vhdFlag -eq $false) {
                     if ($sistemaOperativo -eq "Windows 10") {
+                        Modificar-Unattend  -username $usuario -passwd $passwd -rutaXML $rutaUnattend
                         "Presentando Versiones de Windows Disponibles dentro de ISO:`n"
-                        Obtener-VersionesDeWindows -WinIso $imagen -VhdFile $pathDisk
+                        Obtener-VersionesDeWindows -WinIso $imagen -VhdFile $pathDisk -UnattendFile $rutaUnattend
                         $vhdFlag = $true
                     }
                 }

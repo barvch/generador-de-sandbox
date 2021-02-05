@@ -1,16 +1,14 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <unattend xmlns="urn:schemas-microsoft-com:unattend">
   <settings pass="oobeSystem">
-    <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35"
-               language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
-               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <AutoLogon>
         <Password>
-          <Value>hola123.,</Value>
-          <PlainText>true</PlainText>
+          <Value>hola12344.,prueba</Value>
+          <PlainText>True</PlainText>
         </Password>
         <Enabled>true</Enabled>
-        <Username>admin</Username>
+        <Username>Magumbosito</Username>
       </AutoLogon>
       <OOBE>
         <HideEULAPage>true</HideEULAPage>
@@ -26,18 +24,21 @@
         <LocalAccounts>
           <LocalAccount wcm:action="add">
             <Password>
-              <Value>hola123.,</Value>
+              <Value>hola12344.,prueba</Value>
               <PlainText>true</PlainText>
             </Password>
-            <Description></Description>
-            <DisplayName>user</DisplayName>
+            <Description>
+            </Description>
+            <DisplayName>Magumbosito</DisplayName>
             <Group>Administrators</Group>
-            <Name>admin</Name>
+            <Name>Magumbosito</Name>
           </LocalAccount>
         </LocalAccounts>
       </UserAccounts>
-      <RegisteredOrganization></RegisteredOrganization>
-      <RegisteredOwner></RegisteredOwner>
+      <RegisteredOrganization>
+      </RegisteredOrganization>
+      <RegisteredOwner>
+      </RegisteredOwner>
       <DisableAutoDaylightTimeSet>false</DisableAutoDaylightTimeSet>
       <TimeZone>GMT Standard Time</TimeZone>
     </component>
