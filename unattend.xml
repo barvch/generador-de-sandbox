@@ -26,13 +26,13 @@
         <LocalAccounts>
           <LocalAccount wcm:action="add">
             <Password>
-              <Value>login</Value>
+              <Value>hola123.,</Value>
               <PlainText>true</PlainText>
             </Password>
             <Description></Description>
             <DisplayName>user</DisplayName>
             <Group>Administrators</Group>
-            <Name>user</Name>
+            <Name>admin</Name>
           </LocalAccount>
         </LocalAccounts>
       </UserAccounts>
