@@ -251,10 +251,10 @@ function Obtener-VersionesDeWindows {
     [char] $VirtualWinLetter = $DriveLetter
     $VirtualWinLetter = [byte] $VirtualWinLetter + 1
 
-    Mount-DiskImage -ImagePath $VhdFile
+    Mount-DiskImage -ImagePath $VhdFile | Out-Null
     $disknumber = (Get-DiskImage -ImagePath $VhdFile | Get-Disk).Number
 
-    $EfiLetter = [byte] $VirtualWinLetter + 1
+    [char] $EfiLetter = [byte] $VirtualWinLetter + 1
     
     Write-Host "Montando discos..."
 
@@ -266,16 +266,16 @@ function Obtener-VersionesDeWindows {
 
     Write-Host "Preparando la instalacion..."
 
-    #Invoke-Expression $VirtualWinLetter":\Windows\System32\bcdboot.exe "$VirtualWinLetter":\Windows /f uefi /s "$EfiLetter":"
-    Invoke-Expression $VirtualWinLetter":\Windows\System32\bcdboot.exe" #$VirtualWinLetter":\Windows /f uefi /s "$EfiLetter":"
-    Invoke-Expression "bcdedit /store "$EfiLetter":\EFI\Microsoft\Boot\BCD"
+    Invoke-Expression "$($VirtualWinLetter):\Windows\System32\bcdboot.exe $($VirtualWinLetter):\Windows /f uefi /s $($EfiLetter):"
+    #Invoke-Expression $VirtualWinLetter":\Windows\System32\bcdboot.exe" #$VirtualWinLetter":\Windows /f uefi /s "$EfiLetter":"
+    Invoke-Expression "bcdedit /store $($EfiLetter):\EFI\Microsoft\Boot\BCD"
 
     $UnattendFile = ".\unattend.xml"
 
     if($UnattendFile) {
         Write-Host "Copying unattend.xml"
-        New-Item -ItemType "directory" -Path $VirtualWinLetter+":\Windows\Panther\" | Out-Null
-        Copy-Item $UnattendFile $VirtualWinLetter+":\Windows\Panther\unattend.xml" | Out-Null
+        New-Item -ItemType "directory" -Path "$($VirtualWinLetter):\Windows\Panther\" | Out-Null
+        Copy-Item $UnattendFile "$($VirtualWinLetter):\Windows\Panther\unattend.xml" | Out-Null
       }
 
     "select disk $disknumber`nselect partition 2`nremove letter=$EfiLetter`nselect partition 4`nremove letter=$VirtualWinLetter`nexit`n" | diskpart | Out-Null
@@ -485,7 +485,7 @@ function Datos-VM {
 
     # Confirmacion de los datos que han sido le�dos para la VM
     Do {
-       $confirmacion = Read-Host -Prompt "¿Son los datos presentados correctos para el equipo $hostname? (S/N)"
+       $confirmacion = Read-Host -Prompt "Los datos presentados son correctos para el equipo $hostname? (S/N)"
        if ($confirmacion.toUpper().Equals("S")) {
             $vname = $sistemaOperativo + $hostname
             $switchesVirtualesAsociados = @()
@@ -523,11 +523,11 @@ function Datos-VM {
                     $pathDisk = $raiz+'\'+$vname+$disk+$random+'.vhdx'
                 }
                 $disk = [int]$disk * 1GB
-                New-VHD -Path $pathDisk -SizeBytes $disk
+                New-VHD -Path $pathDisk -SizeBytes $disk | Out-Null
                 Add-VMHardDiskDrive -VMName $vname -Path $pathDisk 
                 if (($disk/1GB) -eq [int]$discoRaizVM.Maximum -and $vhdFlag -eq $false) {
                     if ($sistemaOperativo -eq "Windows 10") {
-                        "Presentando Versiones de Windows Disponibles dentro de ISO:"
+                        "Presentando Versiones de Windows Disponibles dentro de ISO:`n"
                         Obtener-VersionesDeWindows -WinIso $imagen -VhdFile $pathDisk
                         $vhdFlag = $true
                     }
