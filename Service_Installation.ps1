@@ -1,5 +1,6 @@
-﻿# C:\ProgramData\Microsoft\Windows\Hyper-V
+# C:\ProgramData\Microsoft\Windows\Hyper-V
 
+# -----------------------------------------------------------------------------CAMBIO------------------------------------------------------------------------------------
 # Funcion que instala IIS
 function Install-IIS {
     param([string]$vname, [PSCredential]$cred)
@@ -244,6 +245,8 @@ function Install-WebDAV {
     } -args $service.Config,$domain
 }
 
+# -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 function Validar-JSON {
     param ([string]$rutaJSON)
     if (Test-Path -Path $rutaJSON) {
@@ -446,7 +449,7 @@ function Validar-Redes {
 }
 
 function Obtener-VersionesDeWindows {
-    param ([string]$WinIso, [string]$VhdFile)
+    param ([string]$WinIso, [string]$VhdFile, [string]$UnattendFile)
     Write-Progress "Mounting $WinIso ..."
     $MountResult = Mount-DiskImage -ImagePath $WinIso -StorageType ISO -PassThru
     $DriveLetter = ($MountResult | Get-Volume).DriveLetter
@@ -495,10 +498,10 @@ function Obtener-VersionesDeWindows {
     [char] $VirtualWinLetter = $DriveLetter
     $VirtualWinLetter = [byte] $VirtualWinLetter + 1
 
-    Mount-DiskImage -ImagePath $VhdFile
+    Mount-DiskImage -ImagePath $VhdFile | Out-Null
     $disknumber = (Get-DiskImage -ImagePath $VhdFile | Get-Disk).Number
 
-    $EfiLetter = [byte] $VirtualWinLetter + 1
+    [char] $EfiLetter = [byte] $VirtualWinLetter + 1
     
     Write-Host "Montando discos..."
 
@@ -510,16 +513,16 @@ function Obtener-VersionesDeWindows {
 
     Write-Host "Preparando la instalacion..."
 
-    #Invoke-Expression $VirtualWinLetter":\Windows\System32\bcdboot.exe "$VirtualWinLetter":\Windows /f uefi /s "$EfiLetter":"
-    Invoke-Expression $VirtualWinLetter":\Windows\System32\bcdboot.exe" #$VirtualWinLetter":\Windows /f uefi /s "$EfiLetter":"
-    Invoke-Expression "bcdedit /store "$EfiLetter":\EFI\Microsoft\Boot\BCD"
+    Invoke-Expression "$($VirtualWinLetter):\Windows\System32\bcdboot.exe $($VirtualWinLetter):\Windows /f uefi /s $($EfiLetter):"
+    #Invoke-Expression $VirtualWinLetter":\Windows\System32\bcdboot.exe" #$VirtualWinLetter":\Windows /f uefi /s "$EfiLetter":"
+    Invoke-Expression "bcdedit /store $($EfiLetter):\EFI\Microsoft\Boot\BCD"
 
-    $UnattendFile = ".\unattend.xml"
+    #$UnattendFile = ".\unattend.xml"
 
     if($UnattendFile) {
         Write-Host "Copying unattend.xml"
-        New-Item -ItemType "directory" -Path $VirtualWinLetter+":\Windows\Panther\" | Out-Null
-        Copy-Item $UnattendFile $VirtualWinLetter+":\Windows\Panther\unattend.xml" | Out-Null
+        New-Item -ItemType "directory" -Path "$($VirtualWinLetter):\Windows\Panther\" | Out-Null
+        Copy-Item $UnattendFile "$($VirtualWinLetter):\Windows\Panther\unattend.xml" | Out-Null
       }
 
     "select disk $disknumber`nselect partition 2`nremove letter=$EfiLetter`nselect partition 4`nremove letter=$VirtualWinLetter`nexit`n" | diskpart | Out-Null
@@ -566,7 +569,7 @@ function Validar-Credenciales {
     param ($usuario, $passwd)
     Write-Host "Credenciales Administrativas"
     if (($usuario -or $passwd) -ne "") {
-        if($usuario -match "^[a-zA-Z0-9]{5,20}[a-zA-Z]$"){
+        if($usuario -match "^[a-zA-Z0-9]{4,19}[a-zA-Z]$"){
             if($passwd -match "^[\x20-\x7E]{10,30}$"){
                 Write-Host "`tSe usaron las siguientes credenciales para el equipo:"
                 Write-Host "`t`tUsername: $usuario"
@@ -624,6 +627,28 @@ function Consultar-RolHyperV {
     }
 }
 
+function Modificar-Unattend {
+    param ([string]$username ,[string]$passwd, [string]$rutaXML)
+    if (Test-Path -Path $rutaXML) {
+        try {
+            [XML]$xml = Get-Content $rutaXML
+            $xml.unattend.settings.component.AutoLogon.Password.Value = $passwd 
+            $xml.unattend.settings.component.UserAccounts.LocalAccounts.LocalAccount.Password.Value = $passwd
+            $xml.unattend.settings.component.UserAccounts.LocalAccounts.LocalAccount.DisplayName = $username
+            $xml.unattend.settings.component.UserAccounts.LocalAccounts.LocalAccount.Name = $username
+            $xml.unattend.settings.component.AutoLogon.Username = $username
+            $xml.Save($rutaXML)
+            "Arhivo $rutaXML modificado correctamente"
+        } catch {
+            "Error al aplicar cambios dentro del XML"
+            exit
+        }
+    } else {
+        "No se encuentra la ruta del archivo XML para 'Unattend'"
+        exit
+    }
+}
+
 # Funcion para obtener parametros de las maquinas virtuales que desean ser creadas  
 function Datos-VM {
     param ([int]$contador)
@@ -647,6 +672,7 @@ function Datos-VM {
     $imagen = Validar-ISO -imagen $archivoEntrada.VMs[$contador].ImagePath
     $interfaces = Validar-Redes -interfaces $archivoEntrada.VMs[$contador].InterfaceConfig # Se validan las configuraciones de red para todas las interfaces
     $numeroProcesadores = Validar-Procesadores -numeroProcesadores $archivoEntrada.VMs[$contador].ProcessorNumber
+    $rutaUnattend = "C:\Users\Administrator\Desktop\generador-de-sandbox\unattend.xml"
     
     
     # Se recuperan los datos individuales dependiendo del tipo de SO
@@ -707,7 +733,9 @@ function Datos-VM {
     
     # Para obtener los servicios a instalar dentro del equipo  
     Write-Host "Servicios a instalar dentro del equipo"
-    $serviciosDisponibles = @("Apache", "DHCP") # Se definen todos los servicios disponibles para este tipo de SO
+
+# -----------------------------------------------------------------------------CAMBIO-------------------------------------------------------------------------------------
+    $serviciosDisponibles = @("Apache", "DHCP","DNS","IIS","Certificate Services","Active Directory","Windows Defender","WebDAV","RDP") # Se definen todos los servicios disponibles para este tipo de SO
     $serviciosPorInstalar = @() # Aca se almacenan los servicios que sean validados
     $servicios = $archivoEntrada.VMs[$contador].Services
     if ($servicios.Count -ne 0) {
@@ -741,22 +769,23 @@ function Datos-VM {
             if(($servicio.Name -eq "Certificate Services" -or $servicio.Name -eq "Active Directory") -and -not $existeAD){
                 $existeAD = $true
             }
-            if(($servicio.Name -eq "Certificate Services" -or $servicio.Name -eq "Active Directory") -and $existeAD){
+            elseif(($servicio.Name -eq "Certificate Services" -or $servicio.Name -eq "Active Directory") -and $existeAD){
                 Write-Host "`tNo se pueden instalar los servicios de Certificate Service y Active Directory en el mismo equipo"
                 exit
             }
         }
-        "`tLista de servicios a intalar dentro del equipo:"
+       "`tLista de servicios a intalar dentro del equipo:"
         foreach ($servicioValidado in $serviciosPorInstalar) {
-            Write-Host "`t`t$servicioValidado"
+            Write-Host "`t`t"$servicioValidado.Name
         }
+# -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
     } else {
         Write-Host "`tNo se han encontrados servicios a instalar para este equipo"
     }
 
     # Confirmacion de los datos que han sido leidos para la VM
     Do {
-       $confirmacion = Read-Host -Prompt "¿Son los datos presentados correctos para el equipo $hostname? (S/N)"
+       $confirmacion = Read-Host -Prompt "Los datos presentados son correctos para el equipo $hostname? (S/N)"
        if ($confirmacion.toUpper().Equals("S")) {
             $vname = $sistemaOperativo + $hostname
             $switchesVirtualesAsociados = @()
@@ -794,57 +823,60 @@ function Datos-VM {
                     $pathDisk = $raiz+'\'+$vname+$disk+$random+'.vhdx'
                 }
                 $disk = [int]$disk * 1GB
-                New-VHD -Path $pathDisk -SizeBytes $disk
+                New-VHD -Path $pathDisk -SizeBytes $disk | Out-Null
                 Add-VMHardDiskDrive -VMName $vname -Path $pathDisk 
                 if (($disk/1GB) -eq [int]$discoRaizVM.Maximum -and $vhdFlag -eq $false) {
                     if ($sistemaOperativo -eq "Windows 10") {
-                        "Presentando Versiones de Windows Disponibles dentro de ISO:"
-                        Obtener-VersionesDeWindows -WinIso $imagen -VhdFile $pathDisk
+                        Modificar-Unattend  -username $usuario -passwd $passwd -rutaXML $rutaUnattend
+                        "Presentando Versiones de Windows Disponibles dentro de ISO:`n"
+                        Obtener-VersionesDeWindows -WinIso $imagen -VhdFile $pathDisk -UnattendFile $rutaUnattend
                         $vhdFlag = $true
                     }
                 }
             }
             "Se ha creado satisfactoriamente la VM: $vmname"
+# --------------------------------------------------------------------------CAMBIO---------------------------------------------------------------------------------------
             <#
-                $password = ConvertTo-SecureString $passwd -AsPlainText -Force
-                $cred= New-Object System.Management.Automation.PSCredential ($usuario, $password)
-                foreach ($service in $serviciosPorInstalar) {
-                    if($service.Name -eq "Active Directory"){
-                        Write-Host "Servicio | Active Directory Domain Services"
-                        Install-ADDS -vname $vname -cred $cred
-                    }
+            $password = ConvertTo-SecureString $passwd -AsPlainText -Force
+            $cred= New-Object System.Management.Automation.PSCredential ($usuario, $password)
+            foreach ($service in $serviciosPorInstalar) {
+                if($service.Name -eq "Active Directory"){
+                    Write-Host "Servicio | Active Directory Domain Services"
+                    Install-ADDS -vname $vname -cred $cred
                 }
-                foreach ($service in $serviciosPorInstalar) {
-                    if($service.Name -eq "IIS"){
-                        Write-Host "Servicio | IIS"
-                        Install-IIS -vname $vname -cred $cred
-                    }
-                    elseif($service.Name -eq "DHCP"){
-                        Write-Host "Servicio | DHCP"
-                        Install-DHCP -vname $vname -cred $cred -os $os
-                    }
-                    elseif($service.Name -eq "DNS"){
-                        Write-Host "Servicio | DNS"
-                        Install-DNS -vname $vname -cred $cred -os $os
-                    }
-                    elseif($service.Name -eq "Certificate Services"){
-                        Write-Host "Servicio | AD Certificate Services"
-                        Install-Certificate -vname $vname -cred $cred
-                    }
-                    elseif($service.Name -eq "Windows Defender"){
-                        Write-Host "Servicio | Windows Defender"
-                        Install-Defender -vname $vname -cred $cred
-                    }
-                    elseif($service.Name -eq "WebDAV"){
-                        Write-Host "Servicio | WebDAV"
-                        Install-WebDAV -vname $vname -cred $cred
-                    }
-                    elseif($service.Name -eq "RDP"){
-                        Write-Host "Servicio | RDP"
-                        Install-RDP -vname $vname -cred $cred
-                    }
+            }
+            foreach ($service in $serviciosPorInstalar) {
+                if($service.Name -eq "IIS"){
+                    Write-Host "Servicio | IIS"
+                    Install-IIS -vname $vname -cred $cred
                 }
-                #>
+                elseif($service.Name -eq "DHCP"){
+                    Write-Host "Servicio | DHCP"
+                    Install-DHCP -vname $vname -cred $cred -os $os
+                }
+                elseif($service.Name -eq "DNS"){
+                    Write-Host "Servicio | DNS"
+                    Install-DNS -vname $vname -cred $cred -os $os
+                }
+                elseif($service.Name -eq "Certificate Services"){
+                    Write-Host "Servicio | AD Certificate Services"
+                    Install-Certificate -vname $vname -cred $cred
+                }
+                elseif($service.Name -eq "Windows Defender"){
+                    Write-Host "Servicio | Windows Defender"
+                    Install-Defender -vname $vname -cred $cred
+                }
+                elseif($service.Name -eq "WebDAV"){
+                    Write-Host "Servicio | WebDAV"
+                    Install-WebDAV -vname $vname -cred $cred
+                }
+                elseif($service.Name -eq "RDP"){
+                    Write-Host "Servicio | RDP"
+                    Install-RDP -vname $vname -cred $cred
+                }
+            }
+            #>
+# -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
         } 
         break
        if ($confirmacion.ToUpper().Equals("N")) {
@@ -861,7 +893,9 @@ if ($args.Count -eq 1) {
     $rutaJSON = $args[0] # Se lee la ruta donde esta el archivo de entrada
     $archivoEntrada = Validar-JSON -rutaJSON $rutaJSON # Se lee y valida que exista el archivo y que esté en formato JSON
     $raiz = Validar-Raiz -rutaRaiz $archivoEntrada[0].Root # Se lee y valida la ruta raiz del proyecto a ser creado.
-
+# ---------------------------------------------------------------CAMBIO---------------------------------------------------------------------------------------------
+    $dominiosExistentes=@{}
+# -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
     # Revision de las especificaciones de las maquinas virtuales    
     $numeroMaquinas = ($ArchivoEntrada[0].VMs | Measure-Object).Count # Numero de Maquinas por instalar
     for($i=0; $i -le $numeroMaquinas-1;$i++) {
