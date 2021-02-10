@@ -17,7 +17,7 @@ function Datos-VM {
         "Los unicos tipos de memorias aceptadas son 'Dynamic' y 'Static'.`nRevise archivo JSON."
         exit
     }
-    $discos = Validar-VHDX -listaDiscosPorCrear $archivoEntrada.VMs[$contador].DiskSize
+    $discos = Validar-VHDX -listaDiscosPorCrear $archivoEntrada.VMs[$contador].DiskSize -letterRoot (-join $raiz[0,1])
     $imagen = Validar-ISO -imagen $archivoEntrada.VMs[$contador].ImagePath
     $interfaces = Validar-Redes -interfaces $archivoEntrada.VMs[$contador].InterfaceConfig # Se validan las configuraciones de red para todas las interfaces
     $numeroProcesadores = Validar-Procesadores -numeroProcesadores $archivoEntrada.VMs[$contador].ProcessorNumber
@@ -235,6 +235,7 @@ function Datos-VM {
            Write-Host "Aplique los cambios necesarios sobre el archivo de entrada y ejecute el script de nuevo."
            exit
        }
+       
     } while ($true)
 }
 
@@ -245,7 +246,6 @@ if ($args.Count -eq 1) {
         $lol = ".\funciones\"+$modulo
         Import-Module -Name $lol -Force -DisableNameChecking # Se leen las funciones que utiliza este archivo
     }
-    ":9"
     Consultar-RolHyperV # Revisar si está o no el rol de Hyper-V dentro del Host Hyper-V. Lo instala en caso de que no este presente
 
     $rutaJSON = $args[0] # Se lee la ruta donde esta el archivo de entrada

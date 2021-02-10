@@ -29,9 +29,9 @@ function Crear-VSwitch {
     } until ($tipo -in 0..2)
      # Se crea un nuevo virtual Switch del tipo seleccionado por el usuario
     if($tipo -eq 0){
-        New-VMSwitch -name $nombre -SwitchType Internal
+        New-VMSwitch -name $nombre -SwitchType "Internal"
     } elseif($tipo -eq 1) {
-        New-VMSwitch -name $nombre -SwitchType Private
+        New-VMSwitch -name $nombre -SwitchType "Private"
     } else {
         # Se obtienen los adaptadores de red del equipo
         $adaptadores = Get-NetAdapter
@@ -42,7 +42,8 @@ function Crear-VSwitch {
                 }
                 $tipo = Read-Host -Prompt "`t`tPor favor, ingrese el adaptador del VSwitch"
             } until ($tipo -in 0..($adaptadores.Count-1))
-            New-VMSwitch -name $nombre  -NetAdapterName $adaptadores[$tipo].Name
+            Write-Host  $adaptadores[$tipo].Name
+            New-VMSwitch -name $nombre  -NetAdapterName $adaptadores[$tipo].Name | Out-Null
         }
         if($adaptadores.Count -eq 1){
             New-VMSwitch -name $nombre  -NetAdapterName $adaptadores.Name
@@ -88,19 +89,15 @@ function Consultar-VSwitchDisponibles {
 }
 
 function Almacenamiento-Disponible {
-    param ([int]$diskSize)
-    #Get-WmiObject -Class Win32_logicaldisk -Filter "DriveType = '3'" | Select-Object -Property DeviceID, DriveType, VolumeName, @{L='FreeSpaceGB';E={"{0:N2}" -f ($_.FreeSpace /1GB)}}
-    $arrayDiscosDisponibles = Get-WmiObject -Class Win32_logicaldisk -Filter "DriveType = '3'" | Select-Object -ExpandProperty  FreeSpace @{L='FreeSpace';E={"{0:0}" -f ($_.FreeSpace /1GB)}}
-    for ($i=0; $i -le ($arrayDiscosDisponibles.Count-1); $i++) {
-        $libre = ($arrayDiscosDisponibles[$i]/1GB)
-        $libre = [math]::Round($libre,2)
-        if (($libre - $diskSize) -le 0) {
-            "`tNo se cuenta con el suficiente espacio de almacenamiento disponible para crear el VHD solicitado."
-            "`tAlmacenamiento disponible: $libre GB | Tamanio del disco solicitado: $diskSize GB XXXX"
-            exit
-        }
-        return ($libre - $diskSize)
+    param ([int]$diskSize, [string]$letterRoot)
+    $espacioDisponible = (Get-WmiObject -Class Win32_logicaldisk -Filter "DeviceID = '$letterRoot'" | Select-Object -ExpandProperty  FreeSpace @{L='FreeSpace';E={"{0:0}" -f ($_.FreeSpace /1GB)}}) / 1GB
+    $libre = [math]::Round($espacioDisponible,2)
+    if (($libre - $diskSize) -le 0) {
+        "`tNo se cuenta con el suficiente espacio de almacenamiento disponible para crear el siguiente VHDX solicitado."
+        "`tAlmacenamiento disponible: $libre GB | Tamanio del disco solicitado: $diskSize GB"
+        exit
     }
+    return ($libre - $diskSize)
 }
 
 # Funcion para revisar el maximo de memoria RAM dentro del host de Hyper-V
@@ -123,35 +120,35 @@ function Validar-SistemaOperativo {
 }
 
 function Validar-VHDX {
-    param ([array]$listaDiscosPorCrear)
+    param ([array]$listaDiscosPorCrear, [string]$letterRoot)
     Write-Host "Discos Virtuales"
     if ($listaDiscosPorCrear.Count -ne 0) { # Si se encuetra al menos un valor especificado dentro del arreglo de VHDs
         if ($listaDiscosPorCrear.Count -eq 1) {
              Write-Host "`tVHD encontrado: $listaDiscosPorCrear GB"
-             $postCreacionDisco = Almacenamiento-Disponible -diskSize $listaDiscosPorCrear[0]
+             $postCreacionDisco = Almacenamiento-Disponible -diskSize $listaDiscosPorCrear[0] -letterRoot $letterRoot
              return $listaDiscosPorCrear
         } else {
-            for ($i=0; $i -le ($postCreacionDisco.Count-1); $i++) {
-                $temp = $postCreacionDisco[$i]
+            for ($i=0; $i -lt ($listaDiscosPorCrear.Count); $i++) {
+                $temp = $listaDiscosPorCrear[$i]
                 if ($i -eq 0) {
+                    $postCreacionDisco = Almacenamiento-Disponible -diskSize $listaDiscosPorCrear[0] -letterRoot $letterRoot
                     Write-Host "`tVHDX encontrado: $temp GB"
-                    $postCreacionDisco = Almacenamiento-Disponible -diskSize $temp
                 } else {
-                     Write-Host "`t VHD encontrado: $temp GB"
                      $libre = $postCreacionDisco - $temp
                      if ($libre -le 0) {
-                        "`tNo se cuenta con el suficiente espacio de almacenamiento disponible para crear el VHD solicitado."
-                        "`tAlmacenamiento disponible: $libre GB | Tamanio del disco solicitado: $temp GB"
+                        "`tNo se cuenta con el suficiente espacio de almacenamiento disponible para crear el siguiente VHDX solicitado."
+                        "`tAlmacenamiento disponible: $($libre+$temp)  GB | Tamanio del disco solicitado: $temp GB"
                         exit
                     }
+                    Write-Host "`tVHDX encontrado: $temp GB"
                     $postCreacionDisco = $libre
                }
             }
-            Write-Host "`t`tEspacio libre dentro del disco seleccionado como raiz al crear los VHDX: $postCreacionDisco GB"
+            Write-Host "`t`tQuedara el siguiente espacio libre dentro del disco seleccionado como raiz al crear los VHDX solicitados: $postCreacionDisco GB"
             return $listaDiscosPorCrear
         }
     } else {
-        "ERROR: No se ha especificado el tamaño del disco virtual (VHDX) a crear para el equipo."
+        "Se debe especificar el tamaño de al menos un disco virtual (VHDX) a crear para el equipo."
         exit
     }
 }
