@@ -392,3 +392,57 @@ function Modificar-Unattend {
         exit
     }
 }
+
+function Validar-DatosEntrada {
+    param ([int]$contadorVMs, $archivoEntrada, $dominiosExistentes)
+    for ($j=0;$j -le $contadorVMs;$j++) {
+
+        # Se recuperan los datos obligatorios independientemente del tipo de SO y se valida que sean correctos
+        $raiz = $archivoEntrada.Root
+        $hostname = Validar-Hostname -hostname $archivoEntrada.VMs[$j].Hostname # String
+        $sistemaOperativo = Validar-SistemaOperativo -SOPorRevisar $archivoEntrada.VMs[$j].SO # String
+        Write-Host "DATOS DEL EQUIPO  $sistemaOperativo | $hostname :"
+        $usuario, $passwd = Validar-Credenciales -usuario $archivoEntrada.VMs[$j].User -passwd $archivoEntrada.VMs[$j].Password
+        $tipoDeMemoria = $archivoEntrada.VMs[$j].MemoryType
+        if($tipoDeMemoria -eq "Static"){
+            $tamanioMemoria = Validar-RAM -tamanioMemoria $archivoEntrada.VMs[$j].MemorySize
+            Write-Host "$tamanioMemoria`n$tipoDeMemoria"
+        }elseif($tipoDeMemoria -eq "Dynamic"){
+            $minMemoria, $maxMemoria = Validar-RAM -minMemoria $archivoEntrada.VMs[$j].MemoryMin -maxMemoria $archivoEntrada.VMs[$j].MemoryMax
+        }else{
+            "Los unicos tipos de memorias aceptadas son 'Dynamic' y 'Static'.`nRevise archivo JSON."
+            exit
+        }
+        $discos = Validar-VHDX -listaDiscosPorCrear $archivoEntrada.VMs[$j].DiskSize -letterRoot (-join $raiz[0,1])
+        $imagen = Validar-ISO -imagen $archivoEntrada.VMs[$j].ImagePath
+        $interfaces = Validar-Redes -interfaces $archivoEntrada.VMs[$j].InterfaceConfig # Se validan las configuraciones de red para todas las interfaces
+        $numeroProcesadores = Validar-Procesadores -numeroProcesadores $archivoEntrada.VMs[$j].ProcessorNumber
+        #"Se han validado los datos de entrada del equipo $hostname"
+        #Datos particulares dependiendo del SO
+        switch ($sistemaOperativo) {
+            "Windows 10" { 
+                try {
+                    $rutaUnattend = ".\recursos\unattend.xml"
+                    Test-Path -Path $rutaUnattend | Out-Null
+                    $rutasMSI = $archivoEntrada.VMs[$j].MsiPaths
+                    foreach($path in $rutasMSI) {
+                        if (-not (Test-Path -Path $path)) {
+                            "No se encuentra el archivo .msi indicado en la ruta: $path`nRevise archivo de configuracion"
+                            exit
+                        }
+                    }
+                } catch {
+                    "Error datos extra Windows."
+                    exit
+                }
+            }
+            "Windows Server 2019" {
+                $rutaUnattend = ".\recursos\unattend.xml"
+                Test-Path -Path $rutaUnattend | Out-Null
+                $servicios = $archivoEntrada.VMs[$j].Services
+                $serviciosPorInstalar = Validar-ServiciosWindowsServer -servicios $servicios -dominiosExistentes $dominiosExistentes
+                #Validación
+            }
+        }
+    }
+}

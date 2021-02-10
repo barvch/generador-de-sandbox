@@ -3,22 +3,22 @@
   "VMs": [
     {
       "SO": "Windows 10",
-      "Hostname": "Teeeeeeeeeest",
+      "Hostname": "Contoso",
       "DiskSize": [
         13
       ],
       "InterfaceConfig": [
         {
           "VirtualSwitch" : "SalidaInternet",
-          "Nombre": "Interfaz No 1",
+          "Nombre": "Interfaz Externa",
           "IP": "192.168.1.31",
           "Mask": "255.255.255.0",
           "Gateway": null,
           "DNS": null
         },
         {
-          "VirtualSwitch" : "PruebaPrivado",
-          "Nombre": "Interfaz Privada",
+          "VirtualSwitch" : "Test12",
+          "Nombre": "Interfaz1",
           "IP": "192.168.30.31",
           "Mask": "255.255.255.0",
           "Gateway": "192.168.1.255",
@@ -34,7 +34,8 @@
       "Password": "hola12344.,prueba",
       "Services": [
       ],
-      "ImagePath": "C:\\Win10_1909_English_x64.iso"
+      "ImagePath": "C:\\Win10_1909_English_x64.iso",
+      "MsiPaths": ["C:\\Users\\Administrator\\Desktop\\Firefox Setup 85.0.2.msi","C:\\Users\\Administrator\\Desktop\\7z1900-x64.msi" ]
     },
     {
       "SO": "Windows 10",
@@ -44,7 +45,7 @@
       ],
       "InterfaceConfig": [
         {
-          "VirtualSwitch" : "Prueba",
+          "VirtualSwitch" : "Prueba21",
           "Nombre": "Interna",
           "IP": "192.168.1.31",
           "Mask": "255.255.255.0",
@@ -63,15 +64,15 @@
       "MemoryType": "Static",
       "MemorySize": 2,
       "ProcessorNumber": 2,
-      "User": "Test",
-      "Password": "hola123.,",
+      "User": "Anita",
+      "Password": "hola123.,pruebaaa",
       "Services": [
         {
           "AD": "CONTOSO",
           "DHCP": ""
         }
       ],
-      "ImagePath": "C:\\Users\\Administrator\\Downloads\\Win10_20H2_v2_English_x64.iso"
+      "ImagePath": "C:\\Win10_1909_English_x64.iso"
     }
   ]
 }
