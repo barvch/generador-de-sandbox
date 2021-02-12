@@ -34,7 +34,7 @@
         "Password": "hola1234.,prueba",
         "Services": [
         ],
-        "ImagePath": "E:\\SanboxTest\\ubuntu-16.04.7-desktop-amd64.iso"
+        "ImagePath": "E:\\SanboxTest\\ubuntu-16.04.7-server-amd64.iso"
       }
     ]
   }
