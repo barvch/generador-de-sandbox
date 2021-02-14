@@ -54,6 +54,3 @@ d-i user-setup/allow-password-weak boolean true
 d-i grub-installer/grub2_instead_of_grub_legacy boolean true
 d-i grub-installer/only_debian boolean true
 d-i finish-install/reboot_in_progress note
-
-
-
