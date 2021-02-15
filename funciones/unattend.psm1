@@ -86,10 +86,7 @@ function Crear-ISOUbuntu {
 function Crear-ISOCentos {
     param ([string]$password,[string]$hostname, [string] $isoFile, [string]$seed_file, [string]$tmp)
     $timezone = 'America/Mexico_City'
-    #$rootPassword = $password
     $pwhash = bash -c "echo $password | mkpasswd -s -m sha-512"
-    #$rootPwdHash = bash -c "echo $rootPassword | mkpasswd -s -m sha-512"
-    
     Write-Host "Creando carpetas de trabajo para la creacion del ISO..." -ForegroundColor Yellow
     if (-not (Test-Path $tmp)) {
         Write-Host "`tCreando directorio: $tmp" -ForegroundColor Yellow
@@ -129,7 +126,7 @@ function Crear-ISOCentos {
 
     #(Get-Content "$tmp\iso_org\ks.cfg").replace('{{username}}', $username) | Set-Content "$tmp\iso_org\$seed_file"
     (Get-Content "$tmp\iso_org\ks.cfg").replace('{{passwd}}', $pwhash) | Set-Content "$tmp\iso_org\$seed_file"
-    (Get-Content "$tmp\iso_org\ks.cfg").replace('{{hostname}}', $hostname) | Set-Content "$tmp\iso_org\$seed_file"
+    #(Get-Content "$tmp\iso_org\ks.cfg").replace('{{hostname}}', $hostname) | Set-Content "$tmp\iso_org\$seed_file"
     (Get-Content "$tmp\iso_org\ks.cfg").replace('{{timezone}}', $timezone) | Set-Content "$tmp\iso_org\$seed_file"
     #(Get-Content "$tmp\iso_org\ks.preseed").replace('{{postinstall}}', "apt install vim apache2 whois git") | Set-Content "$tmp\iso_org\$seed_file"
 
@@ -139,11 +136,16 @@ function Crear-ISOCentos {
     
     Remove-Item $tmp\iso_org\isolinux\isolinux.cfg
     Copy-Item ".\recursos\isolinux.cfg" "$tmp\iso_org\isolinux\isolinux.cfg" -Force
-    (Get-Content "$tmp\iso_org\isolinux\isolinux.cfg").replace('{{ks}}', "ks.cfg") | Set-Content "$tmp\iso_org\isolinux\isolinux.cfg"
+    #(Get-Content "$tmp\iso_org\isolinux\isolinux.cfg").replace('{{ks}}', "ks.cfg") | Set-Content "$tmp\iso_org\isolinux\isolinux.cfg"
     
     # Se establece el orden de booteo para ver reflejados todos los cambios 
-    $cambio = "linuxefi /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=RHEL-8-3-0-BaseOS-x86_64 inst.ks=cdrom:/ks.cfg quiet"
-    (Get-Content "$tmp\iso_org\EFI\BOOT\grub.cfg").replace('linuxefi /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=RHEL-8-3-0-BaseOS-x86_64 quiet', $cambio) | Set-Content "$tmp\iso_org\EFI\BOOT\grub.cfg"
+    $cambio = "linuxefi /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=CentOS-8-3-2011-x86_64-dvd inst.ks=cdrom:/ks.cfg quiet"
+    
+    #inst.stage2=hd:LABEL=CentOS-8-3-2011-x86_64-dvd
+    #inst.stage2=hd:LABEL=RHEL-8-3-0-BaseOS-x86_64
+    #menuentry 'Install CentOS Linux 8' --class fedora --class gnu-linux --class gnu --class os
+    (Get-Content "$tmp\iso_org\EFI\BOOT\grub.cfg").replace("menuentry 'Install CentOS Linux 8' --class fedora --class gnu-linux --class gnu --class os", "menuentry 'Kickstart Installation of CentOS 8 PAPIRRI' --class fedora --class gnu-linux --class gnu --class os") | Set-Content "$tmp\iso_org\EFI\BOOT\grub.cfg"
+    (Get-Content "$tmp\iso_org\EFI\BOOT\grub.cfg").replace('linuxefi /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=CentOS-8-3-2011-x86_64-dvd quiet', $cambio) | Set-Content "$tmp\iso_org\EFI\BOOT\grub.cfg"
     (Get-Content "$tmp\iso_org\EFI\BOOT\grub.cfg").replace('set default="1"', 'set default="0"') | Set-Content "$tmp\iso_org\EFI\BOOT\grub.cfg"
 
     # Se mueve al directorio de trabajo para crear el ISO con todo el contenido actual del directorio de trabajo
