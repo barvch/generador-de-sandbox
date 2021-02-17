@@ -435,3 +435,129 @@ function Linux-SQL{
     "    source ~/.bashrc" | Add-Content -Path sql.sh
     "fi" | Add-Content -Path sql.sh
 }
+
+function Linux-Apache{
+        "#!/bin/bash" | Out-File -FilePath apache.sh
+
+        'config(){' | Add-Content -Path apache.sh
+            '    if [[ $so == *"Ubuntu"* || $so == *"Kali"* || $so == *"Debian"* ]]' | Add-Content -Path apache.sh
+	        '    then' | Add-Content -Path apache.sh
+            "        sudo sed -e 's/ServerTokens OS/ServerTokens ProductOnly/' \"  | Add-Content -Path apache.sh
+            "            -e 's/ServerSignature On/#&/'  \"  | Add-Content -Path apache.sh
+            "            -e 's/#ServerSignature Off/ServerSignature Off/' \"  | Add-Content -Path apache.sh
+            "            -i /etc/apache2/conf-available/security.conf"  | Add-Content -Path apache.sh
+            '    fi' | Add-Content -Path apache.sh
+
+        "}" | Add-Content -Path apache.sh
+
+        'virtual_hosts(){' | Add-Content -Path apache.sh
+        foreach($virtual in $servicio.VHosts){
+            $name = $virtual.Name + ".conf"
+            $admin = $virtual.ServerAdmin
+            $root = $virtual.DocumentRoot
+            $serverName = $virtual.ServerName
+            $alias = $virtual.ServerAlias
+
+            if($virtual.IP -eq $null -or $virtual.IP -eq ""){
+                $dirIP = "*"
+            }
+            else{
+                $dirIP = $virtual.IP
+            }
+
+            "    sudo mkdir $root" | Add-Content -Path apache.sh
+            if($virtual.Protocol -eq "http"){
+                "    sudo bash -c 'echo `"<VirtualHost $dirIP`:80>`" >> $name'" | Add-Content -Path apache.sh
+            }
+            if($virtual.Protocol -eq "https"){
+                "    sudo bash -c 'echo `"<IfModule mod_ssl.c>`" >> $name'" | Add-Content -Path apache.sh
+                "    sudo bash -c 'echo `"<VirtualHost $dirIP`:443>`" >> $name'" | Add-Content -Path apache.sh 
+            }
+                "    sudo bash -c 'echo `"    ServerAdmin $admin`" >> $name'" | Add-Content -Path apache.sh 
+                "    sudo bash -c 'echo `"    DocumentRoot $root`" >> $name'" | Add-Content -Path apache.sh 
+                "    sudo bash -c 'echo `"    ServerName $name`" >> $name'" | Add-Content -Path apache.sh 
+                "    sudo bash -c 'echo `"    ServerAlias $alias`" >> $name'" | Add-Content -Path apache.sh 
+                "    sudo bash -c 'echo `"    <Directory $root>`" >> $name'" | Add-Content -Path apache.sh 
+                "    sudo bash -c 'echo `"        Options -Indexes`" >> $name'" | Add-Content -Path apache.sh
+                "    sudo bash -c 'echo `"        AllowOverride none`" >> $name'" | Add-Content -Path apache.sh
+                "    sudo bash -c 'echo `"        Require all granted`" >> $name'" | Add-Content -Path apache.sh
+                "    sudo bash -c 'echo `"    </Directory>`" >> $name'" | Add-Content -Path apache.sh
+
+            if($virtual.Protocol -eq "http"){
+                '    if [[ $so == *"CentOS"* || $so == *"Red Hat Enterprise"* ]]' | Add-Content -Path apache.sh
+                '    then' | Add-Content -Path apache.sh
+                "        sudo bash -c 'echo `"    ErrorLog $root/Login-error.log`" >> $name'" | Add-Content -Path apache.sh
+                "        sudo bash -c 'echo `"    CustomLog $root/Login-Access.log combined`" >> $name'" | Add-Content -Path apache.sh
+                '    elif [[ $so == *"Ubuntu"* || $so == *"Kali"* || $so == *"Debian"* ]]' | Add-Content -Path apache.sh
+	            '    then' | Add-Content -Path apache.sh
+                "        sudo bash -c 'echo `"    ErrorLog \`${APACHE_LOG_DIR}/Login-error.log`" >> $name'" | Add-Content -Path apache.sh
+                "        sudo bash -c 'echo `"    CustomLog \`${APACHE_LOG_DIR}/Login-Access.log combined`" >> $name'" | Add-Content -Path apache.sh
+                '    fi' | Add-Content -Path apache.sh
+                "    sudo bash -c 'echo `"</VirtualHost>`"  >> $name'" | Add-Content -Path apache.sh
+            }
+            if($virtual.Protocol -eq "https"){
+                $certFile  = $virtual.CertFile
+                $certKey = $virtual.CertKey
+                "    sudo bash -c 'echo `"    SSLEngine on`" >> $name'" | Add-Content -Path apache.sh
+                "    sudo bash -c 'echo `"    SSLCertificateFile      $certFile`" >> $name'" | Add-Content -Path apache.sh
+                "    sudo bash -c 'echo `"    SSLCertificateKeyFile $certKey`" >> $name'" | Add-Content -Path apache.sh
+
+                "    sudo bash -c 'echo `"    LogLevel warn`" >> $name'" | Add-Content -Path apache.sh
+                '    if [[ $so == *"CentOS"* || $so == *"Red Hat Enterprise"* ]]' | Add-Content -Path apache.sh
+                '    then' | Add-Content -Path apache.sh
+                "        sudo bash -c 'echo `"    ErrorLog $root/error.log`" >> $name'" | Add-Content -Path apache.sh
+                "        sudo bash -c 'echo `"    CustomLog $root/access.log combined`" >> $name'" | Add-Content -Path apache.sh
+                '    elif [[ $so == *"Ubuntu"* || $so == *"Kali"* || $so == *"Debian"* ]]' | Add-Content -Path apache.sh
+	            '    then' | Add-Content -Path apache.sh
+                "        sudo bash -c 'echo `"    ErrorLog \`${APACHE_LOG_DIR}/error.log`" >> $name'" | Add-Content -Path apache.sh
+                "        sudo bash -c 'echo `"    CustomLog \`${APACHE_LOG_DIR}/access.log combined`" >> $name'" | Add-Content -Path apache.sh
+                '    fi' | Add-Content -Path apache.sh
+                "    sudo bash -c 'echo `"</VirtualHost>`" >> $name'" | Add-Content -Path apache.sh
+                "    sudo bash -c 'echo `"</IfModule>`" >> $name'" | Add-Content -Path apache.sh
+            }
+            '    if [[ $so == *"CentOS"* || $so == *"Red Hat Enterprise"* ]]' | Add-Content -Path apache.sh
+            '    then' | Add-Content -Path apache.sh
+            "        sudo mv $name /etc/httpd/conf.d/" | Add-Content -Path apache.sh
+            '    elif [[ $so == *"Ubuntu"* || $so == *"Kali"* || $so == *"Debian"* ]]' | Add-Content -Path apache.sh
+	        '    then' | Add-Content -Path apache.sh
+            "        sudo mv $name /etc/apache2/sites-available/" | Add-Content -Path apache.sh
+            "        cd /etc/apache2/sites-available/" | Add-Content -Path apache.sh
+            "        sudo a2ensite $name" | Add-Content -Path apache.sh
+            '    fi' | Add-Content -Path apache.sh
+        }
+        "}" | Add-Content -Path apache.sh
+
+
+        '   so=$(hostnamectl | grep -i "operating system" | cut -d " " -f 5,6,7)' | Add-Content -Path apache.sh
+        '   if [[ $so == *"CentOS"* || $so == *"Red Hat Enterprise"* ]]' | Add-Content -Path apache.sh
+        '   then' | Add-Content -Path apache.sh
+        '       echo -e "' | Add-Content -Path apache.sh -NoNewline
+        "$passwd" | Add-Content -Path apache.sh -NoNewline
+        '\n" | sudo -S dnf install httpd httpd-tools  -y' | Add-Content -Path apache.sh
+        '       sudo dnf install dnf-utils http://rpms.remirepo.net/enterprise/remi-release-8.rpm -y' | Add-Content -Path apache.sh
+        '       sudo dnf module reset php' | Add-Content -Path apache.sh
+        '       sudo dnf module enable php:remi-7.4 -y' | Add-Content -Path apache.sh
+        '       sudo dnf install php php-opcache php-gd php-curl php-mysqlnd -y' | Add-Content -Path apache.sh
+        '       sudo chcon -Rt httpd_sys_rw_content_t /var/www' | Add-Content -Path apache.sh
+        '       sudo systemctl restart httpd'  | Add-Content -Path apache.sh
+
+        '   elif [[ $so == *"Ubuntu"* || $so == *"Kali"* || $so == *"Debian"* ]]' | Add-Content -Path apache.sh
+        '   then' | Add-Content -Path apache.sh
+        '       echo -e "' | Add-Content -Path apache.sh -NoNewline
+        "$passwd" | Add-Content -Path apache.sh -NoNewline
+        '\n" | sudo -S apt-get install apache2 php libapache2-mod-php -y' | Add-Content -Path apache.sh
+        '       sudo systemctl start apache2' | Add-Content -Path apache.sh
+        '   fi' | Add-Content -Path apache.sh
+        "   config" | Add-Content -Path apache.sh
+        "   virtual_hosts" | Add-Content -Path apache.sh
+
+        '   if [[ $so == *"CentOS"* || $so == *"Red Hat Enterprise"* ]]' | Add-Content -Path apache.sh
+        '   then' | Add-Content -Path apache.sh
+        "      sudo setenforce 0"  | Add-Content -Path apache.sh
+        "      sudo systemctl restart httpd"  | Add-Content -Path apache.sh
+        '   elif [[ $so == *"Ubuntu"* || $so == *"Kali"* || $so == *"Debian"* ]]' | Add-Content -Path apache.sh
+        '   then' | Add-Content -Path apache.sh
+        "      sudo a2dissite 000-default.conf" | Add-Content -Path apache.sh
+        "      sudo systemctl restart apache2"  | Add-Content -Path apache.sh
+        '   fi' | Add-Content -Path apache.sh
+}
