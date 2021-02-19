@@ -475,7 +475,7 @@ function Linux-Apache{
             }
                 "    sudo bash -c 'echo `"    ServerAdmin $admin`" >> $name'" | Add-Content -Path apache.sh 
                 "    sudo bash -c 'echo `"    DocumentRoot $root`" >> $name'" | Add-Content -Path apache.sh 
-                "    sudo bash -c 'echo `"    ServerName $name`" >> $name'" | Add-Content -Path apache.sh 
+                "    sudo bash -c 'echo `"    ServerName $name`" >> $serverName'" | Add-Content -Path apache.sh 
                 "    sudo bash -c 'echo `"    ServerAlias $alias`" >> $name'" | Add-Content -Path apache.sh 
                 "    sudo bash -c 'echo `"    <Directory $root>`" >> $name'" | Add-Content -Path apache.sh 
                 "    sudo bash -c 'echo `"        Options -Indexes`" >> $name'" | Add-Content -Path apache.sh
@@ -560,4 +560,140 @@ function Linux-Apache{
         "      sudo a2dissite 000-default.conf" | Add-Content -Path apache.sh
         "      sudo systemctl restart apache2"  | Add-Content -Path apache.sh
         '   fi' | Add-Content -Path apache.sh
+}
+
+function Linux-Nginx{
+        "#!/bin/bash" | Out-File -FilePath nginx.sh
+
+        'config(){' | Add-Content -Path nginx.sh
+            '    if [[ $so == *"CentOS"* || $so == *"Red Hat Enterprise"* ]]' | Add-Content -Path nginx.sh
+	        '    then' | Add-Content -Path nginx.sh
+            "        archivo=/etc/php-fpm.d/www.conf" | Add-Content -Path nginx.sh
+            '    elif [[ $so == *"Ubuntu"* || $so == *"Kali"* || $so == *"Debian"* ]]' | Add-Content -Path nginx.sh
+	        '    then' | Add-Content -Path nginx.sh
+            "        phpVer=`$(php --version | head -n 1 | cut -d `" `" -f 2 | cut -c 1,2,3)" | Add-Content -Path nginx.sh
+            "        archivo=/etc/php/`$phpVer/fpm/pool.d/www.conf" | Add-Content -Path nginx.sh
+            '    fi' | Add-Content -Path nginx.sh
+            "        sudo sed -e 's/;security.limit_extensions =.*/security.limit_extensions = \.php \.html/' \"  | Add-Content -Path nginx.sh
+            "            -i `$archivo" | Add-Content -Path nginx.sh
+            '    if [[ $so == *"CentOS"* || $so == *"Red Hat Enterprise"* ]]' | Add-Content -Path nginx.sh
+	        '    then' | Add-Content -Path nginx.sh
+            "        sudo systemctl restart php-fpm" | Add-Content -Path nginx.sh
+            '    elif [[ $so == *"Ubuntu"* || $so == *"Kali"* || $so == *"Debian"* ]]' | Add-Content -Path nginx.sh
+	        '    then' | Add-Content -Path nginx.sh
+            "        sudo systemctl restart php`$phpVer-fpm" | Add-Content -Path nginx.sh
+            '    fi' | Add-Content -Path nginx.sh
+
+        "}" | Add-Content -Path nginx.sh
+
+        'virtual_hosts(){' | Add-Content -Path nginx.sh
+        foreach($virtual in $servicio.VHosts){
+            $name = $virtual.Name + ".conf"
+            $root = $virtual.DocumentRoot
+            $serverName = $virtual.ServerName
+            $alias = $virtual.ServerAlias
+            $index = $virtual.Index
+
+            if($virtual.IP -eq $null -or $virtual.IP -eq ""){
+                $dirIP = "*"
+            }
+            else{
+                $dirIP = $virtual.IP
+            }
+
+            "    sudo bash -c 'echo `"server {`" >> $name'" | Add-Content -Path nginx.sh
+
+            "    sudo mkdir $root" | Add-Content -Path nginx.sh
+            if($virtual.Protocol -eq "http"){
+                "    sudo bash -c 'echo `"   listen                 80;`" >> $name'" | Add-Content -Path nginx.sh
+            }
+            if($virtual.Protocol -eq "https"){
+                $certFile  = $virtual.CertFile
+                $certKey = $virtual.CertKey
+                "    sudo bash -c 'echo `"   listen                 443;`" >> $name'" | Add-Content -Path nginx.sh
+                "    sudo bash -c 'echo `"   ssl                    on;`" >> $name'" | Add-Content -Path nginx.sh
+                "    sudo bash -c 'echo `"   ssl_certificate        $certFile;`" >> $name'" | Add-Content -Path nginx.sh
+                "    sudo bash -c 'echo `"   ssl_certificate_key    $certKey;`" >> $name'" | Add-Content -Path nginx.sh
+            }
+                
+                "    sudo bash -c 'echo `"   server_name $serverName $alias;`" >> $name'" | Add-Content -Path nginx.sh 
+                "    sudo bash -c 'echo `"   access_log /var/log/nginx/nginx.$serverName.access.log;`" >> $name'" | Add-Content -Path nginx.sh
+                "    sudo bash -c 'echo `"   error_log /var/log/nginx/nginx.$serverName.error.log;`" >> $name'" | Add-Content -Path nginx.sh
+                "    sudo bash -c 'echo `"   location / {`" >> $name'" | Add-Content -Path nginx.sh  
+                "    sudo bash -c 'echo `"      root   $root;`" >> $name'" | Add-Content -Path nginx.sh 
+                "    sudo bash -c 'echo `"      index  $index;`" >> $name'" | Add-Content -Path nginx.sh
+
+                '    if [[ $so == *"CentOS"* || $so == *"Red Hat Enterprise"* ]]' | Add-Content -Path nginx.sh
+                '    then' | Add-Content -Path nginx.sh
+                "        sudo bash -c 'echo `"      fastcgi_pass   php-fpm;`" >> $name'" | Add-Content -Path nginx.sh
+                "        sudo bash -c 'echo `"      include        fastcgi_params;`" >> $name'" | Add-Content -Path nginx.sh
+                "        sudo bash -c 'echo `"      fastcgi_param  SCRIPT_FILENAME  \`$document_root\`$fastcgi_script_name;`" >> $name'" | Add-Content -Path nginx.sh
+
+
+                '    elif [[ $so == *"Ubuntu"* || $so == *"Kali"* || $so == *"Debian"* ]]' | Add-Content -Path nginx.sh
+	            '    then' | Add-Content -Path nginx.sh
+                "        sudo bash -c 'echo `"      include snippets/fastcgi-php.conf;`" >> $name'" | Add-Content -Path nginx.sh
+                "        sudo bash -c 'phpVers=`$(php --version | head -n 1 | cut -d `" `" -f 2 | cut -c 1,2,3);echo `"      fastcgi_pass unix:/var/run/php/php`$phpVers-fpm.sock;`" >> $name'" | Add-Content -Path nginx.sh
+                '    fi' | Add-Content -Path nginx.sh
+
+                "    sudo bash -c 'echo `"   }`" >> $name'" | Add-Content -Path nginx.sh  
+                "    sudo bash -c 'echo `"}`" >> $name'" | Add-Content -Path nginx.sh  
+
+
+            '    if [[ $so == *"CentOS"* || $so == *"Red Hat Enterprise"* ]]' | Add-Content -Path nginx.sh
+            '    then' | Add-Content -Path nginx.sh
+            "        sudo mv $name /etc/nginx/conf.d/" | Add-Content -Path nginx.sh
+            '    elif [[ $so == *"Ubuntu"* || $so == *"Kali"* || $so == *"Debian"* ]]' | Add-Content -Path nginx.sh
+	        '    then' | Add-Content -Path nginx.sh
+            "        sudo mv $name /etc/nginx/sites-available/" | Add-Content -Path nginx.sh
+            "        sudo ln -s /etc/nginx/sites-available/$name /etc/nginx/sites-enabled/" | Add-Content -Path nginx.sh
+            '    fi' | Add-Content -Path nginx.sh
+        }
+        "}" | Add-Content -Path nginx.sh
+
+
+        '   so=$(hostnamectl | grep -i "operating system" | cut -d " " -f 5,6,7)' | Add-Content -Path nginx.sh
+        '   if [[ $so == *"CentOS"* || $so == *"Red Hat Enterprise"* ]]' | Add-Content -Path nginx.sh
+        '   then' | Add-Content -Path nginx.sh
+        '       echo -e "' | Add-Content -Path nginx.sh -NoNewline
+        "$passwd" | Add-Content -Path nginx.sh -NoNewline
+        '\n" | sudo -S dnf install nginx  -y' | Add-Content -Path nginx.sh
+        "      sudo systemctl enable nginx" | Add-Content -Path nginx.sh
+        "      sudo systemctl start nginx"  | Add-Content -Path nginx.sh
+        '      sudo dnf install dnf-utils http://rpms.remirepo.net/enterprise/remi-release-8.rpm -y' | Add-Content -Path nginx.sh
+        '      sudo dnf module reset php' | Add-Content -Path nginx.sh
+        '      sudo dnf module enable php:remi-7.4 -y' | Add-Content -Path nginx.sh
+        '      sudo dnf install php php-opcache php-gd php-curl php-mysqlnd -y' | Add-Content -Path nginx.sh
+        '      sudo chcon -Rt httpd_sys_rw_content_t /var/www' | Add-Content -Path nginx.sh
+        '      sudo systemctl restart nginx'  | Add-Content -Path nginx.sh
+
+        '   elif [[ $so == *"Ubuntu"* || $so == *"Debian"* ]]' | Add-Content -Path nginx.sh
+        '   then' | Add-Content -Path nginx.sh
+        '       echo -e "' | Add-Content -Path nginx.sh -NoNewline
+        "$passwd" | Add-Content -Path nginx.sh -NoNewline
+        '\n" | sudo -S apt-get install nginx -y' | Add-Content -Path nginx.sh
+        "       sudo add-apt-repository universe"  | Add-Content -Path nginx.sh
+        '       sudo systemctl start nginx' | Add-Content -Path nginx.sh
+        "       sudo apt update && sudo apt install php-fpm -y" | Add-Content -Path nginx.sh
+        '   elif [[ $so == *"Kali"* ]]' | Add-Content -Path nginx.sh
+	    '   then' | Add-Content -Path nginx.sh
+        '       echo -e "' | Add-Content -Path nginx.sh -NoNewline
+        "$passwd" | Add-Content -Path nginx.sh -NoNewline
+        '\n" | sudo -S apt-get purge apache2 -y' | Add-Content -Path nginx.sh
+        "       sudo apt-get install nginx -y" | Add-Content -Path nginx.sh
+        "       sudo add-apt-repository universe"  | Add-Content -Path nginx.sh
+        '       sudo systemctl start nginx' | Add-Content -Path nginx.sh
+        "       sudo apt update && sudo apt install php-fpm -y" | Add-Content -Path nginx.sh
+        '   fi' | Add-Content -Path nginx.sh
+        "   virtual_hosts" | Add-Content -Path nginx.sh
+        "   config" | Add-Content -Path nginx.sh
+
+        '   if [[ $so == *"CentOS"* || $so == *"Red Hat Enterprise"* ]]' | Add-Content -Path nginx.sh
+        '   then' | Add-Content -Path nginx.sh
+        "      sudo setenforce 0"  | Add-Content -Path nginx.sh
+        "      sudo systemctl restart nginx"  | Add-Content -Path nginx.sh
+        '   elif [[ $so == *"Ubuntu"* || $so == *"Kali"* || $so == *"Debian"* ]]' | Add-Content -Path nginx.sh
+        '   then' | Add-Content -Path nginx.sh
+        "      sudo systemctl restart nginx"  | Add-Content -Path nginx.sh
+        '   fi' | Add-Content -Path nginx.sh
 }
