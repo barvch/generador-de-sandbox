@@ -64,17 +64,22 @@ function Crear-ISOUbuntu {
         (Get-Content "$tmp\iso_org\preseed.cfg").replace('{{timezone}}', $timezone) | Set-Content "$tmp\iso_org\$seed_file"
         
         # Se modifica el archivo isolinux\install.cfg, el cual contiene las respuestas que instalación y se indican detalles de la instalación desatendida:    
-        $install_lable="label install-unattend`n`tmenu label ^Install Unattend`n`tlinux /install/gtk/vmlinuz`n`tinitrd /install/gtk/initrd.gz`n`tappend video=vesa:ywrap,mtrr vga=788 net.ifnames=0 tpreseed/file=/sr0/preseed.cfg auto=true priority=critical debian-installer/locale=en_US keyboard-configuration/layoutcode=us ubiquity/reboot=true languagechooser/language-name=English countrychooser/shortlist=US localechooser/supported-locales=en_US.UTF-8 --- quiet"#splash noprompt noshell" #initrd=/casper/initrd.lz
+        $install_lable="label install-unattend`n`tmenu label ^Install Unattend`n`tlinux /install/gtk/vmlinuz`n`tinitrd /install/gtk/initrd.gz`n`tappend video=vesa:ywrap,mtrr vga=788 net.ifnames=0 preseed/file=/cdrom/preseed.cfg auto=true priority=critical debian-installer/locale=en_US keyboard-configuration/layoutcode=us ubiquity/reboot=true languagechooser/language-name=English countrychooser/shortlist=US localechooser/supported-locales=en_US.UTF-8 --- quiet"#splash noprompt noshell" #initrd=/casper/initrd.lz
         Clear-Content "$tmp\iso_org\isolinux\install.cfg"
         $install_lable | Set-Content "$tmp\iso_org\isolinux\install.cfg"
-        $lol = "source /boot/grub/config.cfg`n`nsource /boot/grub/theme.cfg`n`nmenuentry `"Start Installer Unattend`" {`n`tlinux	/install/gtk/vmlinuz video=vesa:ywrap,mtrr vga=788 preseed/file=/sr0/preseed.cfg auto=true priority=critical locale=en_US keymap=us hostname=test domain=local.lan`n`tinitrd	/install/gtk/initrd.gz`n`nmenuentry `"memtest86`" {`n`tlinux16 /live/memtest`n}"
+
+       # $lol = "source /boot/grub/config.cfg`n`nsource /boot/grub/theme.cfg`n`nmenuentry `"Start Installer Unattend`" {`n`tlinux	/install/gtk/vmlinuz video=vesa:ywrap,mtrr vga=788 preseed/file=/cdrom/preseed.cfg auto=true priority=critical locale=en_US keymap=us hostname=test domain=local.lan`n`tinitrd	/install/gtk/initrd.gz`n}"
+        #Clear-Content "$tmp\iso_org\boot\grub\grub.cfg"
         Clear-Content "$tmp\iso_org\boot\grub\grub.cfg"
-        $lol | Set-Content "$tmp\iso_org\boot\grub\grub.cfg"
+        Copy-Item ".\recursos\grub.cfg" "$tmp\iso_org\boot\grub\grub.cfg" -Force
+        #$lol | Set-Content "$tmp\iso_org\boot\grub\grub.cfg"
+        #$name = (Get-ChildItem -Path $tmp\iso_org\dists -Name)
+        Rename-Item -Path $tmp\iso_org\dists\kali-last-snapshot\ -NewName "kali-rolling"
     }
     
     # Se establece el orden de booteo para ver reflejados todos los cambios 
-    (Get-Content "$tmp\iso_org\isolinux\isolinux.cfg").replace('timeout 0', 'timeout 20') | Set-Content "$tmp\iso_org\isolinux\isolinux.cfg"
-    (Get-Content "$tmp\iso_org\isolinux\isolinux.cfg").replace('prompt 0', 'prompt 20') | Set-Content "$tmp\iso_org\isolinux\isolinux.cfg"
+    (Get-Content "$tmp\iso_org\isolinux\isolinux.cfg").replace('timeout 0', 'timeout 300') | Set-Content "$tmp\iso_org\isolinux\isolinux.cfg"
+    (Get-Content "$tmp\iso_org\isolinux\isolinux.cfg").replace('prompt 0', 'prompt 300') | Set-Content "$tmp\iso_org\isolinux\isolinux.cfg"
 
     # Se mueve al directorio de trabajo para crear el ISO con todo el contenido actual del directorio de trabajo
     Write-Host "Creando ISO Unattended..."
@@ -128,11 +133,8 @@ function Crear-ISOCentos {
     # Dentro del directorio de trabajo, se elimina la configuracion por defecto del ISO y se copia la modificada 
     Remove-Item $tmp\iso_org\isolinux\isolinux.cfg
     Copy-Item ".\recursos\isolinux.cfg" "$tmp\iso_org\isolinux\isolinux.cfg" -Force
-    #(Get-Content "$tmp\iso_org\isolinux\isolinux.cfg").replace('{{ks}}', "ks.cfg") | Set-Content "$tmp\iso_org\isolinux\isolinux.cfg"
     
     # Se establece el orden de booteo para ver reflejados todos los cambios 
-    #inst.stage2=hd:LABEL=CentOS-8-3-2011-x86_64-dvd
-    #inst.stage2=hd:LABEL=RHEL-8-3-0-BaseOS-x86_64
     $cambio = "linuxefi /images/pxeboot/vmlinuz  inst.stage2=hd:sr0 inst.ks=cdrom:/ks.cfg quiet"
     (Get-Content "$tmp\iso_org\EFI\BOOT\grub.cfg").replace("menuentry 'Install CentOS Linux 8' --class fedora --class gnu-linux --class gnu --class os", "menuentry 'Kickstart Installation of CentOS 8 PAPIRRI' --class fedora --class gnu-linux --class gnu --class os") | Set-Content "$tmp\iso_org\EFI\BOOT\grub.cfg"
     (Get-Content "$tmp\iso_org\EFI\BOOT\grub.cfg").replace('linuxefi /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=CentOS-8-3-2011-x86_64-dvd quiet', $cambio) | Set-Content "$tmp\iso_org\EFI\BOOT\grub.cfg"
