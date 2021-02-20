@@ -697,3 +697,121 @@ function Linux-Nginx{
         "      sudo systemctl restart nginx"  | Add-Content -Path nginx.sh
         '   fi' | Add-Content -Path nginx.sh
 }
+
+function Linux-PostgreSQL{
+        "#!/bin/bash" | Out-File -FilePath postgresql.sh
+
+        "   config(){" | Add-Content -Path postgresql.sh
+        '      if [[ $so == *"CentOS"* || $so == *"Red Hat Enterprise"* ]]' | Add-Content -Path postgresql.sh
+        '      then' | Add-Content -Path postgresql.sh
+        "         sudo sed -e '`$alocal   all             postgres                                peer' \" | Add-Content -Path postgresql.sh
+        "            -i /var/lib/pgsql/data/pg_hba.conf" | Add-Content -Path postgresql.sh
+        '      fi' | Add-Content -Path postgresql.sh
+        "         sudo systemctl restart postgresql"  | Add-Content -Path postgresql.sh
+        $roles=@("SUPERUSER","NOSUPERUSER","CREATEDB","NOCREATEDB","CREATEROLE","NOCREATEROLE","INHERIT","NOINHERIT","LOGIN","NOLOGIN")
+        foreach($role in $servicio.Role){
+            $name = $role.Name
+            "      sudo -u postgres psql -c `"CREATE ROLE $name WITH" | Add-Content -Path postgresql.sh -NoNewline
+            foreach($at in $role.Attribute){
+                if($roles.Contains($at)){
+                    " $at" | Add-Content -Path postgresql.sh -NoNewline
+                }
+            }
+            ";`"" | Add-Content -Path postgresql.sh
+        }
+        foreach($user in $servicio.Users){
+            $name = $user.Name
+            $pass = $user.Password
+            if($pass -eq "" -or $pass -eq $null){
+            "      sudo -u postgres psql -c `"CREATE USER $name;`"" | Add-Content -Path postgresql.sh
+            }
+            else{
+            "      sudo -u postgres psql -c `"CREATE USER $name WITH PASSWORD '$pass';`"" | Add-Content -Path postgresql.sh 
+            }
+            if($user.Role -ne "" -and $user.Role -ne $null){
+                $role = $user.Role
+                "      sudo -u postgres psql -c `"GRANT $role TO $name;`"" | Add-Content -Path postgresql.sh
+            }
+        }
+        foreach($db in $servicio.Databases){
+            "      sudo -u postgres psql -c `"CREATE DATABASE $db;`"" | Add-Content -Path postgresql.sh 
+        }
+        foreach($dbP in $servicio.DBPermission){
+            $database = $dbP.DB
+            $user = $dbP.User
+
+            "      sudo -u postgres psql -c `"GRANT" | Add-Content -Path postgresql.sh -NoNewline
+            foreach($permission in $dbP.Permission){
+                if($permission -eq $dbP.Permission[0]){
+                    " $permission" | Add-Content -Path postgresql.sh -NoNewline
+                }
+                else{
+                    ", $permission" | Add-Content -Path postgresql.sh -NoNewline
+                }
+            }
+            " ON DATABASE $database TO $user;`"" | Add-Content -Path postgresql.sh
+        }
+
+        "   }" | Add-Content -Path postgresql.sh
+
+        "   auth(){" | Add-Content -Path postgresql.sh
+        '      if [[ $so == *"CentOS"* || $so == *"Red Hat Enterprise"* ]]' | Add-Content -Path postgresql.sh
+        '      then' | Add-Content -Path postgresql.sh
+        '         archivo=/var/lib/pgsql/data/pg_hba.conf' | Add-Content -Path postgresql.sh
+        '      elif [[ $so == *"Ubuntu"* || $so == *"Debian"* || $so == *"Kali"* ]]' | Add-Content -Path postgresql.sh
+        '      then' | Add-Content -Path postgresql.sh
+        "         psqlVer=`$(psql --version | head -n 1 | cut -d `" `" -f 3 | cut -c 1,2)" | Add-Content -Path postgresql.sh
+        '         archivo=/etc/postgresql/$psqlVer/main/pg_hba.conf' | Add-Content -Path postgresql.sh
+        '      fi' | Add-Content -Path postgresql.sh
+        foreach($auth in $servicio.Authentication){
+            $type = $auth.Type
+            $user = $auth.User
+            $user = $user.ToLower()
+            $database = $auth.Database
+            $database = $database.ToLower()
+            $method = $auth.Method
+            if($type -ne "local"){
+                $ip = $auth.IP
+                $mask = $auth.Mask
+            }
+            else{
+                $ip = "    "
+                $mask = "    "
+            }
+            if($database -eq "" -or $database -eq $null){
+                $database = "all"
+            }
+            "      sudo sed -e '`$a$type    $database    $user    $ip    $mask    $method' \" | Add-Content -Path postgresql.sh
+            "         -i `$archivo" | Add-Content -Path postgresql.sh
+        }
+        "      sudo sed -e 's/local.*all.*all.*peer/#&/' \" | Add-Content -Path postgresql.sh
+        "         -i `$archivo" | Add-Content -Path postgresql.sh
+
+        "   }" | Add-Content -Path postgresql.sh
+
+        '   so=$(hostnamectl | grep -i "operating system" | cut -d " " -f 5,6,7)' | Add-Content -Path postgresql.sh
+        '   if [[ $so == *"CentOS"* || $so == *"Red Hat Enterprise"* ]]' | Add-Content -Path postgresql.sh
+        '   then' | Add-Content -Path postgresql.sh
+        '       echo -e "' | Add-Content -Path postgresql.sh -NoNewline
+        "$passwd" | Add-Content -Path postgresql.sh -NoNewline
+        '\n" | sudo -S dnf install postgresql-server  -y' | Add-Content -Path postgresql.sh
+        "       sudo postgresql-setup --initdb" | Add-Content -Path postgresql.sh
+        
+        '   elif [[ $so == *"Ubuntu"* || $so == *"Debian"* || $so == *"Kali"* ]]' | Add-Content -Path postgresql.sh
+        '   then' | Add-Content -Path postgresql.sh
+        '       echo -e "' | Add-Content -Path postgresql.sh -NoNewline
+        "$passwd" | Add-Content -Path postgresql.sh -NoNewline
+        '\n" | sudo -S apt-get install postgresql postgresql-contrib -y' | Add-Content -Path postgresql.sh
+        
+        '   fi' | Add-Content -Path postgresql.sh
+        "   config" | Add-Content -Path postgresql.sh
+        "   auth" | Add-Content -Path postgresql.sh
+        '   if [[ $so == *"CentOS"* || $so == *"Red Hat Enterprise"* ]]' | Add-Content -Path postgresql.sh
+        '   then' | Add-Content -Path postgresql.sh
+        "      sudo setenforce 0"  | Add-Content -Path postgresql.sh
+        "      sudo systemctl restart postgresql"  | Add-Content -Path postgresql.sh
+        '   elif [[ $so == *"Ubuntu"* || $so == *"Kali"* || $so == *"Debian"* ]]' | Add-Content -Path postgresql.sh
+        '   then' | Add-Content -Path postgresql.sh
+        "      sudo systemctl restart postgresql"  | Add-Content -Path postgresql.sh
+        '   fi' | Add-Content -Path postgresql.sh
+}
