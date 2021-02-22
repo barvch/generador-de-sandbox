@@ -57,29 +57,28 @@ function Crear-ISOUbuntu {
         Clear-Content "$tmp\iso_org\isolinux\txt.cfg"
         $install_lable | Set-Content "$tmp\iso_org\isolinux\txt.cfg"
     } elseif ("Kali Linux 2020.04" -eq $os) {
+        # Se copia el preseed base al directorio de trabajo y al archivo copiado, se hacen las modificaciones de las especificaciones para el equipo
         Copy-Item ".\recursos\preseed.cfg" "$tmp\iso_org" -Force
         (Get-Content "$tmp\iso_org\preseed.cfg").replace('{{username}}', $username) | Set-Content "$tmp\iso_org\$seed_file"
         (Get-Content "$tmp\iso_org\preseed.cfg").replace('{{pwhash}}', $pwhash) | Set-Content "$tmp\iso_org\$seed_file"
         (Get-Content "$tmp\iso_org\preseed.cfg").replace('{{hostname}}', $hostname) | Set-Content "$tmp\iso_org\$seed_file"
         (Get-Content "$tmp\iso_org\preseed.cfg").replace('{{timezone}}', $timezone) | Set-Content "$tmp\iso_org\$seed_file"
-        
-        # Se modifica el archivo isolinux\install.cfg, el cual contiene las respuestas que instalación y se indican detalles de la instalación desatendida:    
-        $install_lable="label install-unattend`n`tmenu label ^Install Unattend`n`tlinux /install/gtk/vmlinuz`n`tinitrd /install/gtk/initrd.gz`n`tappend video=vesa:ywrap,mtrr vga=788 net.ifnames=0 preseed/file=/cdrom/preseed.cfg auto=true priority=critical debian-installer/locale=en_US keyboard-configuration/layoutcode=us ubiquity/reboot=true languagechooser/language-name=English countrychooser/shortlist=US localechooser/supported-locales=en_US.UTF-8 --- quiet"#splash noprompt noshell" #initrd=/casper/initrd.lz
-        Clear-Content "$tmp\iso_org\isolinux\install.cfg"
-        $install_lable | Set-Content "$tmp\iso_org\isolinux\install.cfg"
 
-       # $lol = "source /boot/grub/config.cfg`n`nsource /boot/grub/theme.cfg`n`nmenuentry `"Start Installer Unattend`" {`n`tlinux	/install/gtk/vmlinuz video=vesa:ywrap,mtrr vga=788 preseed/file=/cdrom/preseed.cfg auto=true priority=critical locale=en_US keymap=us hostname=test domain=local.lan`n`tinitrd	/install/gtk/initrd.gz`n}"
-        #Clear-Content "$tmp\iso_org\boot\grub\grub.cfg"
+        # Se copia el preseed del GRUB base al directorio de trabajo y al archivo copiado, se hacen las modificaciones de las especificaciones para el equipo
         Clear-Content "$tmp\iso_org\boot\grub\grub.cfg"
         Copy-Item ".\recursos\grub.cfg" "$tmp\iso_org\boot\grub\grub.cfg" -Force
-        #$lol | Set-Content "$tmp\iso_org\boot\grub\grub.cfg"
-        #$name = (Get-ChildItem -Path $tmp\iso_org\dists -Name)
-        Rename-Item -Path $tmp\iso_org\dists\kali-last-snapshot\ -NewName "kali-rolling"
+        (Get-Content "$tmp\iso_org\boot\grub\grub.cfg").replace('{{hostname}}', $hostname) | Set-Content "$tmp\iso_org\boot\grub\grub.cfg"
+
+        # Se hacen modificaciones al archivo txt.cfg del directorio isolinux, para indicar que se lea el archivo de configuración agregado a la imagen 
+        (Get-Content "$tmp\iso_org\isolinux\txt.cfg").replace('label install', 'label unattended') | Set-Content "$tmp\iso_org\isolinux\txt.cfg"
+        (Get-Content "$tmp\iso_org\isolinux\txt.cfg").replace('menu label ^Install', 'menu label ^Unattended Install') | Set-Content "$tmp\iso_org\isolinux\txt.cfg"
+        $lol = "append preseed/file=/cdrom/preseed.cfg locale=en_US keymap=es hostname=$hostname domain=local.lan vga=788 initrd=/install.amd/initrd.gz --- quiet"
+        (Get-Content "$tmp\iso_org\isolinux\txt.cfg").replace('append preseed/file=/cdrom/simple-cdd/default.preseed simple-cdd/profiles=kali,offline desktop=xfce vga=788 initrd=/install.amd/initrd.gz --- quiet ', $lol) | Set-Content "$tmp\iso_org\isolinux\txt.cfg"
     }
     
     # Se establece el orden de booteo para ver reflejados todos los cambios 
-    (Get-Content "$tmp\iso_org\isolinux\isolinux.cfg").replace('timeout 0', 'timeout 300') | Set-Content "$tmp\iso_org\isolinux\isolinux.cfg"
-    (Get-Content "$tmp\iso_org\isolinux\isolinux.cfg").replace('prompt 0', 'prompt 300') | Set-Content "$tmp\iso_org\isolinux\isolinux.cfg"
+    (Get-Content "$tmp\iso_org\isolinux\isolinux.cfg").replace('timeout 0', 'timeout 60') | Set-Content "$tmp\iso_org\isolinux\isolinux.cfg"
+    (Get-Content "$tmp\iso_org\isolinux\isolinux.cfg").replace('prompt 0', 'prompt 60') | Set-Content "$tmp\iso_org\isolinux\isolinux.cfg"
 
     # Se mueve al directorio de trabajo para crear el ISO con todo el contenido actual del directorio de trabajo
     Write-Host "Creando ISO Unattended..."
@@ -154,7 +153,7 @@ function Crear-ISOCentos {
     $vmFolder = "E:\SanboxTest\tempUbuntu\vhd"
     New-Item -ItemType Directory -Path $vmFolder -Force | Out-Null
     $vmSwitch = Get-VMSwitch | Where-Object {$_.Name -eq 'SalidaInternet'}
-    New-VM -Name $hostname -NewVHDPath "$vmFolder\$hostname.vhdx" -NewVHDSizeBytes 15gb -MemoryStartupBytes 1GB
+    New-VM -Name $hostname -NewVHDPath "$vmFolder\$hostname.vhdx" -NewVHDSizeBytes 24gb -MemoryStartupBytes 1GB
     Add-VMDvdDrive -VMName $hostname -Path $rutaIsoSalida
     $vmActiveSwitch = Get-VM -Name $hostname -ErrorAction SilentlyContinue | Get-VMNetworkAdapter -ErrorAction SilentlyContinue
     if (! $vmActiveSwitch.SwitchName){
