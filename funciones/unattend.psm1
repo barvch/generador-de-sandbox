@@ -42,7 +42,7 @@ function Crear-ISOUbuntu {
 
     if (@("Ubuntu 16.04", "Ubuntu 18.04", "Ubuntu 20.04") -contains $os) {
         # Se copia el preseed base al directorio de trabajo y al archivo copiado, se hacen las modificaciones de las especificaciones para el equipo
-        Copy-Item ".\recursos\ks.preseed" "$tmp\iso_org" -Force
+        Copy-Item ".\recursos\unattend\Ubuntu\ks.preseed" "$tmp\iso_org" -Force
         (Get-Content "$tmp\iso_org\ks.preseed").replace('{{username}}', $username) | Set-Content "$tmp\iso_org\$seed_file"
         (Get-Content "$tmp\iso_org\ks.preseed").replace('{{pwhash}}', $pwhash) | Set-Content "$tmp\iso_org\$seed_file"
         (Get-Content "$tmp\iso_org\ks.preseed").replace('{{hostname}}', $hostname) | Set-Content "$tmp\iso_org\$seed_file"
@@ -56,9 +56,14 @@ function Crear-ISOUbuntu {
         $install_lable="default live-install`nlabel live-install`n  menu label ^Install Ubuntu`n  kernel /casper/vmlinuz.efi`n  append file=/cdrom/ks.preseed auto=true priority=critical debian-installer/locale=en_US keyboard-configuration/layoutcode=us ubiquity/reboot=true languagechooser/language-name=English countrychooser/shortlist=US localechooser/supported-locales=en_US.UTF-8 boot=casper automatic-ubiquity initrd=/casper/initrd.lz quiet splash noprompt noshell ---"
         Clear-Content "$tmp\iso_org\isolinux\txt.cfg"
         $install_lable | Set-Content "$tmp\iso_org\isolinux\txt.cfg"
-    } elseif ("Kali Linux 2020.04" -eq $os) {
+    } elseif (@("Kali Linux 2020.04", "Debian 10") -contains $os) {
         # Se copia el preseed base al directorio de trabajo y al archivo copiado, se hacen las modificaciones de las especificaciones para el equipo
-        Copy-Item ".\recursos\preseed.cfg" "$tmp\iso_org" -Force
+        if ($os -eq "Debian 10"){
+            Copy-Item ".\recursos\unattend\Debian\preseed.cfg" "$tmp\iso_org" -Force
+            (Get-Content "$tmp\iso_org\preseed.cfg").replace('{{paquetes}}', "tree vim git") | Set-Content "$tmp\iso_org\$seed_file"
+        } else {
+            Copy-Item ".\recursos\unattend\Kali\preseed.cfg" "$tmp\iso_org" -Force
+        }
         (Get-Content "$tmp\iso_org\preseed.cfg").replace('{{username}}', $username) | Set-Content "$tmp\iso_org\$seed_file"
         (Get-Content "$tmp\iso_org\preseed.cfg").replace('{{pwhash}}', $pwhash) | Set-Content "$tmp\iso_org\$seed_file"
         (Get-Content "$tmp\iso_org\preseed.cfg").replace('{{hostname}}', $hostname) | Set-Content "$tmp\iso_org\$seed_file"
@@ -66,14 +71,18 @@ function Crear-ISOUbuntu {
 
         # Se copia el preseed del GRUB base al directorio de trabajo y al archivo copiado, se hacen las modificaciones de las especificaciones para el equipo
         Clear-Content "$tmp\iso_org\boot\grub\grub.cfg"
-        Copy-Item ".\recursos\grub.cfg" "$tmp\iso_org\boot\grub\grub.cfg" -Force
+        Copy-Item ".\recursos\unattend\grub.cfg" "$tmp\iso_org\boot\grub\grub.cfg" -Force
         (Get-Content "$tmp\iso_org\boot\grub\grub.cfg").replace('{{hostname}}', $hostname) | Set-Content "$tmp\iso_org\boot\grub\grub.cfg"
 
         # Se hacen modificaciones al archivo txt.cfg del directorio isolinux, para indicar que se lea el archivo de configuración agregado a la imagen 
         (Get-Content "$tmp\iso_org\isolinux\txt.cfg").replace('label install', 'label unattended') | Set-Content "$tmp\iso_org\isolinux\txt.cfg"
         (Get-Content "$tmp\iso_org\isolinux\txt.cfg").replace('menu label ^Install', 'menu label ^Unattended Install') | Set-Content "$tmp\iso_org\isolinux\txt.cfg"
         $lol = "append preseed/file=/cdrom/preseed.cfg locale=en_US keymap=es hostname=$hostname domain=local.lan vga=788 initrd=/install.amd/initrd.gz --- quiet"
-        (Get-Content "$tmp\iso_org\isolinux\txt.cfg").replace('append preseed/file=/cdrom/simple-cdd/default.preseed simple-cdd/profiles=kali,offline desktop=xfce vga=788 initrd=/install.amd/initrd.gz --- quiet ', $lol) | Set-Content "$tmp\iso_org\isolinux\txt.cfg"
+        if ($os -eq "Debian 10") {
+            (Get-Content "$tmp\iso_org\isolinux\txt.cfg").replace('append desktop=xfce vga=788 initrd=/install.amd/initrd.gz --- quiet', $lol) | Set-Content "$tmp\iso_org\isolinux\txt.cfg"
+        } else {
+            (Get-Content "$tmp\iso_org\isolinux\txt.cfg").replace('append preseed/file=/cdrom/simple-cdd/default.preseed simple-cdd/profiles=kali,offline desktop=xfce vga=788 initrd=/install.amd/initrd.gz --- quiet ', $lol) | Set-Content "$tmp\iso_org\isolinux\txt.cfg"
+        }
     }
     
     # Se establece el orden de booteo para ver reflejados todos los cambios 
@@ -122,7 +131,7 @@ function Crear-ISOCentos {
     xcopy $ISOSource "$tmp\iso_org\" /e
 
     # Se copia el preseed base al directorio de trabajo y al archivo copiado, se hacen las modificaciones de las especificaciones para el equipo
-    Copy-Item ".\recursos\ks.cfg" "$tmp\iso_org" -Force
+    Copy-Item ".\recursos\unattend\CentOS\ks.cfg" "$tmp\iso_org" -Force
     (Get-Content "$tmp\iso_org\ks.cfg").replace('{{passwd}}', $pwhash) | Set-Content "$tmp\iso_org\$seed_file"
     (Get-Content "$tmp\iso_org\ks.cfg").replace('{{timezone}}', $timezone) | Set-Content "$tmp\iso_org\$seed_file"
     #(Get-Content "$tmp\iso_org\ks.cfg").replace('{{username}}', $username) | Set-Content "$tmp\iso_org\$seed_file"
@@ -131,7 +140,7 @@ function Crear-ISOCentos {
     
     # Dentro del directorio de trabajo, se elimina la configuracion por defecto del ISO y se copia la modificada 
     Remove-Item $tmp\iso_org\isolinux\isolinux.cfg
-    Copy-Item ".\recursos\isolinux.cfg" "$tmp\iso_org\isolinux\isolinux.cfg" -Force
+    Copy-Item ".\recursos\unatted\CentOS\isolinux.cfg" "$tmp\iso_org\isolinux\isolinux.cfg" -Force
     
     # Se establece el orden de booteo para ver reflejados todos los cambios 
     $cambio = "linuxefi /images/pxeboot/vmlinuz  inst.stage2=hd:sr0 inst.ks=cdrom:/ks.cfg quiet"

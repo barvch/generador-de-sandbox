@@ -1,0 +1,11 @@
+Hash                                                                   ISO
+----                                                                   ----
+B442551D69D876D9DA977503BAC214F3                                       ubuntu-16.04.7-desktop-amd64.iso
+44343BC1373C6DC826EBB58839155C39                                       ubuntu-18.04.5-desktop-amd64.iso
+2B0BFCB7E9E95C8EADB14A6FB59EFAE8                                       ubuntu-20.04.2.0-desktop-amd64.iso
+2A3F98B6EB50326CF69257C5C5FC7E35                                       CentOS-8.3.2011-x86_64-dvd1.iso
+94381C1EE1D07242FE3A38AA1FBA75FD                                       rhel-8.3-x86_64-dvd.iso
+A7B8F47077826DFAC16322CACAFCB1FF                                       kali-linux-2020.4-installer-amd64.iso
+4053678AF215434D6D61706659AECB55                                       debian-10.8.0-amd64-xfce-CD-1.iso
+
+70FEC2CB1D6759108820130C2B5496DA                                       WindowsServer2019_SERVER_EVAL_x64FRE_en-us_1.iso
