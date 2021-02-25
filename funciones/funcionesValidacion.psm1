@@ -419,8 +419,8 @@ function Validar-DatosEntrada {
         $numeroProcesadores = Validar-Procesadores -numeroProcesadores $archivoEntrada.VMs[$j].ProcessorNumber
         #"Se han validado los datos de entrada del equipo $hostname"
         #Datos particulares dependiendo del SO
-        switch ($sistemaOperativo) {
-            "Windows 10" { 
+        switch -regex  ($sistemaOperativo) {
+            "Windows*" { 
                 try {
                     $rutaUnattend = ".\recursos\unattend.xml"
                     Test-Path -Path $rutaUnattend | Out-Null
@@ -435,13 +435,6 @@ function Validar-DatosEntrada {
                     "Error datos extra Windows."
                     exit
                 }
-            }
-            "Windows Server 2019" {
-                $rutaUnattend = ".\recursos\unattend.xml"
-                Test-Path -Path $rutaUnattend | Out-Null
-                $servicios = $archivoEntrada.VMs[$j].Services
-                $serviciosPorInstalar = Validar-ServiciosWindowsServer -servicios $servicios -dominiosExistentes $dominiosExistentes
-                #Validación
             }
         }
     }

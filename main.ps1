@@ -23,10 +23,10 @@ function Crear-VM {
     $imagen = Validar-ISO -imagen $archivoEntrada.VMs[$contador].ImagePath
     $interfaces = Validar-Redes -interfaces $archivoEntrada.VMs[$contador].InterfaceConfig # Se validan las configuraciones de red para todas las interfaces
     $numeroProcesadores = Validar-Procesadores -numeroProcesadores $archivoEntrada.VMs[$contador].ProcessorNumber
-    switch ($sistemaOperativo) {
-        "Windows 10" { 
-            $rutaUnattend = ".\recursos\unattend.xml"
-            $rutasMSI = $archivoEntrada.VMs[$contador].MsiPaths
+    switch -regex ($sistemaOperativo) {
+        "Windows *" { 
+            $rutaUnattend = [string](Get-Location)+"\recursos\unattend.xml"
+            #$rutasMSI = $archivoEntrada.VMs[$contador].MsiPaths
         }
     }
     # Se recuperan los datos individuales dependiendo del tipo de SO
@@ -127,7 +127,7 @@ function Crear-VM {
                 Add-VMHardDiskDrive -VMName $vname -Path $pathDisk 
                 if (($disk/1GB) -eq [int]$discoRaizVM.Maximum -and $vhdFlag -eq $false) {
                     if ($sistemaOperativo -eq "Windows 10") {
-                        Modificar-Unattend  -username $usuario -passwd $passwd -rutaXML $rutaUnattend
+                        #Modificar-Unattend  -username $usuario -passwd $passwd -rutaXML $rutaUnattend
                         "Presentando Versiones de Windows Disponibles dentro de ISO:`n"
                         Obtener-VersionesDeWindows -WinIso $imagen -VhdFile $pathDisk -UnattendFile $rutaUnattend
                         Get-VMDvdDrive -VMName $vname -ControllerNumber 0 | Remove-VMDvdDrive

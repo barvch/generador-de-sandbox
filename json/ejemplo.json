@@ -3,7 +3,7 @@
   "VMs": [
     {
       "SO": "Windows 10",
-      "Hostname": "Contoso",
+      "Hostname": "Nanapanchatron",
       "DiskSize": [
         13
       ],
@@ -34,45 +34,7 @@
       "Password": "hola12344.,prueba",
       "Services": [
       ],
-      "ImagePath": "C:\\Win10_1909_English_x64.iso",
-      "MsiPaths": ["C:\\Users\\Administrator\\Desktop\\Firefox Setup 85.0.2.msi","C:\\Users\\Administrator\\Desktop\\7z1900-x64.msi" ]
-    },
-    {
-      "SO": "Windows 10",
-      "Hostname": "FIREWALL",
-      "DiskSize": [
-        10
-      ],
-      "InterfaceConfig": [
-        {
-          "VirtualSwitch" : "Prueba21",
-          "Nombre": "Interna",
-          "IP": "192.168.1.31",
-          "Mask": "255.255.255.0",
-          "Gateway": null,
-          "DNS": null
-        },
-        {
-          "VirtualSwitch" : "PruebaPrivado",
-          "Nombre": "Externa",
-          "IP": "192.168.30.31",
-          "Mask": "255.255.255.0",
-          "Gateway": "192.168.1.255",
-          "DNS": "1.1.1.1"
-        }
-      ],
-      "MemoryType": "Static",
-      "MemorySize": 2,
-      "ProcessorNumber": 2,
-      "User": "Anita",
-      "Password": "hola123.,pruebaaa",
-      "Services": [
-        {
-          "AD": "CONTOSO",
-          "DHCP": ""
-        }
-      ],
-      "ImagePath": "C:\\Win10_1909_English_x64.iso"
+      "ImagePath": "E:\\SanboxTest\\Win10_1909_English_x64.iso"
     }
   ]
 }
