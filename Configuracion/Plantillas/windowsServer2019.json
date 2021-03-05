@@ -1,0 +1,104 @@
+{
+    "Root": "E:\\SanboxTest",
+    "MaquinasVirtuales": [
+        {
+            "SistemaOperativo": "Windows Server 2019",
+            "Hostname": "Contoso",
+            "LlaveActivacion": "xxxx-xxxx-xxxx-xxxx-xxxx",
+            "DiscosVirtuales": [15,20],
+            "Procesadores": 2,
+            "RutaISO": "E:\\VMware\\Maquinas virtuales\\Test\\Win10_20H2_v2_English_x64.iso",
+            "MemoriaRAM": {
+                "Tipo": "Dynamic",
+                "Minima": 0.5,
+                "Maxima": 2.5
+            },
+            "CredencialesAdministrativas": {
+                "Usuario": "Mi usuario",
+                "Contrasena": "hola12345.,"
+            },
+            "Interfaces": [
+                {
+                    "VirtualSwitch": {
+                        "Nombre": "Internet",
+                        "Tipo": "Externa"
+                    },
+                    "Nombre": "Salida a internet",
+                    "IP": "192.168.1.1",
+                    "MascaraRed": "255.255.255.0"
+                }
+            ],
+            "Servicios": {
+                "CertificateServices": true,
+                "WindowsDefender": true,
+                "AdministracionRemota": "RDP",
+                "ActiveDirectory": {
+                    "Domain":"prueba-contoso.local",
+                    "NetBIOS":"PRUEBA",
+                    "DomainMode":"Win2012R2",
+                    "ForestMode":"Win2008"
+                },
+                "IIS":  [
+                    {
+                        "Nombre": "MiSitio.local",
+                        "Directorio": "MiSitioUno",
+                        "Bindings": [
+                            {
+                                "Dominio": "misitio.local",
+                                "Interfaz": "PruebitaBonitaDos",
+                                "Protocolo": "https",
+                                "RutaCertificado": "E:\\Proyecto Final\\Windows Server 2019\\certificado.pfx",
+                                "Puerto": 443,
+                                "WebDAV": false
+                            }
+                        ]
+                    }
+                ],
+                "DHCP": [
+                    {
+                        "Nombre": "ScopeUno",
+                        "Rango": {
+                            "Inicio": "192.168.12.20",
+                            "Fin": "192.168.12.40",
+                            "MascaraRed": "24"
+                        },
+                        "Exclusiones": {
+                            "Tipo": "Unica",
+                            "Inicio": "192.168.12.30",
+                            "Fin": "192.168.12.25",
+                            "IP": "192.168.12.25"
+                        },
+                        "Lease": "000:01:00",
+                        "Gateway": "192.168.12.55",
+                        "DNS": "192.168.12.60"
+                    }
+                ],
+                "DNS": [
+                    {
+                        "Tipo": "Forward",
+                        "Nombre": "ZonaUno",
+                        "Backup": "",
+                        "Registros": [
+                            {
+                                "Tipo": "A",
+                                "Hostname": "misitio.local",
+                                "IP": "10.23.1.2",
+                                "PTR": true   
+                            },
+                            {
+                                "Tipo": "CNAME",
+                                "Alias": "alias",
+                                "FQDN": "misitio2.local"
+                            },
+                            {
+                                "Tipo": "MX",
+                                "ChildDomain": "misitio2.local",
+                                "FQDN": "prueba.misitio2.local"
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    ]
+}

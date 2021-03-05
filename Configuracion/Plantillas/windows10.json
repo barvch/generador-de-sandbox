@@ -1,0 +1,36 @@
+{
+    "Root": "E:\\SanboxTest",
+    "MaquinasVirtuales": [
+        {
+            "SistemaOperativo": "Windows 10",
+            "Hostname": "Contoso",
+            "LlaveActivacion": "xxxx-xxxx-xxxx-xxxx-xxxx",
+            "DiscosVirtuales": [15,20],
+            "Procesadores": 2,
+            "RutaISO": "E:\\VMware\\Maquinas virtuales\\Test\\Win10_20H2_v2_English_x64.iso",
+            "MemoriaRAM": {
+                "Tipo": "Dynamic",
+                "Minima": 0.5,
+                "Maxima": 2.5
+            },
+            "CredencialesAdministrativas": {
+                "Usuario": "Mi usuario",
+                "Contrasena": "hola12345.,"
+            },
+            "Interfaces": [
+                {
+                    "VirtualSwitch": {
+                        "Nombre": "Internet",
+                        "Tipo": "Externa"
+                    },
+                    "Nombre": "",
+                    "IP": "192.168.1.1",
+                    "MascaraRed": "255.255.255.0"
+                }
+            ],
+            "Servicios": {
+                "AdministracionRemota": "RDP"
+            }
+        }
+    ]
+}
