@@ -1,5 +1,5 @@
 #Importacion de modulos
-foreach ($modulo in (Get-ChildItem -Path ".\Modulos\" -Recurse -Include "*.psm1")) {
+foreach ($modulo in (Get-ChildItem -Path ".\" -Recurse -Include "*.psm1")) {
     Import-Module -Name $modulo -Force -DisableNameChecking
 }
 function VerificarHyperV {

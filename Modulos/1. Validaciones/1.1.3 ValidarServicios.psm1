@@ -1,5 +1,5 @@
 #Se importan los catalogos
-. ".\Recursos\catalogos.ps1"
+. ".\Recursos\Validaciones\catalogos.ps1"
 
 function ValidarAdministracionRemota { param ($servicio = "AdministracionRemota", $adminRemota, $so)
 $adminRemotaCheck = ValidarCatalogos -catalogo $tiposAdminRemota -campo $servicio -valor $adminRemota

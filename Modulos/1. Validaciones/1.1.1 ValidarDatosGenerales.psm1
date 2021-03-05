@@ -1,5 +1,5 @@
 #Se importan los catalogos
-. ".\Recursos\catalogos.ps1"
+. ".\Recursos\Validaciones\catalogos.ps1"
 
 function ValidarSistemaOperativo { param ($campo = "SistemaOperativo", $sistemaOperativo)
     return ValidarCatalogos -catalogo $SOPermitidos.keys -campo $campo -valor $sistemaOperativo -obligatorio $true

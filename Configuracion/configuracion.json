@@ -1,13 +1,13 @@
 {
-    "Root": "E:\\SanboxTest",
+    "Root": "F:\\SanboxTest",
     "MaquinasVirtuales": [
         {
-            "SistemaOperativo": "Debian 10",
-            "TipoAmbiente": "Core",
+            "SistemaOperativo": "Windows 10",
+            "TipoAmbiente": "Windows 10 Home",
             "Hostname": "prueba",
             "DiscosVirtuales": [20],
             "Procesadores": 2,
-            "RutaISO": "E:\\SanboxTest\\debian-10.8.0-amd64-xfce-CD-1.iso",
+            "RutaISO": "F:\\Win10_20H2_v2_English_x64.iso",
             "MemoriaRAM": {
                 "Tipo": "Dynamic",
                 "Minima": 1.0,

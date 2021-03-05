@@ -1,5 +1,5 @@
 #Se importan los catalogos
-. ".\Recursos\catalogos.ps1"
+. ".\Recursos\Validaciones\catalogos.ps1"
 
 function ValidarLlaveActivacion{ param ($campo = "LlaveActivacion", $llave)
     if($llave){

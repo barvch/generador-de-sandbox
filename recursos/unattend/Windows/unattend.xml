@@ -56,6 +56,13 @@
       </RegisteredOwner>
       <DisableAutoDaylightTimeSet>false</DisableAutoDaylightTimeSet>
       <TimeZone>Mexico City Standard</TimeZone>
-    </component>
+              <FirstLogonCommands>
+                <SynchronousCommand wcm:action="add">
+                    <CommandLine>powershell.exe "mspaint.exe"</CommandLine>
+                    <Order>1</Order>
+                    <RequiresUserInput>false</RequiresUserInput>
+                </SynchronousCommand>
+              </FirstLogonCommands>
+    </component> 
   </settings>
 </unattend>

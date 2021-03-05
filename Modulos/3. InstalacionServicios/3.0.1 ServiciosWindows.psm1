@@ -14,6 +14,7 @@ function InstalarActiveDirectory { param ($activeDirectory)
 function InstalarCertificateServices {
     Install-WindowsFeature -Name "AD-Certificate" -IncludeManagementTools
 }
+<#
 function Install-IIS { param ($iis)
     Install-WindowsFeature -Name "Web-Server" -IncludeManagementTools
     #Realiza la creación de sitios con sus respectivos bindings
@@ -24,6 +25,7 @@ function Install-IIS { param ($iis)
             
         }
     }
+
     
     
     
@@ -68,3 +70,5 @@ function Install-IIS { param ($iis)
                     }
                 }
 }
+            }
+            #>
