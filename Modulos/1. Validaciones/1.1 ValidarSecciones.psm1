@@ -25,7 +25,7 @@ function ValidarDatosDependientes { param ($sistemaOperativo, $llaveActivacion, 
         }
         Default { }
         }
-    $datosDependientes = [ordered] @{"TipoAmbiente" = $tipoAmbienteCheck; "LlaveActivacion" = $llaveActivacionCheck; "RutasMSI" = $rutaMSICheck; "ArchivoXML" = $rutaXML}
+    $datosDependientes = [ordered] @{"TipoAmbiente" = $tipoAmbienteCheck; "LlaveActivacion" = $llaveActivacionCheck; "RutaMSI" = $rutaMSICheck; "ArchivoXML" = $rutaXML}
     return $datosDependientes
 }
 
