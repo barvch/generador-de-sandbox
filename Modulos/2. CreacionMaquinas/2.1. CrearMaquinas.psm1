@@ -7,6 +7,7 @@ function CrearMaquinas { param ($maquinas, $rutaRaiz)
     $stepCounter = 0
     foreach($maquina in $maquinas){
         $maquina = New-Object PSCustomObject -Property $maquina
+        Write-Host $maquina
         $hostname = $maquina.Hostname
         $so = $maquina.SistemaOperativo
         $vname = "$($hostname)-$($so)"

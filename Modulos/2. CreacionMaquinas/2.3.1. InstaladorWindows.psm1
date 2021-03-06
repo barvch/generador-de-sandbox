@@ -18,6 +18,7 @@ function CrearVHDWindows { param ([string]$WinIso, [string]$VhdFile, $maquina)
     }
     $MountResult = Mount-DiskImage -ImagePath $WinIso -StorageType ISO -PassThru
     $DriveLetter = ($MountResult | Get-Volume).DriveLetter
+    #$DriveLetter = "I"
     $WimFile = "$($DriveLetter):\sources\install.wim"
     $tipoAmbiente = $maquina.DatosDependientes.TipoAmbiente
 
@@ -42,6 +43,28 @@ function CrearVHDWindows { param ([string]$WinIso, [string]$VhdFile, $maquina)
     New-Item -ItemType "directory" -Path "$($VirtualWinLetter):\Windows\Panther\" | Out-Null
     Copy-Item $UnattendFile "$($VirtualWinLetter):\Windows\Panther\unattend.xml" | Out-Null
     Remove-Item $UnattendFile
+
+    # Copiar archivo a C: dentro de la VM
+    New-Item -ItemType "Directory" -Path "$($VirtualWinLetter):\sources\`$OEM`$" | Out-Null
+    New-Item -ItemType "Directory" -Path "$($VirtualWinLetter):\sources\`$OEM`$\`$1" | Out-Null
+    Copy-Item -Path ".\Recursos\unattend\Windows\servicios.ps1" "$($VirtualWinLetter):\sources\`$OEM`$\`$1" | Out-Null
+
+    # Se deja el archivo en C:\Windows
+    New-Item -ItemType "Directory" -Path "$($VirtualWinLetter):\sources\`$OEM`$\`$`$" | Out-Null
+    New-Item -ItemType "Directory" -Path "$($VirtualWinLetter):\sources\`$OEM`$\`$`$\Setup" | Out-Null
+    New-Item -ItemType "Directory" -Path "$($VirtualWinLetter):\sources\`$OEM`$\`$`$\Setup\Scripts" | Out-Null
+    $lele = "@echo off`n"
+    $cont = 0
+    $msi = $maquina.DatosDependientes.RutaMSI
+    foreach ($ruta in $msi) {
+        Copy-Item $ruta "$($VirtualWinLetter):\sources\`$OEM`$\`$`$\Setup\Scripts\paquete-$cont.msi"
+        $lele += "start /wait C:\sources\`$OEM`$\`$`$\Setup\Scripts\paquete-$cont.msi`n"
+        $cont++
+    }
+    #$lele += "RD /S /Q %windir%\Setup\Scripts"
+    #New-Item -ItemType "File" -Path "$($VirtualWinLetter):\sources\`$OEM`$\`$`$\Setup\Scripts\SetupComplete.cmd" | Out-Null
+    Set-Content -Path "$($VirtualWinLetter):\sources\`$OEM`$\`$`$\Setup\Scripts\SetupComplete.cmd" -Value $lele | Out-Null
+
     "select disk $disknumber`nselect partition 2`nremove letter=$EfiLetter`nselect partition 4`nremove letter=$VirtualWinLetter`nexit`n" | diskpart | Out-Null
     Dismount-DiskImage -ImagePath $VhdFile | Out-Null
     Dismount-DiskImage -ImagePath $WinIso | Out-Null
