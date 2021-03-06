@@ -1,74 +1,58 @@
 #Funcion instala RDP
-function InstalarRDP {
-    Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections" -value 0
-    Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+function InstalarServicios { param ()
+    
 }
-#Funcion instala Windows Defender
-function InstalarWindowsDefender {
-    Install-WindowsFeature -Name "Windows-Defender" -IncludeManagementTools
-}
-function InstalarActiveDirectory { param ($activeDirectory)
-    Install-WindowsFeature -Name "AD-Domain-Services" -IncludeManagementTools
-    Install-ADDSForest -DomainName $activeDirectory.Dominio -DomainNetbiosName $activeDirectory.Netbios -DomainMode $activeDirectory.DomainMode -ForestMode $activeDirectory.ForestMode -Force -SafeModeAdministratorPassword $safePass
-}
-function InstalarCertificateServices {
-    Install-WindowsFeature -Name "AD-Certificate" -IncludeManagementTools
-}
-<#
-function Install-IIS { param ($iis)
-    Install-WindowsFeature -Name "Web-Server" -IncludeManagementTools
+
+function InstalarIIS { param ($iis, $usuario)
     #Realiza la creación de sitios con sus respectivos bindings
     foreach($sitio in $iis){
+        Add-Content -Path "C:\Windows\System32\drivers\etc\hosts" -Value "$ip $dominio"
         $nombre = $sitio.Nombre
-        $directorio = $sitio.directorio
+        $directorio = "C:\inetpub\$($sitio.directorio)"
+        New-Item -ItemType "Directory" $directorio | Out-Null
+        $contador = 0
         foreach($binding in $sitio.Bindings){
-            
-        }
-    }
-
-    
-    
-    
-    
-    $numeroSitios = ($servicio.Sites | Measure-Object).Count # Numero de sitios por configurar
-            for($i=0; $i -le $numeroSitios-1;$i++){
-                Write-Host "Creando sitio " $servicio.Sites[$i].Name
-                $bindings = $servicio.Sites[$i].Bindings #Array de objetos
-                $siteName = $servicio.Sites[$i].Name
-                $sitePath = $servicio.Sites[$i].SitePath
-                #Creacion el directorio del sitio
-                while(-not (Test-Path -Path $sitePath)){
-                    Write-Host "Creando directorio " $sitePath
-                    mkdir $sitePath
-                #Revisa todos los binding declarados
-                foreach($bind in $bindings){
-                    $ip = $bind.IP
-                    $protocol = $bind.Protocol
-                    if($ip -eq "" -or $ip -eq $null){
-                        $ip = "*"
-                    }
-                    $binding = $ip + ":" + $bind.Port + ":" + $bind.Host
-                    if($protocol -eq "https"){
-                        #Crea sitio con bindig https
-                        if($bind -eq $bindings[0]){
-                            New-IISSite -Name $siteName -PhysicalPath $sitePath -BindingInformation $binding -Protocol "https"  -Force
-                        }
-                        #Agrega binding http al sitio
-                        else{
-                            New-IISSiteBinding -Name $siteName -BindingInformation $binding -Protocol "https"
-                        }
-                    }
-                    elseif($protocol -eq "http"){
-                        #Crea sitio con bindig http
-                        if($bind -eq $bindings[0]){
-                            New-IISSite -Name $siteName -PhysicalPath $sitePath -BindingInformation $binding -Protocol "http"  -Force
-                        }
-                        #Agrega binding http al sitio
-                        else{
-                            New-IISSiteBinding -Name $siteName -BindingInformation $binding  -Protocol "http" -Force
-                        }
-                    }
+            $dominio = $binding.Dominio
+            $ip = $binding.Interfaz
+            $protocolo = $binding.Protocolo
+            $puerto = $binding.$puerto
+            $webDAV = $binding.WebDAV
+            $bindingInfo = "$($ip):$($puerto):$($dominio)"
+            if($protocolo -eq "https"){
+                $rutaCert = $binding.RutaCertificado
+                if($contador -eq 0){
+                    New-Item "IIS:\AppPools\$nombre" | Out-Null
+                    New-Item "IIS:\Sites\$nombre" -physicalPath $directorio -bindings @{protocol=$protocol;bindingInformation="$($ip):$($puerto):$dominio";sslcertificate=$rutaCert} | Out-Null
+                    $newCert = New-SelfSignedCertificate -DnsName $dominio -CertStoreLocation cert:\LocalMachine\My
+                    Set-ItemProperty "IIS:\Sites\$nombre" -name applicationPool -value $nombre
+                    (Get-WebBinding -Name $nombre -Protocol "https").AddSslCertificate($newCert.GetCertHashString(), "my")
                 }
-}
+                New-IISSiteBinding -Name $dominio -BindingInformation $bindingInfo -Protocol $protocolo
+            }else{
+                if($contador -eq 0){
+                    New-Item "IIS:\AppPools\$nombre" | Out-Null
+                    New-Item "IIS:\Sites\$nombre" -physicalPath $directorio -bindings @{protocol=$protocol;bindingInformation="$($ip):$($puerto):$dominio"} | Out-Null
+                    Set-ItemProperty "IIS:\Sites\$nombre" -name applicationPool -value $nombre                
+                }
+                New-IISSiteBinding -Name $dominio -BindingInformation $bindingInfo -Protocol $protocolo
             }
-            #>
+            Set-Content "$($directorio)\Default.htm" '<h1>Hello IIS</h1>'
+            if($webDAV){
+                New-LocalGroup -Name "DavGroup" | Out-Null
+                Add-LocalGroupMember -Group "DavGroup" -Member $usuario
+                $webDav = "$($directorio)\WebDAV\"
+                New-Item -ItemType "Directory" $webDAV | Out-Null
+                New-WebVirtualDirectory -Site $nombre -Name "WebDAV" -PhysicalPath $webDAV | Out-Null
+                Set-WebConfigurationProperty -Filter '/system.webServer/webdav/authoring' -Location $nombre -Name enabled -Value True 
+                Set-WebConfigurationProperty -Filter '/system.webServer/security/authentication/anonymousAuthentication' -Location $webDAV -Name enabled -Value False 
+                Set-WebConfigurationProperty -Filter '/system.webServer/security/authentication/basicAuthentication' -Location $webDAV -Name enabled -Value True 
+                Add-WebConfiguration -Filter "/system.webServer/webdav/authoringRules" -Location $nombre -Value @{path="*";roles="DavGroup";access="Read,Write,Source"} 
+                icacls $webDAV /grant "DavGroup:(OI)(CI)(F)" | Out-Null
+                Set-WebConfigurationProperty -Filter '/system.webServer/directoryBrowse' -Location $directorio -Name enabled -Value True 
+                Restart-WebItem -PSPath "IIS:\Sites\$nombre"
+            }
+            $contador++
+        }
+        Restart-Service "W3SVC" | Out-Null
+    }
+}
