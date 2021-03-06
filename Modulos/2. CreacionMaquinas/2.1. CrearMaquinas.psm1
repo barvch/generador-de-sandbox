@@ -6,12 +6,11 @@ function CrearMaquinas { param ($maquinas, $rutaRaiz)
     $steps = ([System.Management.Automation.PsParser]::Tokenize($MyInvocation.MyCommand.Definition, [ref]$null) | Where-Object { $_.Type -eq 'Command' -and $_.Content -eq 'Write-ProgressHelper' }).Count * $maquinas.Count
     $stepCounter = 0
     foreach($maquina in $maquinas){
+        $maquina | ConvertTo-Json -depth 5 | Set-Content -Path ".\Recursos\unattend\tmp.json"
         $maquina = New-Object PSCustomObject -Property $maquina
-        Write-Host $maquina
         $hostname = $maquina.Hostname
         $so = $maquina.SistemaOperativo
         $vname = "$($hostname)-$($so)"
-        $credenciales = $maquina.Credenciales
         Write-ProgressHelper -currentOperation "Configurando Maquina En Hyper-V" -StepNumber ($stepCounter++)
         ConfigurarMaquinaHyperV -maquina $maquina -rutaRaiz $rutaRaiz
         Write-ProgressHelper -currentOperation "Creando Disco De Instalacion Rapida" -StepNumber ($stepCounter++)

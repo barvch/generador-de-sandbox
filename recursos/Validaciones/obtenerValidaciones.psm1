@@ -11,11 +11,11 @@ function ObtenerValidaciones { param ($validacionCaracter, $validacionLongitud= 
         $inicioFin = $consecutivos = ".*"
     }
     switch ($validacionCaracter) {
-        alfaNum1 { $caracteres = "^[a-zA-Z0-9-]*$"; $mensajeCaracteres =  "alfanumericos y guion medio (-)"; break}
-        alfaNum2 { $caracteres = "^[a-zA-Z0-9 -]*$"; $mensajeCaracteres =  "alfanumericos, guion medio (-) y espacio ( )"; break}
-        alfaNum3 { $caracteres = "^[a-zA-Z0-9 \.-]*$"; $mensajeCaracteres =  "alfanumericos, guion medio (-), punto (.) y espacio ( )"; break}
-        alfaNum4 { $caracteres = "^[a-zA-Z0-9\.-]*$"; $mensajeCaracteres =  "alfanumericos, guion medio (-) y punto (.)"; break}
-        alfaNum5 { $caracteres = "^[a-zA-Z0-9]*$"; $mensajeCaracteres =  "alfanumericos"; break}
+        alfaNum1 { $caracteres = "^[a-zA-Z0-9-]+$"; $mensajeCaracteres =  "alfanumericos y guion medio (-)"; break}
+        alfaNum2 { $caracteres = "^[a-zA-Z0-9 -]+$"; $mensajeCaracteres =  "alfanumericos, guion medio (-) y espacio ( )"; break}
+        alfaNum3 { $caracteres = "^[a-zA-Z0-9 \.-]+$"; $mensajeCaracteres =  "alfanumericos, guion medio (-), punto (.) y espacio ( )"; break}
+        alfaNum4 { $caracteres = "^[a-zA-Z0-9\.-]+$"; $mensajeCaracteres =  "alfanumericos, guion medio (-) y punto (.)"; break}
+        alfaNum5 { $caracteres = "^[a-zA-Z0-9]+$"; $mensajeCaracteres =  "alfanumericos"; break}
 
         password {$caracteres = "[\x20-\x7E]"; $mensajeCaracteres = "ASCII imprimibles" ; break}
         ip { $caracteres = "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$"; $mensajeCaracteres =  "numericos y punto (.) con un formato de IP valida:`nxxx.xxx.xxx.xxx"; $validacionLongitud = "longitud3"; break}

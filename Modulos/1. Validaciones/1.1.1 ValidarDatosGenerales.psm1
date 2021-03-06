@@ -7,7 +7,7 @@ function ValidarSistemaOperativo { param ($campo = "SistemaOperativo", $sistemaO
 
 function ValidarHostname { param ($campo = "Hostname", $hostname, $so)
     if($so.Contains("Windows")){
-        return ValidarCadenas -campo $campo -valor $hostname -validacionCaracter "alfaNum6" -validacionLongitud "longitud1" -obligatorio $true
+        return ValidarCadenas -campo $campo -valor $hostname -validacionCaracter "alfaNum5" -validacionLongitud "longitud1" -obligatorio $true
     }else{
         return ValidarCadenas -campo $campo -valor $hostname -validacionCaracter "alfaNum1" -validacionLongitud "longitud1" -obligatorio $true
     }

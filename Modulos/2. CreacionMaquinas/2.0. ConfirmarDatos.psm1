@@ -5,19 +5,15 @@ function ConfirmarDatos { param ($maquinas = $maquinas)
         }
     }
     function IteraDiccionario { param ($diccionario, $sangria = 0)
+        if(-not $diccionario.keys){
+            Write-Host -NoNewline $("`t" * $sangria)
+            Write-Host $diccionario
+        }
         foreach($llave in $diccionario.keys){
             $valor = $diccionario[$llave]
             if($valor){
                 Write-Host -NoNewline $("`t" * $sangria)
                 switch -regex ($valor.GetType().Name){
-                    "Object\[\]" {
-                        Write-Host -Nonewline "$($llave): [ "
-                        foreach($elemento in $valor){
-                            Write-Host -NoNewline "$elemento "
-                        }
-                        Write-Host "]"
-                        break
-                    }
                     ".*Object.*" {
                         Write-Host "$($llave):"
                         IteraArreglo -arreglo $valor -sangria ($sangria+1)

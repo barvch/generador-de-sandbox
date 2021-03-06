@@ -1,14 +1,12 @@
-function InstalarServicios { param ($maquina, $rutaRaiz)
-    $hostname = $maquina.Hostname
+function InstalarServicios { param ($maquina)
     $so = $maquina.SistemaOperativo
-    $usuario = $maquina.Credenciales.Usuario
-    $vname = "$($hostname)-$($so)"
     $servicio = $maquina.Servicios
     $winDefender = $servicio.WindowsDefender
     $activeDirectory = $servicio.ActiveDirectory
     $certServices = $servicio.CertificateServices
-    $iis = servicio.IIS
-    
+    $iis = $servicio.IIS
+    $dhcp = $servicio.DHCP
+    $dns = $servicio.DNS
     switch -regex ($so) {
         "Windows*" { 
             #RDP
@@ -23,6 +21,10 @@ function InstalarServicios { param ($maquina, $rutaRaiz)
             }
             if($certServices){ Install-WindowsFeature -Name "AD-Certificate" -IncludeManagementTools }
             if($iis){ Install-WindowsFeature -Name "Web-WebServer" -IncludeManagementTools -IncludeAllSubFeature }
+            if($dhcp){ Install-WindowsFeature -Name "DHCP" -IncludeManagementTools }
+            if($dns){ Install-WindowsFeature -Name "DNS" -IncludeManagementTools }
          }
     }
 }
+$maquina = Get-Content -Raw -Path "C:\Windows\Temp\tmp.json" | ConvertFrom-Json
+InstalarServicios -maquina $maquina

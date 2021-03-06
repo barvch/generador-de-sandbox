@@ -44,27 +44,38 @@ function CrearVHDWindows { param ([string]$WinIso, [string]$VhdFile, $maquina)
     Copy-Item $UnattendFile "$($VirtualWinLetter):\Windows\Panther\unattend.xml" | Out-Null
     Remove-Item $UnattendFile
 
+    #Copiar JSON a la VM
+    Copy-Item -Path ".\Recursos\unattend\tmp.json" "$($VirtualWinLetter):\Windows\Temp" | Out-Null
     # Copiar archivo a C: dentro de la VM
     New-Item -ItemType "Directory" -Path "$($VirtualWinLetter):\sources\`$OEM`$" | Out-Null
     New-Item -ItemType "Directory" -Path "$($VirtualWinLetter):\sources\`$OEM`$\`$1" | Out-Null
-    Copy-Item -Path ".\Recursos\unattend\Windows\servicios.ps1" "$($VirtualWinLetter):\sources\`$OEM`$\`$1" | Out-Null
-
-    # Se deja el archivo en C:\Windows
-    New-Item -ItemType "Directory" -Path "$($VirtualWinLetter):\sources\`$OEM`$\`$`$" | Out-Null
-    New-Item -ItemType "Directory" -Path "$($VirtualWinLetter):\sources\`$OEM`$\`$`$\Setup" | Out-Null
-    New-Item -ItemType "Directory" -Path "$($VirtualWinLetter):\sources\`$OEM`$\`$`$\Setup\Scripts" | Out-Null
-    $lele = "@echo off`n"
-    $cont = 0
-    $msi = $maquina.DatosDependientes.RutaMSI
-    foreach ($ruta in $msi) {
-        Copy-Item $ruta "$($VirtualWinLetter):\sources\`$OEM`$\`$`$\Setup\Scripts\paquete-$cont.msi"
-        $lele += "start /wait C:\sources\`$OEM`$\`$`$\Setup\Scripts\paquete-$cont.msi`n"
-        $cont++
+    Copy-Item -Path ".\Recursos\unattend\Windows\InstalarServiciosWindows.ps1" "$($VirtualWinLetter):\sources\`$OEM`$\`$1" | Out-Null
+    if($maquina.SistemaOperativo -eq "Windows 10"){
+        # Se deja el archivo en C:\Windows
+        New-Item -ItemType "Directory" -Path "$($VirtualWinLetter):\sources\`$OEM`$\`$`$" | Out-Null
+        New-Item -ItemType "Directory" -Path "$($VirtualWinLetter):\sources\`$OEM`$\`$`$\Setup" | Out-Null
+        New-Item -ItemType "Directory" -Path "$($VirtualWinLetter):\sources\`$OEM`$\`$`$\Setup\Scripts" | Out-Null
+        $lele = "@echo off`n"
+        $cont = 0
+        $msi = $maquina.DatosDependientes.RutaMSI
+        foreach ($ruta in $msi) {
+            Copy-Item $ruta "$($VirtualWinLetter):\sources\`$OEM`$\`$`$\Setup\Scripts\paquete-$cont.msi"
+            $lele += "start /wait C:\sources\`$OEM`$\`$`$\Setup\Scripts\paquete-$cont.msi`n"
+            $cont++
+        }
+        #$lele += "RD /S /Q %windir%\Setup\Scripts"
+        #New-Item -ItemType "File" -Path "$($VirtualWinLetter):\sources\`$OEM`$\`$`$\Setup\Scripts\SetupComplete.cmd" | Out-Null
+        Set-Content -Path "$($VirtualWinLetter):\sources\`$OEM`$\`$`$\Setup\Scripts\SetupComplete.cmd" -Value $lele | Out-Null
+        $SetupComplete = "<SynchronousCommand wcm:action=`"add`"> `
+            <CommandLine>C:\sources\$OEM$\$$\Setup\Scripts\SetupComplete.cmd</CommandLine> `
+            <Order>3</Order> `
+            <RequiresUserInput>false</RequiresUserInput> `
+        </SynchronousCommand>"
+        (Get-Content "$UnattendFile").replace('{{MSI}}', $SetupComplete) | Set-Content "$UnattendFile"
+    }else{
+        (Get-Content "$UnattendFile").replace('{{MSI}}', "") | Set-Content "$UnattendFile"
+        Copy-Item -Path ".\Recursos\unattend\Windows\ConfigurarServiciosWindows.psm1" "$($VirtualWinLetter):\Windows\Temp" | Out-Null
     }
-    #$lele += "RD /S /Q %windir%\Setup\Scripts"
-    #New-Item -ItemType "File" -Path "$($VirtualWinLetter):\sources\`$OEM`$\`$`$\Setup\Scripts\SetupComplete.cmd" | Out-Null
-    Set-Content -Path "$($VirtualWinLetter):\sources\`$OEM`$\`$`$\Setup\Scripts\SetupComplete.cmd" -Value $lele | Out-Null
-
     "select disk $disknumber`nselect partition 2`nremove letter=$EfiLetter`nselect partition 4`nremove letter=$VirtualWinLetter`nexit`n" | diskpart | Out-Null
     Dismount-DiskImage -ImagePath $VhdFile | Out-Null
     Dismount-DiskImage -ImagePath $WinIso | Out-Null

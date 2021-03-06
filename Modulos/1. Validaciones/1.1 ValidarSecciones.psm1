@@ -31,7 +31,6 @@ function ValidarDatosDependientes { param ($sistemaOperativo, $llaveActivacion, 
 
 function ValidarServicios { param ( $sistemaOperativo, $maquinaVirtual, $interfaces = "")
     switch -regex ($sistemaOperativo) {
-        "Windows .*" { $adminRemotaCheck = ValidarAdministracionRemota -adminRemota $maquinaVirtual.AdministracionRemota -so $sistemaOperativo }
         "Windows Server 2019" { 
             $activeDirectoryCheck = ValidarActiveDirectory -activeDirectory $maquinaVirtual.Servicios.ActiveDirectory
             $certServicesCheck = ValidarCertServices -certServices $maquinaVirtual.Servicios.CertificateServices
@@ -39,9 +38,14 @@ function ValidarServicios { param ( $sistemaOperativo, $maquinaVirtual, $interfa
             $IISCheck = ValidarIIS -iis $maquinaVirtual.Servicios.IIS -interfaces $interfaces
             $DHCPCheck = ValidarDHCP -dhcp $maquinaVirtual.Servicios.DHCP
             $DNSCheck = ValidarDNS -dns $maquinaVirtual.Servicios.DNS
-            $servicios = [ordered] @{"AdministracionRemota" = $adminRemotaCheck; "CertificateServices" = $certServicesCheck; "WindowsDefender" = $winDefenderCheck; "ActiveDirectory" = $activeDirectoryCheck; "IIS" = $IISCheck; "DHCP" = $DHCPCheck; "DNS" = $DNSCheck }
-            return $servicios
         }
+        "Windows .*" { 
+            $adminRemotaCheck = ValidarAdministracionRemota -adminRemota $maquinaVirtual.AdministracionRemota -so $sistemaOperativo 
+            $servicios = [ordered] @{"AdministracionRemota" = $adminRemotaCheck; "CertificateServices" = $certServicesCheck; "WindowsDefender" = $winDefenderCheck; "ActiveDirectory" = $activeDirectoryCheck; "IIS" = $IISCheck; "DHCP" = $DHCPCheck; "DNS" = $DNSCheck }
+        }
+
         "Ubuntu .*" { $adminRemotaCheck = ValidarAdministracionRemota -adminRemota $maquinaVirtual.AdministracionRemota -so $sistemaOperativo ; break }
     }
+    return $servicios
+
 }

@@ -3,6 +3,7 @@
     "MaquinasVirtuales": [
         {
             "SistemaOperativo": "Windows Server 2019",
+            "TipoAmbiente": "",
             "Hostname": "Contoso",
             "LlaveActivacion": "xxxx-xxxx-xxxx-xxxx-xxxx",
             "DiscosVirtuales": [15,20],

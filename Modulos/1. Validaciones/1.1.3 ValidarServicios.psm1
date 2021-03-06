@@ -72,10 +72,10 @@ function ValidarIIS { param ($campo = "IIS.Sitios", $iis, $interfaces)
                     exit
                 }
                 $bindingProtocoloCheck = ValidarCatalogos -catalogo $protocolos -campo "$campo.Bindings.Protocolo" -valor $binding.Protocolo -obligatorio $true
-                if($bindingProtocoloCheck -eq "https"){
-                    $bindingCertCheck = ValidarRuta -campo "$campo.Bindings.RutaCertificado" -valor $binding.RutaCertificado -obligatorio $true
-                    #Get-PfxCertificate -FilePath "E:\Proyecto Final\Windows Server 2019\certificado.pfx" -NoPromptForPassword
-                }
+               # if($bindingProtocoloCheck -eq "https"){
+               #     $bindingCertCheck = ValidarRuta -campo "$campo.Bindings.RutaCertificado" -valor $binding.RutaCertificado -obligatorio $true
+               #     #Get-PfxCertificate -FilePath "E:\Proyecto Final\Windows Server 2019\certificado.pfx" -NoPromptForPassword
+               # }
                 $bindingPuertoCheck = ValidarArregloDato -campo "$campo.Bindings.Puerto" -valor $binding.Puerto -tipoDato "Int32"
                 if($bindingPuertoCheck){
                     if(($bindingProtocoloCheck -eq "http" -and $bindingPuertoCheck -eq 443) -or ($bindingProtocoloCheck -eq "https" -and $bindingPuertoCheck -eq 80)){
@@ -98,7 +98,7 @@ function ValidarIIS { param ($campo = "IIS.Sitios", $iis, $interfaces)
                 $WebDAVCheck = ValidarArregloDato -campo "$campo.Bindings.WebDAV" -valor $binding.WebDAV -tipoDato "Boolean" 
                 $dominiosBindings += $bindingDominioCheck
                 ValidarNombreUnico -campo "$campo.Bindings.Dominio" -arreglo $dominiosBindings
-                $bindingObject = [ordered] @{"Dominio" = $bindingDominioCheck; "Interfaz" = $ipBindingCheck; "Protocolo" = $bindingProtocoloCheck; "Puerto" = $bindingPuertoCheck; "RutaCertificado" = $bindingCertCheck; "WebDAV" = $WebDAVCheck}
+                $bindingObject = [ordered] @{"Dominio" = $bindingDominioCheck; "Interfaz" = $ipBindingCheck; "Protocolo" = $bindingProtocoloCheck; "Puerto" = $bindingPuertoCheck; "WebDAV" = $WebDAVCheck} #"RutaCertificado" = $bindingCertCheck; 
                 $bindings += $bindingObject
             }
             $nombres += $sitioNombreCheck
@@ -187,25 +187,25 @@ function ValidarDNS { param ($campo = "DNS.Zonas", $dns)
             }
             foreach($registro in $dns.Registros){
                 if($tipoZonaCheck -eq "Forward"){
-                    $tipoRegistroCheck = ValidarCatalogos -catalogo $forwardRecords -campo "$campo.Forward.Registros.Tipo" -valor $registro.Tipo -obligatorio $true
+                    $tipoRegistroCheck = ValidarCatalogos -catalogo $forwardRecords -campo "$campo.Forward.Registros.Tipo" -valor $registro.Tipo -obligatorio $true | Out-Null
                     if($tipoRegistroCheck -eq "A"){
-                        ValidarCadenas -campo "$campo.Forward.Registros.A.Hostname" -valor $registro.Hostname -validacionCaracter "dominio" -obligatorio $true
-                        ValidarCadenas -campo "$campo.Forward.Registros.A.IP" -valor $registro.IP -validacionCaracter "ip" -obligatorio $true
+                        ValidarCadenas -campo "$campo.Forward.Registros.A.Hostname" -valor $registro.Hostname -validacionCaracter "dominio" -obligatorio $true | Out-Null
+                        ValidarCadenas -campo "$campo.Forward.Registros.A.IP" -valor $registro.IP -validacionCaracter "ip" -obligatorio $true | Out-Null
                         ValidarArregloDato -campo "$campo.Forward.Registros.A.PTR" -valor $registro.PTR -tipoDato "Boolean"
                     }elseif($tipoRegistroCheck -eq "MX"){
-                        ValidarCadenas -campo "$campo.Forward.Registros.MX.ChildDomain" -valor $registro.ChildDomain -validacionCaracter "dominio" -obligatorio $true
-                        ValidarCadenas -campo "$campo.Forward.Registros.MX.FQDN" -valor $registro.FQDN -validacionCaracter "dominio" -obligatorio $true
+                        ValidarCadenas -campo "$campo.Forward.Registros.MX.ChildDomain" -valor $registro.ChildDomain -validacionCaracter "dominio" -obligatorio $true | Out-Null
+                        ValidarCadenas -campo "$campo.Forward.Registros.MX.FQDN" -valor $registro.FQDN -validacionCaracter "dominio" -obligatorio $true | Out-Null
                     }
                 }else{
-                    $tipoRegistroCheck = ValidarCatalogos -catalogo $reverseRecords -campo "$campo.Reverse.Registros.Tipo" -valor $registro.Tipo -obligatorio $true
+                    $tipoRegistroCheck = ValidarCatalogos -catalogo $reverseRecords -campo "$campo.Reverse.Registros.Tipo" -valor $registro.Tipo -obligatorio $true | Out-Null
                     if($tipoRegistroCheck -eq "PTR"){
-                        ValidarCadenas -campo "$campo.Reverse.Registros.PTR.IP" -valor $registro.IP -validacionCaracter "ip" -obligatorio $true
-                        ValidarCadenas -campo "$campo.Reverse.Registros.PTR.Hostname" -valor $registro.Hostname -validacionCaracter "dominio" -obligatorio $true
+                        ValidarCadenas -campo "$campo.Reverse.Registros.PTR.IP" -valor $registro.IP -validacionCaracter "ip" -obligatorio $true | Out-Null
+                        ValidarCadenas -campo "$campo.Reverse.Registros.PTR.Hostname" -valor $registro.Hostname -validacionCaracter "dominio" -obligatorio $true | Out-Null
                     }
                 }
                 if($tipoRegistroCheck -eq"CNAME"){
-                    ValidarCadenas -campo "$campo.Registros.CNAME.Alias" -valor $registro.Alias -validacionCaracter "alfaNum1" -validacionLongitud "longitud1" -obligatorio $true
-                    ValidarCadenas -campo "$campo.Registros.CNAME.FQDN" -valor $registro.FQDN -validacionCaracter "dominio" -obligatorio $true
+                    ValidarCadenas -campo "$campo.Registros.CNAME.Alias" -valor $registro.Alias -validacionCaracter "alfaNum1" -validacionLongitud "longitud1" -obligatorio $true | Out-Null
+                    ValidarCadenas -campo "$campo.Registros.CNAME.FQDN" -valor $registro.FQDN -validacionCaracter "dominio" -obligatorio $true | Out-Null
                 }
                 $registroCheck = [ordered] @{}
                 $registro.psobject.properties | Foreach-Object { $registroCheck[$_.Name] = $_.Value }
