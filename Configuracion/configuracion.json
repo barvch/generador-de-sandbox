@@ -1,13 +1,13 @@
 {
-    "Root": "F:\\SanboxTest",
+    "Root": "E:\\SanboxTest",
     "MaquinasVirtuales": [
         {
             "SistemaOperativo": "Windows Server 2019",
             "TipoAmbiente": "Windows Server 2019 Datacenter Evaluation",
-            "Hostname": "michisadddd",
+            "Hostname": "michifelizzz",
             "DiscosVirtuales": [20],
             "Procesadores": 2,
-            "RutaISO": "F:\\WindowsServer2019.iso",
+            "RutaISO": "E:\\SanboxTest\\WindowsServer2019_SERVER_EVAL_x64FRE_en-us_1.iso",
             "MemoriaRAM": {
                 "Tipo": "Static",
                 "Memoria": 1.0
@@ -109,7 +109,7 @@
                     {
                         "Tipo": "Forward",
                         "Nombre": "ZonaUno",
-                        "Backup": "F:\\Prueba.dns",
+                        "Backup": "E:\\SanboxTest\\Prueba.dns",
                         "Registros": [
                             {
                                 "Tipo": "A",
