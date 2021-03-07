@@ -1,4 +1,4 @@
-function InstalarIIS {
+function ConfigurarIIS {
     #Realiza la creación de sitios con sus respectivos bindings
     foreach($sitio in $maquina.Servicios.IIS){
         Add-Content -Path "C:\Windows\System32\drivers\etc\hosts" -Value "$ip $dominio"
@@ -51,7 +51,39 @@ function InstalarIIS {
         Restart-Service "W3SVC" | Out-Null
     }
 }
-function InstalarDHCP {
+function ConfigurarDNS {
+    foreach($zona in $maquina.DNS){
+        if($zona.Backup){
+            $nombreArchivo = ($zona.Backup).Split("\")[-1]
+            Copy-Item "C:\sources\`$OEM`$\`$1\$nombreArchivo" "%systemroot%\system32\dns"
+            $file = $nombreArchivo
+        }
+        if($zona.Tipo -eq "Forward"){
+            $nombre = $zona.Nombre
+            if(-not $zona.Backup){$file = "$($nombre).dns"}
+            Add-DnsServerPrimaryZone -Name $nombre -ZoneFile $file
+            foreach($record in $zona.Registros){
+                switch ($record.Tipo) {
+                    A { Add-DnsServerResourceRecordA -Name $record.Hostname -ZoneName $nombre -AllowUpdateAny -IPv4Address $record.IP -CreatePtr; break}
+                    CNAME { Add-DnsServerResourceRecordCName -Name $record.Alias -HostNameAlias $record.FQDN -ZoneName $nombre; break }
+                    MX { Add-DnsServerResourceRecordMX -Name $record.ChildDomain -MailExchange $record.FQDN -ZoneName $nombre; break }
+                }
+            }
+        }else{
+            $netID = $zona.NetID
+            if(-not $zona.Backup){$file = "$($netID).in-addr.arpa.dns"}
+            Add-DnsServerPrimaryZone -NetworkID $netID -ZoneFile $file
+            $netNombre = "$($netID.Split('/')[0]).in-addr.arpa"
+            foreach($record in $zona.Registros){
+                switch ($record.Tipo) {
+                    PTR { Add-DnsServerResourceRecordPtr -Name $record.Host -ZoneName $netNombre -AllowUpdateAny -PtrDomainName $record.Hostname; break}
+                    CNAME { Add-DnsServerResourceRecordPtr -Name $record.Alias -HostNameAlias $record.FQDN -ZoneName $netNombre; break }
+                }
+            }
+        }
+    }
+}
+function ConfigurarDHCP {
     foreach($scope in $maquina.Servicios.DHCP){
         $mascaraRed = $scope.Rango.MascaraRed
         $rangoInicio = $scope.Rango.Inicio
@@ -82,8 +114,8 @@ function InstalarDHCP {
 }
 
 $maquina = Get-Content -Raw -Path "C:\sources\`$OEM`$\`$1\tmp.json" | ConvertFrom-Json
-$usuario = $maquina.Credenciales.Usuario
-if($maquina.Servicios.IIS){ InstalarIIS }
-if($maquina.Servicios.DHCP){ InstalarDHCP }
+if($maquina.Servicios.IIS){ ConfigurarIIS }
+if($maquina.Servicios.DNS){ ConfigurarDNS }
+if($maquina.Servicios.DHCP){ ConfigurarDHCP }
 Unregister-ScheduledTask -TaskName "ConfigurarServicios"
-#Remove-Item -Path "C:\sources\`$OEM`$" | Out-Null
+Remove-Item -Path "C:\sources\`$OEM`$" | Out-Null

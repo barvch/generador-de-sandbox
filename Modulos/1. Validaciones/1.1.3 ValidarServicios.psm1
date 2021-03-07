@@ -2,7 +2,7 @@
 . ".\Recursos\Validaciones\catalogos.ps1"
 
 function ValidarAdministracionRemota { param ($servicio = "AdministracionRemota", $adminRemota, $so)
-$adminRemotaCheck = ValidarCatalogos -catalogo $tiposAdminRemota -campo $servicio -valor $adminRemota
+    $adminRemotaCheck = ValidarCatalogos -catalogo $tiposAdminRemota -campo $servicio -valor $adminRemota
     if(-not $adminRemotaCheck){
         if($so.Contains("Windows")){
             $adminRemotaCheck = "RDP"
@@ -52,7 +52,7 @@ function ValidarIIS { param ($campo = "IIS.Sitios", $iis, $interfaces)
         $sitiosCheck = $directorios = $nombres = @()
         foreach($sitio in $iis){
             $sitioCheck = @()
-            $sitioNombreCheck = ValidarCadenas -campo "$campo.Nombre" -valor $sitio.Nombre -validacionCaracter "alfaNum4" -validacionLongitud "longitud6" -obligatorio $true
+            $sitioNombreCheck = ValidarCadenas -campo "$campo.Nombre" -valor $sitio.Nombre -validacionCaracter "alfaNum4" -validacionLongitud "longitud5" -obligatorio $true
             $sitioDirectorioCheck = ValidarCadenas -campo "$campo.Directorio" -valor $sitio.Directorio -validacionCaracter "alfaNum4" -validacionLongitud "longitud6"    
             if(-not $sitioDirectorioCheck){
                 $sitioDirectorioCheck = $sitioNombreCheck
@@ -148,19 +148,14 @@ function ValidarDHCP { param ($campo = "DHCP.Scopes", $dhcp)
                     }
                 }
             }
-            ValidarTiempo -campo "$campo.$($nombreCheck).Lease" -tiempo $scope.Lease -obligatorio $true | Out-Null
-            ValidarCadenas -campo "$campo.$($nombreCheck).Gateway" -valor $scope.Gateway -validacionCaracter "ip" | Out-Null
-            ValidarCadenas -campo "$campo.$($nombreCheck).DNS" -valor $scope.DNS -validacionCaracter "ip" | Out-Null
+            $leaseCheck = ValidarTiempo -campo "$campo.$($nombreCheck).Lease" -tiempo $scope.Lease -obligatorio $true
+            $gatewayCheck = ValidarCadenas -campo "$campo.$($nombreCheck).Gateway" -valor $scope.Gateway -validacionCaracter "ip"
+            $dnsCheck = ValidarCadenas -campo "$campo.$($nombreCheck).DNS" -valor $scope.DNS -validacionCaracter "ip"
             $nombres += $nombreCheck
             $rangoUnico += (ValidarRango -ipInicio $ipInicioCheck -mascara $mascaraCheck -campo "$campo.Rango" -unico $true) 
-            $scopeCheck = ([ordered] @{})
-            $scope.psobject.properties | Foreach-Object { $scopeCheck[$_.Name] = $_.Value }
-            $rangoCheck = [ordered] @{}
-            $scope.Rango.psobject.properties | Foreach-Object { $rangoCheck[$_.Name] = $_.Value }
-            $scopeCheck["Rango"] = $rangoCheck
-            $exclusionesCheck = [ordered] @{}
-            $scope.Exclusiones.psobject.properties | Foreach-Object { $exclusionesCheck[$_.Name] = $_.Value }
-            $scopeCheck["Exclusiones"] = $exclusionesCheck
+            $scopeCheck = [ordered] @{"Nombre" = $nombreCheck; "Rango" = [ordered]@{"Inicio" = $ipInicioCheck; "Fin" = $ipFinCheck}; "MascaraRed" = $mascaraCheck;`
+            "Exclusiones" = [ordered]@{"Tipo" = $tipoExclusion; "Inicio" = $ipInicioExCheck; "Fin" = $ipFinExCheck; "IP" = $ipExCheck}; "Lease" = $leaseCheck; `
+            "Gateway" = $gatewayCheck; "DNS" = $dnsCheck}
             $dhcpCheck += $scopeCheck
         }
         ValidarNombreUnico -campo "$campo.Nombre" -arreglo $nombres
@@ -173,53 +168,69 @@ function ValidarDHCP { param ($campo = "DHCP.Scopes", $dhcp)
 
 function ValidarDNS { param ($campo = "DNS.Zonas", $dns)
     if($dns){
-        $registros = $nombres = $backups = @()
+        $zonas = $netIDs  = $nombres = $backups = @()
         foreach($zona in $dns){
+            $registros = @()
             $tipoZonaCheck = ValidarCatalogos -catalogo $tiposZonas -campo "$campo.Zonas.Tipo" -valor $zona.Tipo -obligatorio $true
-            if(-not $zona.Backup){
-                if($tipoZonaCheck -eq "Forward"){
-                    $nombreZonaCheck = ValidarCadenas -campo "$campo.Nombre" -valor $zona.Nombre -validacionCaracter "alfaNum1" -validacionLongitud "longitud1" -obligatorio $true
-                }else{
-                    ValidarCadenas -campo "$campo.NetID" -valor $zona.NetID -validacionCaracter "netID" -obligatorio $true
-                }
-            }else{
-                $backupZonaCheck =  ValidarRuta -campo "$campo.Backup" -valor $zona.Backup
-            }
-            foreach($registro in $dns.Registros){
-                if($tipoZonaCheck -eq "Forward"){
-                    $tipoRegistroCheck = ValidarCatalogos -catalogo $forwardRecords -campo "$campo.Forward.Registros.Tipo" -valor $registro.Tipo -obligatorio $true | Out-Null
-                    if($tipoRegistroCheck -eq "A"){
-                        ValidarCadenas -campo "$campo.Forward.Registros.A.Hostname" -valor $registro.Hostname -validacionCaracter "dominio" -obligatorio $true | Out-Null
-                        ValidarCadenas -campo "$campo.Forward.Registros.A.IP" -valor $registro.IP -validacionCaracter "ip" -obligatorio $true | Out-Null
-                        ValidarArregloDato -campo "$campo.Forward.Registros.A.PTR" -valor $registro.PTR -tipoDato "Boolean"
-                    }elseif($tipoRegistroCheck -eq "MX"){
-                        ValidarCadenas -campo "$campo.Forward.Registros.MX.ChildDomain" -valor $registro.ChildDomain -validacionCaracter "dominio" -obligatorio $true | Out-Null
-                        ValidarCadenas -campo "$campo.Forward.Registros.MX.FQDN" -valor $registro.FQDN -validacionCaracter "dominio" -obligatorio $true | Out-Null
+            $backupZonaCheck = ValidarRuta -campo "$campo.Backup" -valor $zona.Backup
+            if($tipoZonaCheck -eq "Forward"){
+                $nombreZonaCheck = ValidarCadenas -campo "$campo.Nombre" -valor $zona.Nombre -validacionCaracter "alfaNum1" -validacionLongitud "longitud1" -obligatorio $true
+                foreach($registro in $zona.Registros){
+                    $tipoRegistroCheck = ValidarCatalogos -catalogo $forwardRecords -campo "$campo.Forward.Registros.Tipo" -valor $registro.Tipo -obligatorio $true
+                    switch ($tipoRegistroCheck) {
+                        A { 
+                            ValidarCadenas -campo "$campo.Forward.Registros.A.Hostname" -valor $registro.Hostname -validacionCaracter "dominio" -obligatorio $true | Out-Null
+                            ValidarCadenas -campo "$campo.Forward.Registros.A.IP" -valor $registro.IP -validacionCaracter "ip" -obligatorio $true | Out-Null
+                            $registroCheck = [ordered] @{"Tipo" = $tipoRegistroCheck; "Hostname" = $registro.Hostname; "IP" = $registro.IP}
+                            break
+                        }
+                        MX {
+                            ValidarCadenas -campo "$campo.Forward.Registros.MX.ChildDomain" -valor $registro.ChildDomain -validacionCaracter "dominio" -obligatorio $true | Out-Null
+                            ValidarCadenas -campo "$campo.Forward.Registros.MX.FQDN" -valor $registro.FQDN -validacionCaracter "dominio" -obligatorio $true | Out-Null
+                            $registroCheck = [ordered] @{"Tipo" = $tipoRegistroCheck; "ChildDomain" = $registro.ChildDomain; "FQDN" = $registro.FQND}
+                            break
+                            }
+                        CNAME {
+                            ValidarCadenas -campo "$campo.Registros.CNAME.Alias" -valor $registro.Alias -validacionCaracter "alfaNum1" -validacionLongitud "longitud1" -obligatorio $true | Out-Null
+                            ValidarCadenas -campo "$campo.Registros.CNAME.FQDN" -valor $registro.FQDN -validacionCaracter "dominio" -obligatorio $true | Out-Null
+                            $registroCheck = [ordered] @{"Tipo" = $tipoRegistroCheck; "Alias" = $registro.Alias; "FQDN" = $registro.FQND}
+                            break
+                        }
                     }
-                }else{
-                    $tipoRegistroCheck = ValidarCatalogos -catalogo $reverseRecords -campo "$campo.Reverse.Registros.Tipo" -valor $registro.Tipo -obligatorio $true | Out-Null
-                    if($tipoRegistroCheck -eq "PTR"){
-                        ValidarCadenas -campo "$campo.Reverse.Registros.PTR.IP" -valor $registro.IP -validacionCaracter "ip" -obligatorio $true | Out-Null
-                        ValidarCadenas -campo "$campo.Reverse.Registros.PTR.Hostname" -valor $registro.Hostname -validacionCaracter "dominio" -obligatorio $true | Out-Null
-                    }
+                    $registros += $registroCheck
                 }
-                if($tipoRegistroCheck -eq"CNAME"){
-                    ValidarCadenas -campo "$campo.Registros.CNAME.Alias" -valor $registro.Alias -validacionCaracter "alfaNum1" -validacionLongitud "longitud1" -obligatorio $true | Out-Null
-                    ValidarCadenas -campo "$campo.Registros.CNAME.FQDN" -valor $registro.FQDN -validacionCaracter "dominio" -obligatorio $true | Out-Null
-                }
-                $registroCheck = [ordered] @{}
-                $registro.psobject.properties | Foreach-Object { $registroCheck[$_.Name] = $_.Value }
-                $registros += $registroCheck
-            }
             $nombres += $nombreZonaCheck
+            $zonaCheck = [ordered] @{"Tipo" = $tipoZonaCheck; "Nombre" = $nombreZonaCheck; "Backup" = $backupZonaCheck; "Registros" = $registros}
+            }else{
+                $netIDCheck = ValidarCadenas -campo "$campo.NetID" -valor $zona.NetID -validacionCaracter "netID" -obligatorio $true
+                foreach($registro in $zona.Registros){
+                    $tipoRegistroCheck = ValidarCatalogos -catalogo $reverseRecords -campo "$campo.Reverse.Registros.Tipo" -valor $registro.Tipo -obligatorio $true
+                    switch ($tipoRegistroCheck) {
+                        PTR { 
+                            ValidarCadenas -campo "$campo.Reverse.Registros.PTR.IP" -valor $registro.Host -validacionCaracter "host" -obligatorio $true | Out-Null
+                            ValidarCadenas -campo "$campo.Reverse.Registros.PTR.Hostname" -valor $registro.Hostname -validacionCaracter "dominio" -obligatorio $true | Out-Null
+                            $registroCheck = [ordered] @{"Tipo" = $tipoRegistroCheck; "Host" = $registro.Host; "IP" = $registro.IP}
+                            break
+                        }
+                        CNAME {
+                            ValidarCadenas -campo "$campo.Registros.CNAME.Alias" -valor $registro.Alias -validacionCaracter "alfaNum1" -validacionLongitud "longitud1" -obligatorio $true | Out-Null
+                            ValidarCadenas -campo "$campo.Registros.CNAME.FQDN" -valor $registro.FQDN -validacionCaracter "dominio" -obligatorio $true | Out-Null
+                            $registroCheck = [ordered] @{"Tipo" = $tipoRegistroCheck; "Alias" = $registro.Alias; "FQDN" = $registro.FQND}
+                            break
+                        }
+                    }
+                    $registros += $registroCheck
+                }
+                $netIDs += $netIDCheck
+                $zonaCheck = [ordered] @{"Tipo" = $tipoZonaCheck; "NetID" = $netIDCheck; "Backup" = $backupZonaCheck; "Registros" = $registros}
+            }
             $backups += $backupZonaCheck
-            $zonaCheck = [ordered] @{}
-            $zona.psobject.properties | Foreach-Object { $zonaCheck[$_.Name] = $_.Value }
-            $zonaCheck["Registros"] = $registros
+            $zonas += $zonaCheck
         }
-        ValidarNombreUnico -campo "$campo.Nombre" -arreglo $nombres
-        ValidarNombreUnico -campo "$campo.Backup" -arreglo $backups
-        return $zonaCheck
+    ValidarNombreUnico -campo "$campo.Nombre" -arreglo $nombres
+    ValidarNombreUnico -campo "$campo.Backup" -arreglo $backups
+    ValidarNombreUnico -campo "$campo.NetID" -arreglo $netIDs
+    return $zonas
     }else{
         return ""
     }

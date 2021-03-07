@@ -22,6 +22,7 @@ function ObtenerValidaciones { param ($validacionCaracter, $validacionLongitud= 
         llaveActivacion { $caracteres = "^([A-Za-z0-9]{5}-){4}[A-Za-z0-9]{5}$"; $mensajeCaracteres = "alfanumericos y guion medio (-) con el siguiente formato:`nxxxxx-xxxxx-xxxxx-xxxxx-xxxxx"; $validacionLongitud = "longitud4"; break}
         dominio { $caracteres = "([a-zA-Z0-9]{5,15}\.){1,3}"; $mensajeCaracteres = "alfanumericos, guion medio (-) y espacio con el siguiente formato:`ncontoso.local"; $validacionLongitud = "longitud5"; $inicioFin = "^[A-Za-z].*[A-Za-z]$";break}
         netID { $caracteres = "(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}0\/(24|16|8)$"; $mensajeCaracteres =  "numericos y punto (.) con un formato de NetID valida:`nxxx.xxx.xxx.0/(24|16|8)"; break}
+        host {$caracteres = "^([1-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$"; $mensajeCaracteres = "entre 1 y 255"; break}
 
     }
     switch ($validacionLongitud) {
@@ -181,7 +182,7 @@ function ValidarRango { param ( $ipInicio, $ipFin = "", $mascara, $campo, $unico
 }
 function ValidarTiempo { param ($campo, $tiempo, $obligatorio=$false)
     DatoObligatorio -obligatorio $obligatorio -campo $campo -valor $tiempo
-    if($tiempo -match "[0-9]{3}.([0-1][0-9]|2[0-3]):[0-5][0-9]"){
+    if($tiempo -match "[0-9]{3}\.([0-1][0-9]|2[0-3]):[0-5][0-9]"){
         if($tiempo -match "000.00.*" ){
             Write-Host "El campo $campo debe tener un valor minimo de 000.01:00"
             exit

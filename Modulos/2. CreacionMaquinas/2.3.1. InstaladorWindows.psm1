@@ -81,6 +81,7 @@ function CrearVHDWindows { param ([string]$WinIso, [string]$VhdFile, $maquina)
         (Get-Content "$UnattendFile").replace('{{MSI}}', "") | Set-Content "$UnattendFile"
         (Get-Content "$UnattendFile").replace('{{AdminAccount}}', $adminAcc) | Set-Content "$UnattendFile"
         Copy-Item -Path ".\Recursos\unattend\Windows\ConfigurarServiciosWindows.ps1" "$($VirtualWinLetter):\sources\`$OEM`$\`$1" | Out-Null
+        if($maquina.Servicios.DNS){foreach($zona in $maquina.Servicios.DNS){if($zona.Backup){Copy-Item -Path $zona.Backup "C:\sources\`$OEM`$\`$1"}}}
     }
     # Se aplican los cambios dentro del xml 
     Copy-Item $UnattendFile "$($VirtualWinLetter):\Windows\Panther\unattend.xml" | Out-Null
