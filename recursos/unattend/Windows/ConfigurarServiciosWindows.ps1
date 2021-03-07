@@ -112,10 +112,13 @@ function ConfigurarDHCP {
         }
     }
 }
-
+function ConfigurarAD {
+    Install-ADDSForest -DomainName $activeDirectory.Dominio -DomainNetbiosName $activeDirectory.Netbios -DomainMode $activeDirectory.DomainMode -ForestMode $activeDirectory.ForestMode -Force -SafeModeAdministratorPassword (ConvertTo-SecureString -String $maquina.Credenciales.Contrasena -AsPlainText -Force)
+}
 $maquina = Get-Content -Raw -Path "C:\sources\`$OEM`$\`$1\tmp.json" | ConvertFrom-Json
 if($maquina.Servicios.IIS){ ConfigurarIIS }
 if($maquina.Servicios.DNS){ ConfigurarDNS }
 if($maquina.Servicios.DHCP){ ConfigurarDHCP }
+if($maquina.Servicios.ActiveDirectory){ ConfigurarAD }
 Unregister-ScheduledTask -TaskName "ConfigurarServicios"
 Remove-Item -Path "C:\sources\`$OEM`$" | Out-Null

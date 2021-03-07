@@ -46,13 +46,10 @@ switch -regex ($so) {
             Add-DHCPServerSecurityGroup
          }
         if($dns){ Install-WindowsFeature -Name "DNS" -IncludeManagementTools }
-        if($activeDirectory){ 
-            Install-WindowsFeature -Name "AD-Domain-Services" -IncludeManagementTools 
-            Install-ADDSForest -DomainName $activeDirectory.Dominio -DomainNetbiosName $activeDirectory.Netbios -DomainMode $activeDirectory.DomainMode -ForestMode $activeDirectory.ForestMode -Force -SafeModeAdministratorPassword (ConvertTo-SecureString -String $maquina.Credenciales.Contrasena -AsPlainText -Force)
-        }
+        if($activeDirectory){ Install-WindowsFeature -Name "AD-Domain-Services" -IncludeManagementTools }
      }
 }
 $taskAction = New-ScheduledTaskAction -Execute "PowerShell.exe" -Argument "-file C:\sources\`$OEM`$\`$1\ConfigurarServiciosWindows.ps1"
 $trigger = New-ScheduledTaskTrigger -AtStartup 
-Register-ScheduledTask -TaskName "ConfigurarServicios" -Trigger $trigger -Action $taskAction
+Register-ScheduledTask -TaskName "ConfigurarServicios" -Trigger $trigger -Action $taskAction -User "Administrator"
 Restart-Computer -Force
