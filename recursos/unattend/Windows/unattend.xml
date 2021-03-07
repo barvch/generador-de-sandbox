@@ -36,6 +36,7 @@
         <ProtectYourPC>1</ProtectYourPC>
       </OOBE>
       <UserAccounts>
+     {{AdminAccount}}
         <LocalAccounts>
           <LocalAccount wcm:action="add">
             <Password>

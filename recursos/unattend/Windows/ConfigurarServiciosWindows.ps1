@@ -51,7 +51,39 @@ function InstalarIIS {
         Restart-Service "W3SVC" | Out-Null
     }
 }
-$maquina = Get-Content -Raw -Path "C:\Windows\Temp\tmp.json" | ConvertFrom-Json
+function InstalarDHCP {
+    foreach($scope in $maquina.Servicios.DHCP){
+        $mascaraRed = $scope.Rango.MascaraRed
+        $rangoInicio = $scope.Rango.Inicio
+        Add-DhcpServerv4Scope -name $scope.Nombre -StartRange $rangoInicio -EndRange $scope.Rango.Fin -SubnetMask $mascaraRed -LeaseDuration "$($scope.Lease):00" -State Active
+        if($scope.Exclusiones){
+            $ipSplit = $rangoInicio.Split(".")
+            switch -regex ($mascaraRed) {
+                ("255.255.255.0") { $rango = 0,1,2; $padding = ".0" ; break}
+                ("255.255.0.0") { $rango = 0,1 ; $padding = ".0.0"; break}
+                ("255.0.0.0") { $rango = 0 ; $padding = ".0.0.0"; break}
+            }
+            $netID = "$($ipSplit[$rango] -join ".")$padding"
+            if($scope.Exclusiones.Tipo -eq "Unica"){
+                $inicio = $fin = $scope.Exclusiones.IP
+            }else{
+                $inicio = $scope.Exclusiones.Inicio
+                $fin = $scope.Exclusiones.Fin
+            }
+                Add-DhcpServerv4ExclusionRange -ScopeID $netID -StartRange $inicio -EndRange $fin
+        }
+        if($scope.DNS){
+            Set-DhcpServerv4OptionValue -ScopeID $netID -DnsServer $scope.DNS
+        }
+        if($scope.Gateway){
+            Set-DhcpServerv4OptionValue -ScopeID $netID -Router $scope.Gateway
+        }
+    }
+}
+
+$maquina = Get-Content -Raw -Path "C:\sources\`$OEM`$\`$1\tmp.json" | ConvertFrom-Json
 $usuario = $maquina.Credenciales.Usuario
 if($maquina.Servicios.IIS){ InstalarIIS }
+if($maquina.Servicios.DHCP){ InstalarDHCP }
 Unregister-ScheduledTask -TaskName "ConfigurarServicios"
+#Remove-Item -Path "C:\sources\`$OEM`$" | Out-Null

@@ -16,18 +16,18 @@ function CrearVHDWindows { param ([string]$WinIso, [string]$VhdFile, $maquina)
       (Get-Content "$rutaXML").replace('{{llaveActivacion}}', $llaveActivacion) | Set-Content "$rutaXML"
       return $rutaXML
     }
-    $MountResult = Mount-DiskImage -ImagePath $WinIso -StorageType ISO -PassThru
-    $DriveLetter = ($MountResult | Get-Volume).DriveLetter
-    #$DriveLetter = "I"
+
+    #$MountResult = Mount-DiskImage -ImagePath $WinIso -StorageType ISO -PassThru
+    #$DriveLetter = ($MountResult | Get-Volume).DriveLetter
+    $DriveLetter = "I"
     $WimFile = "$($DriveLetter):\sources\install.wim"
-    $tipoAmbiente = $maquina.DatosDependientes.TipoAmbiente
-
-    if($tipoAmbiente[2] -match "[0-9]"){
-        $WimIdx = -join ($tipoAmbiente[1..2])
-    }else{
-        $WimIdx = $tipoAmbiente[1]
-    }
-
+    #$tipoAmbiente = $maquina.DatosDependientes.TipoAmbiente
+    #if($tipoAmbiente[2] -match "[0-9]"){
+    #    $WimIdx = -join ($tipoAmbiente[1..2])
+    #}else{
+    #    $WimIdx = $tipoAmbiente[1]
+    #}
+    $WimIdx = 2
     [char] $VirtualWinLetter = $DriveLetter
     $VirtualWinLetter = [byte] $VirtualWinLetter + 1
     Mount-DiskImage -ImagePath $VhdFile | Out-Null
@@ -41,41 +41,52 @@ function CrearVHDWindows { param ([string]$WinIso, [string]$VhdFile, $maquina)
     Invoke-Expression "$($VirtualWinLetter):\Windows\System32\bcdboot.exe $($VirtualWinLetter):\Windows /f uefi /s $($EfiLetter):" | Out-Null
     Invoke-Expression "bcdedit /store $($EfiLetter):\EFI\Microsoft\Boot\BCD" | Out-Null
     New-Item -ItemType "directory" -Path "$($VirtualWinLetter):\Windows\Panther\" | Out-Null
-    Copy-Item $UnattendFile "$($VirtualWinLetter):\Windows\Panther\unattend.xml" | Out-Null
-    Remove-Item $UnattendFile
-
-    #Copiar JSON a la VM
-    Copy-Item -Path ".\Recursos\unattend\tmp.json" "$($VirtualWinLetter):\Windows\Temp" | Out-Null
-    # Copiar archivo a C: dentro de la VM
+    
+    # Se crean los folders de trabajo dentro la VM:
     New-Item -ItemType "Directory" -Path "$($VirtualWinLetter):\sources\`$OEM`$" | Out-Null
     New-Item -ItemType "Directory" -Path "$($VirtualWinLetter):\sources\`$OEM`$\`$1" | Out-Null
+
+    # Se copia el JSON  con el objeto máquina y el script para instalar servicios dentro ded los folders de trabajo:
+    Copy-Item -Path ".\Recursos\unattend\tmp.json" "$($VirtualWinLetter):\sources\`$OEM`$\`$1" | Out-Null
     Copy-Item -Path ".\Recursos\unattend\Windows\InstalarServiciosWindows.ps1" "$($VirtualWinLetter):\sources\`$OEM`$\`$1" | Out-Null
+
+    # Se copian los .msi y creación del script para inslaralos al bootear:
     if($maquina.SistemaOperativo -eq "Windows 10"){
-        # Se deja el archivo en C:\Windows
         New-Item -ItemType "Directory" -Path "$($VirtualWinLetter):\sources\`$OEM`$\`$`$" | Out-Null
         New-Item -ItemType "Directory" -Path "$($VirtualWinLetter):\sources\`$OEM`$\`$`$\Setup" | Out-Null
         New-Item -ItemType "Directory" -Path "$($VirtualWinLetter):\sources\`$OEM`$\`$`$\Setup\Scripts" | Out-Null
-        $lele = "@echo off`n"
+        $comandoMSI = "@echo off`n"
         $cont = 0
         $msi = $maquina.DatosDependientes.RutaMSI
         foreach ($ruta in $msi) {
             Copy-Item $ruta "$($VirtualWinLetter):\sources\`$OEM`$\`$`$\Setup\Scripts\paquete-$cont.msi"
-            $lele += "start /wait C:\sources\`$OEM`$\`$`$\Setup\Scripts\paquete-$cont.msi`n"
+            $comandoMSI += "msiexec /passive /i C:\sources\`$OEM`$\`$`$\Setup\Scripts\paquete-$cont.msi`n"
             $cont++
         }
-        #$lele += "RD /S /Q %windir%\Setup\Scripts"
-        #New-Item -ItemType "File" -Path "$($VirtualWinLetter):\sources\`$OEM`$\`$`$\Setup\Scripts\SetupComplete.cmd" | Out-Null
-        Set-Content -Path "$($VirtualWinLetter):\sources\`$OEM`$\`$`$\Setup\Scripts\SetupComplete.cmd" -Value $lele | Out-Null
+        
+        Set-Content -Path "$($VirtualWinLetter):\sources\`$OEM`$\`$`$\Setup\Scripts\SetupComplete.cmd" -Value $comandoMSI | Out-Null
         $SetupComplete = "<SynchronousCommand wcm:action=`"add`"> `
-            <CommandLine>C:\sources\$OEM$\$$\Setup\Scripts\SetupComplete.cmd</CommandLine> `
+            <CommandLine>C:\sources\`$OEM`$\`$`$\Setup\Scripts\SetupComplete.cmd</CommandLine> `
             <Order>3</Order> `
             <RequiresUserInput>false</RequiresUserInput> `
         </SynchronousCommand>"
         (Get-Content "$UnattendFile").replace('{{MSI}}', $SetupComplete) | Set-Content "$UnattendFile"
+        (Get-Content "$UnattendFile").replace('{{AdminAccount}}', "") | Set-Content "$UnattendFile"
     }else{
+        [string] $passwd = $maquina.Credenciales.Contrasena
+        $adminAcc = "<AdministratorPassword> `
+        <Value>$passwd</Value>`
+        <PlainText>true</PlainText>`
+        </AdministratorPassword>"
         (Get-Content "$UnattendFile").replace('{{MSI}}', "") | Set-Content "$UnattendFile"
-        Copy-Item -Path ".\Recursos\unattend\Windows\ConfigurarServiciosWindows.psm1" "$($VirtualWinLetter):\Windows\Temp" | Out-Null
+        (Get-Content "$UnattendFile").replace('{{AdminAccount}}', $adminAcc) | Set-Content "$UnattendFile"
+        Copy-Item -Path ".\Recursos\unattend\Windows\ConfigurarServiciosWindows.ps1" "$($VirtualWinLetter):\sources\`$OEM`$\`$1" | Out-Null
     }
+    # Se aplican los cambios dentro del xml 
+    Copy-Item $UnattendFile "$($VirtualWinLetter):\Windows\Panther\unattend.xml" | Out-Null
+    Remove-Item $UnattendFile
+    
+    # Se aplican cambios al vdhx y se desmotan los discos/ISO montados:
     "select disk $disknumber`nselect partition 2`nremove letter=$EfiLetter`nselect partition 4`nremove letter=$VirtualWinLetter`nexit`n" | diskpart | Out-Null
     Dismount-DiskImage -ImagePath $VhdFile | Out-Null
     Dismount-DiskImage -ImagePath $WinIso | Out-Null

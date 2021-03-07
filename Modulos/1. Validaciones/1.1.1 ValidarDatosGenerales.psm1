@@ -114,8 +114,8 @@ function ValidarInterfaces { param ($interfaces, $hostname)
         $interfacesCheck = $ips = $nombres = @()
         foreach($interfaz in $interfaces){
             $interfazCheck = @{}
-            $interfacesNombreCheck = ValidarCadenas -campo "Interfaces.Nombre" -valor $interfaz.Nombre -validacionCaracter "alfaNum2" -validacionLongitud "longitud1" -obligatorio $true
-            $nombres += $interfacesNombreCheck
+            $tipoInterfazCheck = ValidarCatalogos -campo "Interfaces.Tipo" -valor $interfaz.Tipo -obligatorio $true -catalogo $tipoInterfazConfig
+            
             $VSNombreCheck = ValidarCadenas -campo "$interfacesNombreCheck.VirtualSwitch.Nombre" -valor $interfaz.VirtualSwitch.Nombre -validacionCaracter "alfaNum2" -validacionLongitud "longitud1"
             if(-not $VSNombreCheck){
                 $VSNombreCheck = ValidarCadenas -campo "$interfacesNombreCheck.VirtualSwitch.Nombre" -valor (Read-Host -Prompt "`t> [$interfacesNombreCheck] Nombre del VirtualSwitch: ") -validacionCaracter "alfaNum2" -validacionLongitud "longitud1"
@@ -134,17 +134,21 @@ function ValidarInterfaces { param ($interfaces, $hostname)
                     }
                 }
             }
-            $ipCheck = ValidarCadenas -campo "$interfacesNombreCheck.IP" -valor $interfaz.IP -validacionCaracter "ip" -obligatorio $true
-            $mascaraCheck = ValidarCatalogos -catalogo $mascaras -campo "$interfacesNombreCheck.MascaraRed" -valor $interfaz.MascaraRed -obligatorio $true
-            switch ($mascaraCheck) {
-                8  { $mascaraCheck = "255.0.0.0"; break}
-                16 { $mascaraCheck = "255.255.0.0"; break}
-                24 { $mascaraCheck = "255.255.255.0"; break}
-                Default { $mascaraCheck = $interfaz.MascaraRed }
-            } 
-            $gatewayCheck = ValidarCadenas -campo "$interfacesNombreCheck.Gateway" -valor $interfaz.Gateway -validacionCaracter "ip"
-            $dnsCheck = ValidarCadenas -campo "$interfacesNombreCheck.DNS" -valor $interfaz.DNS -validacionCaracter "ip"
-            $interfazCheck = [ordered] @{"Nombre" = $interfacesNombreCheck; "VirtualSwitch" = [ordered] @{"Nombre" = $VSNombreCheck; "Tipo" = $VSTipoCheck; "AdaptadorRed" = $adaptadorRedCheck}; "IP" = $ipCheck; "MascaraRed" = $mascaraCheck;"Gateway" = $gatewayCheck; "DNS" = $dnsCheck}
+            if ($tipoInterfazCheck) {
+                $ipCheck = ValidarCadenas -campo "$interfacesNombreCheck.IP" -valor $interfaz.IP -validacionCaracter "ip" -obligatorio $true
+                $mascaraCheck = ValidarCatalogos -catalogo $mascaras -campo "$interfacesNombreCheck.MascaraRed" -valor $interfaz.MascaraRed -obligatorio $true
+                switch ($mascaraCheck) {
+                    8  { $mascaraCheck = "255.0.0.0"; break}
+                    16 { $mascaraCheck = "255.255.0.0"; break}
+                    24 { $mascaraCheck = "255.255.255.0"; break}
+                    Default { $mascaraCheck = $interfaz.MascaraRed }
+                } 
+                $gatewayCheck = ValidarCadenas -campo "$interfacesNombreCheck.Gateway" -valor $interfaz.Gateway -validacionCaracter "ip"
+                $dnsCheck = ValidarCadenas -campo "$interfacesNombreCheck.DNS" -valor $interfaz.DNS -validacionCaracter "ip" 
+            }
+            $interfacesNombreCheck = ValidarCadenas -campo "Interfaces.Nombre" -valor $interfaz.Nombre -validacionCaracter "alfaNum2" -validacionLongitud "longitud1" -obligatorio $true
+            $nombres += $interfacesNombreCheck
+            $interfazCheck = [ordered] @{"VirtualSwitch" = [ordered] @{"Nombre" = $VSNombreCheck; "Tipo" = $VSTipoCheck; "AdaptadorRed" = $adaptadorRedCheck}; "Tipo" = $tipoInterfazCheck;"Nombre" = $interfacesNombreCheck; "IP" = $ipCheck; "MascaraRed" = $mascaraCheck;"Gateway" = $gatewayCheck; "DNS" = $dnsCheck}
             $interfacesCheck += $interfazCheck
             $ips += (ValidarRango -ipInicio $ipCheck -mascara $mascaraCheck -campo "$interfacesNombreCheck.IP" -unico $true)
         }

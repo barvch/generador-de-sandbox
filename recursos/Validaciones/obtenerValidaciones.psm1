@@ -179,17 +179,16 @@ function ValidarRango { param ( $ipInicio, $ipFin = "", $mascara, $campo, $unico
     }
     return [Double]$ipInicio, [Double]$ipFin
 }
-
 function ValidarTiempo { param ($campo, $tiempo, $obligatorio=$false)
     DatoObligatorio -obligatorio $obligatorio -campo $campo -valor $tiempo
-    if($tiempo -match "[0-9]{3}:([0-1][0-9]|2[0-3]):[0-5][0-9]"){
-        if($tiempo -match "000:00.*" ){
-            Write-Host "El campo $campo debe tener un valor minimo de 000:01:00"
+    if($tiempo -match "[0-9]{3}.([0-1][0-9]|2[0-3]):[0-5][0-9]"){
+        if($tiempo -match "000.00.*" ){
+            Write-Host "El campo $campo debe tener un valor minimo de 000.01:00"
             exit
         }
         return $tiempo
     }else{
-        Write-Host "El formato para el campo $campo debe ser DDD:HH:MM`nValores Maximos 999:23:59"
+        Write-Host "El formato para el campo $campo debe ser DDD:HH:MM`nValores Maximos 999.23:59"
         exit
     }
 }

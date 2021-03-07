@@ -1,17 +1,16 @@
 {
-    "Root": "F:\\SanboxTest",
+    "Root": "E:\\SanboxTest",
     "MaquinasVirtuales": [
         {
             "SistemaOperativo": "Windows Server 2019",
-            "TipoAmbiente": "Windows 10 Home",
-            "Hostname": "PruebaJSON",
-            "DiscosVirtuales": [20,15,16],
+            "TipoAmbiente": "Windows Server 2019 Datacenter Evaluation",
+            "Hostname": "michisadddd",
+            "DiscosVirtuales": [20],
             "Procesadores": 2,
-            "RutaISO": "F:\\Win10_20H2_v2_English_x64.iso",
+            "RutaISO": "E:\\SanboxTest\\WindowsServer2019_SERVER_EVAL_x64FRE_en-us_1.iso",
             "MemoriaRAM": {
-                "Tipo": "Dynamic",
-                "Minima": 1.0,
-                "Maxima": 2.0
+                "Tipo": "Static",
+                "Memoria": 1.0
             },
             "Credenciales": {
                 "Usuario": "prueba",
@@ -24,11 +23,12 @@
                         "Tipo": "External",
                         "AdaptadorRed": "Ethernet"
                     },
+                    "Tipo": "Static",
                     "Nombre": "Red Externa",
                     "IP": "192.168.0.56",
                     "MascaraRed": "24",
                     "Gateway": "192.168.0.1",
-                    "DNS": "1.1.1.1"
+                    "DNS": "8.8.8.8"
                 }
             ],
             "Servicios": {

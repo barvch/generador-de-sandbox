@@ -23,3 +23,4 @@ $SOPermitidos = [ordered] @{"Windows Server 2019" = "70FEC2CB1D6759108820130C2B5
 $ambientesRHELCentOS = @("Core", "Gnome", "KDE" )
 $ambientesDebian = @("Core", "Xcfe")
 $ambientesUbuntu = @("Ubuntu desktop")
+$tipoInterfazConfig = @("Static", "DCHP")
