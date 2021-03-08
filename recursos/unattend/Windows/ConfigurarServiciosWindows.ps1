@@ -57,7 +57,7 @@ function ConfigurarIIS {
     }
 }
 function ConfigurarDNS {
-    foreach($zona in $maquina.DNS){
+    foreach($zona in $maquina.Servicios.DNS){
         if($zona.Backup){
             $nombreArchivo = ($zona.Backup).Split("\")[-1]
             Copy-Item "C:\sources\`$OEM`$\`$1\$nombreArchivo" "%systemroot%\system32\dns"
