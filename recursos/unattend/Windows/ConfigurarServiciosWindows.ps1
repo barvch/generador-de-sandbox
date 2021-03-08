@@ -11,28 +11,30 @@ function ConfigurarIIS {
             $dominio = $binding.Dominio
             $ip = $binding.Interfaz
             $protocolo = $binding.Protocolo
-            $puerto = $binding.$puerto
+            $puerto = $binding.Puerto
             $webDAV = $binding.WebDAV
+            $usuario = $maquina.Credenciales.Usuario
             Add-Content -Path "C:\Windows\System32\drivers\etc\hosts" -Value "$ip $dominio"
             $bindingInfo = "$($ip):$($puerto):$($dominio)"
             if($protocolo -eq "https"){
                 $rutaCert = $binding.RutaCertificado
                 if($contador -eq 0){
-                    New-WebAppPool -Name $nombre | Out-Null
-                    #New-Item "IIS:\AppPools\$nombre" | Out-Null
-                    New-Item "IIS:\Sites\$nombre" -physicalPath $directorio -bindings @{protocol=$protocol;bindingInformation="$($ip):$($puerto):$dominio";sslcertificate=$rutaCert} | Out-Null
+                    New-Item "IIS:\AppPools\$nombre" | Out-Null
+                    New-Item "IIS:\Sites\$nombre" -physicalPath $directorio -bindings @{protocol=$protocolo;bindingInformation="$($ip):$($puerto):$dominio"} | Out-Null
                     $newCert = New-SelfSignedCertificate -DnsName $dominio -CertStoreLocation cert:\LocalMachine\My
                     Set-ItemProperty "IIS:\Sites\$nombre" -name applicationPool -value $nombre
                     (Get-WebBinding -Name $nombre -Protocol "https").AddSslCertificate($newCert.GetCertHashString(), "my")
+                }else{
+                    New-IISSiteBinding -Name $nombre -BindingInformation $bindingInfo -Protocol $protocolo | Out-Null
                 }
-                New-IISSiteBinding -Name $dominio -BindingInformation $bindingInfo -Protocol $protocolo
             }else{
                 if($contador -eq 0){
                     New-Item "IIS:\AppPools\$nombre" | Out-Null
-                    New-Item "IIS:\Sites\$nombre" -physicalPath $directorio -bindings @{protocol=$protocol;bindingInformation="$($ip):$($puerto):$dominio"} | Out-Null
+                    New-Item "IIS:\Sites\$nombre" -physicalPath $directorio -bindings @{protocol=$protocolo;bindingInformation="$($ip):$($puerto):$dominio"} | Out-Null
                     Set-ItemProperty "IIS:\Sites\$nombre" -name applicationPool -value $nombre                
+                }else{
+                    New-IISSiteBinding -Name $nombre -BindingInformation $bindingInfo -Protocol $protocolo | Out-Null
                 }
-                New-IISSiteBinding -Name $dominio -BindingInformation $bindingInfo -Protocol $protocolo
             }
             Set-Content "$($directorio)\Default.htm" '<h1>Hello IIS</h1>'
             if($webDAV){
@@ -127,10 +129,9 @@ Write-Host "Configurando servicios..."
 if($maquina.Servicios.IIS){ Write-Host "Configurando IIS..."; ConfigurarIIS }
 if($maquina.Servicios.DNS){ Write-Host "Configurando DNS..."; ConfigurarDNS }
 if($maquina.Servicios.DHCP){ Write-Host "Configurando DHCP..."; ConfigurarDHCP }
-if($maquina.Servicios.ActiveDirectory){ "Configurando AD...";ConfigurarAD }
+if($maquina.Servicios.ActiveDirectory){ Write-Host "Configurando AD...";ConfigurarAD }
 
 # Se elimina el contenido de los archivos y la tarea programada
 Remove-Item -Path "C:\sources\`$OEM`$" | Out-Null
 Unregister-ScheduledTask -TaskName "ConfigurarServicios"
-Write-Host "Fin"
-Pause
+Write-Host "Servicios configurados"

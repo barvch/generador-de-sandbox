@@ -153,7 +153,7 @@ function ValidarDHCP { param ($campo = "DHCP.Scopes", $dhcp)
             $dnsCheck = ValidarCadenas -campo "$campo.$($nombreCheck).DNS" -valor $scope.DNS -validacionCaracter "ip"
             $nombres += $nombreCheck
             $rangoUnico += (ValidarRango -ipInicio $ipInicioCheck -mascara $mascaraCheck -campo "$campo.Rango" -unico $true) 
-            $scopeCheck = [ordered] @{"Nombre" = $nombreCheck; "Rango" = [ordered]@{"Inicio" = $ipInicioCheck; "Fin" = $ipFinCheck}; "MascaraRed" = $mascaraCheck;`
+            $scopeCheck = [ordered] @{"Nombre" = $nombreCheck; "Rango" = [ordered]@{"Inicio" = $ipInicioCheck; "Fin" = $ipFinCheck; "MascaraRed" = $mascaraCheck};`
             "Exclusiones" = [ordered]@{"Tipo" = $tipoExclusion; "Inicio" = $ipInicioExCheck; "Fin" = $ipFinExCheck; "IP" = $ipExCheck}; "Lease" = $leaseCheck; `
             "Gateway" = $gatewayCheck; "DNS" = $dnsCheck}
             $dhcpCheck += $scopeCheck
