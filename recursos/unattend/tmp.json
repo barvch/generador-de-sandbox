@@ -1,6 +1,6 @@
 {
     "SistemaOperativo":  "Windows Server 2019",
-    "Hostname":  "michisadddd",
+    "Hostname":  "michifelizzz",
     "DiscosVirtuales":  20,
     "Procesadores":  2,
     "RutaISO":  "E:\\SanboxTest\\WindowsServer2019_SERVER_EVAL_x64FRE_en-us_1.iso",
@@ -43,58 +43,100 @@
                                               "DomainMode":  "Win2012R2",
                                               "ForestMode":  "Win2008"
                                           },
-                      "IIS":  {
-                                  "Nombre":  "MiSitio.local",
-                                  "Directorio":  "MiSitioUno",
-                                  "Bindings":  [
-                                                   {
-                                                       "Dominio":  "misitio.local",
-                                                       "Interfaz":  "192.168.0.56",
-                                                       "Protocolo":  "https",
-                                                       "Puerto":  443,
-                                                       "WebDAV":  ""
-                                                   }
-                                               ]
-                              },
-                      "DHCP":  {
-                                   "Nombre":  "ScopeUno",
-                                   "Rango":  {
-                                                 "Inicio":  "192.168.12.20",
-                                                 "Fin":  "192.168.12.40",
-                                                 "MascaraRed":  "24"
-                                             },
-                                   "Exclusiones":  {
-                                                       "Tipo":  "Unica",
-                                                       "Inicio":  "192.168.12.30",
-                                                       "Fin":  "192.168.12.25",
-                                                       "IP":  "192.168.12.25"
-                                                   },
-                                   "Lease":  "000:01:00",
-                                   "Gateway":  "192.168.12.55",
-                                   "DNS":  "192.168.12.60"
-                               },
-                      "DNS":  {
-                                  "Tipo":  "Forward",
-                                  "Nombre":  "ZonaUno",
-                                  "Backup":  "",
-                                  "Registros":  [
-                                                    {
-                                                        "Tipo":  "A",
-                                                        "Hostname":  "misitio.local",
-                                                        "IP":  "10.23.1.2",
-                                                        "PTR":  true
-                                                    },
-                                                    {
-                                                        "Tipo":  "CNAME",
-                                                        "Alias":  "alias",
-                                                        "FQDN":  "misitio2.local"
-                                                    },
-                                                    {
-                                                        "Tipo":  "MX",
-                                                        "ChildDomain":  "misitio2.local",
-                                                        "FQDN":  "prueba.misitio2.local"
-                                                    }
-                                                ]
-                              }
+                      "IIS":  [
+                                  {
+                                      "Nombre":  "MiSitio.local",
+                                      "Directorio":  "MiSitioUno",
+                                      "Bindings":  [
+                                                       {
+                                                           "Dominio":  "misitio.local",
+                                                           "Interfaz":  "192.168.0.56",
+                                                           "Protocolo":  "https",
+                                                           "Puerto":  443,
+                                                           "WebDAV":  ""
+                                                       }
+                                                   ]
+                                  },
+                                  {
+                                      "Nombre":  "MiSitioDos.local",
+                                      "Directorio":  "MiSitioDos",
+                                      "Bindings":  [
+                                                       {
+                                                           "Dominio":  "misitiodos.local",
+                                                           "Interfaz":  "192.168.0.56",
+                                                           "Protocolo":  "https",
+                                                           "Puerto":  443,
+                                                           "WebDAV":  true
+                                                       }
+                                                   ]
+                                  }
+                              ],
+                      "DHCP":  [
+                                   {
+                                       "Nombre":  "ScopeUno",
+                                       "Rango":  {
+                                                     "Inicio":  "192.168.12.20",
+                                                     "Fin":  "192.168.12.40"
+                                                 },
+                                       "MascaraRed":  "24",
+                                       "Exclusiones":  {
+                                                           "Tipo":  "Unica",
+                                                           "Inicio":  null,
+                                                           "Fin":  null,
+                                                           "IP":  "192.168.12.25"
+                                                       },
+                                       "Lease":  "000.01:00",
+                                       "Gateway":  "192.168.12.55",
+                                       "DNS":  "192.168.12.60"
+                                   },
+                                   {
+                                       "Nombre":  "ScopeDos",
+                                       "Rango":  {
+                                                     "Inicio":  "192.168.11.20",
+                                                     "Fin":  "192.168.11.40"
+                                                 },
+                                       "MascaraRed":  "24",
+                                       "Exclusiones":  {
+                                                           "Tipo":  "Unica",
+                                                           "Inicio":  null,
+                                                           "Fin":  null,
+                                                           "IP":  "192.168.11.25"
+                                                       },
+                                       "Lease":  "000.01:00",
+                                       "Gateway":  "192.168.12.55",
+                                       "DNS":  "192.168.12.60"
+                                   }
+                               ],
+                      "DNS":  [
+                                  {
+                                      "Tipo":  "Forward",
+                                      "Nombre":  "ZonaUno",
+                                      "Backup":  "E:\\SanboxTest\\Prueba.dns",
+                                      "Registros":  [
+                                                        {
+                                                            "Tipo":  "A",
+                                                            "Hostname":  "misitioA.local",
+                                                            "IP":  "10.23.1.2"
+                                                        }
+                                                    ]
+                                  },
+                                  {
+                                      "Tipo":  "Reverse",
+                                      "NetID":  "10.10.10.0/24",
+                                      "Backup":  "",
+                                      "Registros":  [
+                                                        {
+                                                            "Tipo":  "PTR",
+                                                            "Host":  "2",
+                                                            "IP":  null
+                                                        },
+                                                        {
+                                                            "Tipo":  "CNAME",
+                                                            "Alias":  "alias",
+                                                            "FQDN":  null
+                                                        }
+                                                    ]
+                                  }
+                              ]
                   }
 }

@@ -52,7 +52,8 @@ switch -regex ($so) {
         }
      }
 }
+$principal = New-ScheduledTaskPrincipal -RunLevel "Highest" -GroupId "BUILTIN\Administrators"
 $taskAction = New-ScheduledTaskAction -Execute "PowerShell.exe" -Argument "-file C:\sources\`$OEM`$\`$1\ConfigurarServiciosWindows.ps1"
-$trigger = New-ScheduledTaskTrigger -AtStartup 
-Register-ScheduledTask -TaskName "ConfigurarServicios" -Trigger $trigger -Action $taskAction
+$trigger = New-ScheduledTaskTrigger -AtLogOn 
+Register-ScheduledTask -TaskName "ConfigurarServicios" -Trigger $trigger -Action $taskAction -Principal $principal
 Restart-Computer -Force
