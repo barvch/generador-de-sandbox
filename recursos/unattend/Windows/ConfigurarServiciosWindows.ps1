@@ -60,7 +60,7 @@ function ConfigurarDNS {
     foreach($zona in $maquina.Servicios.DNS){
         if($zona.Backup){
             $nombreArchivo = ($zona.Backup).Split("\")[-1]
-            Copy-Item "C:\sources\`$OEM`$\`$1\$nombreArchivo" "%systemroot%\system32\dns"
+            Copy-Item "C:\sources\`$OEM`$\`$1\$nombreArchivo" "C:\Windows\System32\dns"
             $file = $nombreArchivo
         }
         if($zona.Tipo -eq "Forward"){
@@ -123,6 +123,8 @@ function ConfigurarAD {
 }
 
 # Se ejecuta el contenido de la tarea programada
+Write-Host "Espera..."
+Start-Sleep 60
 Write-Host "Leyendo archivo temp.json..."
 $maquina = Get-Content -Raw -Path "C:\sources\`$OEM`$\`$1\tmp.json" | ConvertFrom-Json
 Write-Host "Configurando servicios..."
