@@ -40,7 +40,10 @@ switch -regex ($so) {
     "Windows Server 2019" { 
         if($winDefender){ Install-WindowsFeature -Name "Windows-Defender" -IncludeManagementTools }
         if($certServices){ Install-WindowsFeature -Name "AD-Certificate" -IncludeManagementTools }
-        if($iis){ Install-WindowsFeature -Name "Web-WebServer" -IncludeManagementTools -IncludeAllSubFeature }
+        if($iis){ 
+            Add-WindowsFeature "Web-Scripting-Tools"
+            Install-WindowsFeature -Name "Web-WebServer" -IncludeManagementTools -IncludeAllSubFeature 
+        }
         if($dhcp){ 
             Install-WindowsFeature -Name "DHCP" -IncludeManagementTools
             Add-DHCPServerSecurityGroup

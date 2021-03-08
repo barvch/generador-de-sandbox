@@ -1,3 +1,5 @@
+Import-Module WebAdministration
+
 function ConfigurarIIS {
     #Realiza la creación de sitios con sus respectivos bindings
     foreach($sitio in $maquina.Servicios.IIS){
@@ -16,7 +18,8 @@ function ConfigurarIIS {
             if($protocolo -eq "https"){
                 $rutaCert = $binding.RutaCertificado
                 if($contador -eq 0){
-                    New-Item "IIS:\AppPools\$nombre" | Out-Null
+                    New-WebAppPool -Name $nombre | Out-Null
+                    #New-Item "IIS:\AppPools\$nombre" | Out-Null
                     New-Item "IIS:\Sites\$nombre" -physicalPath $directorio -bindings @{protocol=$protocol;bindingInformation="$($ip):$($puerto):$dominio";sslcertificate=$rutaCert} | Out-Null
                     $newCert = New-SelfSignedCertificate -DnsName $dominio -CertStoreLocation cert:\LocalMachine\My
                     Set-ItemProperty "IIS:\Sites\$nombre" -name applicationPool -value $nombre
