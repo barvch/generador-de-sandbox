@@ -1,7 +1,6 @@
 function ConfigurarIIS {
     #Realiza la creación de sitios con sus respectivos bindings
     foreach($sitio in $maquina.Servicios.IIS){
-        Add-Content -Path "C:\Windows\System32\drivers\etc\hosts" -Value "$ip $dominio"
         $nombre = $sitio.Nombre
         $directorio = "C:\inetpub\$($sitio.directorio)"
         New-Item -ItemType "Directory" $directorio | Out-Null
@@ -12,6 +11,7 @@ function ConfigurarIIS {
             $protocolo = $binding.Protocolo
             $puerto = $binding.$puerto
             $webDAV = $binding.WebDAV
+            Add-Content -Path "C:\Windows\System32\drivers\etc\hosts" -Value "$ip $dominio"
             $bindingInfo = "$($ip):$($puerto):$($dominio)"
             if($protocolo -eq "https"){
                 $rutaCert = $binding.RutaCertificado
@@ -113,12 +113,21 @@ function ConfigurarDHCP {
     }
 }
 function ConfigurarAD {
+    $activeDirectory = $maquina.Servicios.ActiveDirectory
     Install-ADDSForest -DomainName $activeDirectory.Dominio -DomainNetbiosName $activeDirectory.Netbios -DomainMode $activeDirectory.DomainMode -ForestMode $activeDirectory.ForestMode -Force -SafeModeAdministratorPassword (ConvertTo-SecureString -String $maquina.Credenciales.Contrasena -AsPlainText -Force)
 }
+
+# Se ejecuta el contenido de la tarea programada
+Write-Host "Leyendo archivo temp.json..."
 $maquina = Get-Content -Raw -Path "C:\sources\`$OEM`$\`$1\tmp.json" | ConvertFrom-Json
-if($maquina.Servicios.IIS){ ConfigurarIIS }
-if($maquina.Servicios.DNS){ ConfigurarDNS }
-if($maquina.Servicios.DHCP){ ConfigurarDHCP }
-if($maquina.Servicios.ActiveDirectory){ ConfigurarAD }
-Unregister-ScheduledTask -TaskName "ConfigurarServicios"
+Write-Host "Configurando servicios..."
+if($maquina.Servicios.IIS){ Write-Host "Configurando IIS..."; ConfigurarIIS }
+if($maquina.Servicios.DNS){ Write-Host "Configurando DNS..."; ConfigurarDNS }
+if($maquina.Servicios.DHCP){ Write-Host "Configurando DHCP..."; ConfigurarDHCP }
+if($maquina.Servicios.ActiveDirectory){ "Configurando AD...";ConfigurarAD }
+
+# Se elimina el contenido de los archivos y la tarea programada
 Remove-Item -Path "C:\sources\`$OEM`$" | Out-Null
+Unregister-ScheduledTask -TaskName "ConfigurarServicios"
+Write-Host "Fin"
+Pause
