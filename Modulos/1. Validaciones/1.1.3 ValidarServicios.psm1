@@ -214,8 +214,8 @@ function ValidarDNS { param ($campo = "DNS.Zonas", $dns)
                     switch ($tipoRegistroCheck) {
                         PTR { 
                             $hostCheck = ValidarCadenas -campo "$campo.Reverse.Registros.PTR.Host" -valor $registro.Host -validacionCaracter "host" -obligatorio $true | Out-Null
-                            $hostnameCheck = ValidarCadenas -campo "$campo.Reverse.Registros.PTR.Hostname" -valor $hostCheck -validacionCaracter "dominio" -obligatorio $true | Out-Null
-                            $registroCheck = [ordered] @{"Tipo" = $tipoRegistroCheck; "Hostname" = $hostnameCheck;"Host" = $registro.Host}
+                            $hostnameCheck = ValidarCadenas -campo "$campo.Reverse.Registros.PTR.Hostname" -valor $registro.Hostname -validacionCaracter "dominio" -obligatorio $true | Out-Null
+                            $registroCheck = [ordered] @{"Tipo" = $tipoRegistroCheck; "Hostname" = $hostnameCheck;"Host" = $hostCheck}
                             break
                         }
                         CNAME {
