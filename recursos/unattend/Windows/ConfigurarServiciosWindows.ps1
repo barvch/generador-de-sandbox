@@ -6,6 +6,7 @@ function ConfigurarIIS {
         $nombre = $sitio.Nombre
         $directorio = "C:\inetpub\$($sitio.directorio)"
         New-Item -ItemType "Directory" $directorio | Out-Null
+        Write-Host "Directorio $directorio creado."
         $contador = 0
         foreach($binding in $sitio.Bindings){
             $dominio = $binding.Dominio
@@ -15,6 +16,7 @@ function ConfigurarIIS {
             $webDAV = $binding.WebDAV
             $usuario = $maquina.Credenciales.Usuario
             Add-Content -Path "C:\Windows\System32\drivers\etc\hosts" -Value "$ip $dominio"
+            Write-Host "Se ha agregado al DNS el registro: $ip $dominio"
             $bindingInfo = "$($ip):$($puerto):$($dominio)"
             if($protocolo -eq "https"){
                 $rutaCert = $binding.RutaCertificado
@@ -24,8 +26,10 @@ function ConfigurarIIS {
                     $newCert = New-SelfSignedCertificate -DnsName $dominio -CertStoreLocation cert:\LocalMachine\My
                     Set-ItemProperty "IIS:\Sites\$nombre" -name applicationPool -value $nombre
                     (Get-WebBinding -Name $nombre -Protocol "https").AddSslCertificate($newCert.GetCertHashString(), "my")
+                    Write-Host "Binding SSL creado."
                 }else{
                     New-IISSiteBinding -Name $nombre -BindingInformation $bindingInfo -Protocol $protocolo | Out-Null
+                    Write-Host "Binding normal creado."
                 }
             }else{
                 if($contador -eq 0){
@@ -92,7 +96,7 @@ function ConfigurarDHCP {
     foreach($scope in $maquina.Servicios.DHCP){
         $mascaraRed = $scope.Rango.MascaraRed
         $rangoInicio = $scope.Rango.Inicio
-        Add-DhcpServerv4Scope -name $scope.Nombre -StartRange $rangoInicio -EndRange $scope.Rango.Fin -SubnetMask $mascaraRed -LeaseDuration "$($scope.Lease):00" -State Active
+        Add-DhcpServerv4Scope -name $scope.Nombre -StartRange $rangoInicio -EndRange $scope.Rango.Fin -SubnetMask $mascaraRed -LeaseDuration "$($scope.Lease):00" -State Active -ComputerName $maquina.Hostname
         if($scope.Exclusiones){
             $ipSplit = $rangoInicio.Split(".")
             switch -regex ($mascaraRed) {
@@ -124,16 +128,15 @@ function ConfigurarAD {
 
 # Se ejecuta el contenido de la tarea programada
 Write-Host "Espera..."
-Start-Sleep 60
+Start-Sleep 30
 Write-Host "Leyendo archivo temp.json..."
 $maquina = Get-Content -Raw -Path "C:\sources\`$OEM`$\`$1\tmp.json" | ConvertFrom-Json
-Write-Host "Configurando servicios..."
-if($maquina.Servicios.IIS){ Write-Host "Configurando IIS..."; ConfigurarIIS }
+Write-Host "Configurando servicios del equipo..."
 if($maquina.Servicios.DNS){ Write-Host "Configurando DNS..."; ConfigurarDNS }
 if($maquina.Servicios.DHCP){ Write-Host "Configurando DHCP..."; ConfigurarDHCP }
 if($maquina.Servicios.ActiveDirectory){ Write-Host "Configurando AD...";ConfigurarAD }
-
+#if($maquina.Servicios.IIS){ Write-Host "Configurando IIS..."; ConfigurarIIS }
 # Se elimina el contenido de los archivos y la tarea programada
-Remove-Item -Path "C:\sources\`$OEM`$" | Out-Null
-Unregister-ScheduledTask -TaskName "ConfigurarServicios"
+#Remove-Item -Path "C:\sources\`$OEM`$" | Out-Null
+#Unregister-ScheduledTask -TaskName "ConfigurarServicios"
 Write-Host "Servicios configurados"
