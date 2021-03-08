@@ -20,7 +20,7 @@ function ValidarAdministracionRemota { param ($servicio = "AdministracionRemota"
 
 function ValidarActiveDirectory { param ($servicio = "ActiveDirectory", $activeDirectory)
     if($activeDirectory){
-        $dominioCheck = ValidarCadenas -campo "$servicio.Domain" -valor $activeDirectory.Domain -validacionCaracter "dominio" -obligatorio $true
+        $dominioCheck = ValidarCadenas -campo "$servicio.Dominio" -valor $activeDirectory.Dominio -validacionCaracter "dominio" -obligatorio $true
         $NetBIOSCheck = ValidarCadenas -campo "$servicio.NetBIOS" -valor $activeDirectory.NetBIOS -validacionCaracter "alfaNum1" -validacionLongitud "longitud6"
         if(-not $NetBIOSCheck){
             $NetBIOSCheck = ValidarCadenas -campo "$servicio.NetBIOS" -valor  $dominioCheck.Split(".")[0].ToUpper() -validacionCaracter "alfaNum1" -validacionLongitud "longitud6"
