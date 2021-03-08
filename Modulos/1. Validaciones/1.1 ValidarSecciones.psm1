@@ -38,7 +38,7 @@ function ValidarServicios { param ( $sistemaOperativo, $maquinaVirtual, $interfa
             $IISCheck = ValidarIIS -iis $maquinaVirtual.Servicios.IIS -interfaces $interfaces
             $DHCPCheck = ValidarDHCP -dhcp $maquinaVirtual.Servicios.DHCP
             $DNSCheck = ValidarDNS -dns $maquinaVirtual.Servicios.DNS
-            if($activeDirectory -and ($certServices -or $IISCheck -or $DHCPCheck -or $DNS)){
+            if($activeDirectoryCheck -and ($certServicesCheck -or $IISCheck -or $DHCPCheck -or $DNSCheck)){
                 Write-Host "Si se configura el servicio de AD-DS el equipo no puede tener los servicios: CertificateServices, IIS, DNS o DHCP"
                 exit
             }

@@ -122,6 +122,12 @@ function ValidarDHCP { param ($campo = "DHCP.Scopes", $dhcp)
             $ipInicioCheck = ValidarCadenas -campo "$campo.Rango.Inicio" -valor $scope.Rango.Inicio -validacionCaracter "ip" -obligatorio $true
             $ipFinCheck= ValidarCadenas -campo "$campo.Rango.Fin" -valor $scope.Rango.Fin -validacionCaracter "ip" -obligatorio $true
             $mascaraCheck = ValidarCatalogos -catalogo $mascaras -campo "$campo.Rango.MascaraRed" -valor $scope.Rango.MascaraRed -obligatorio $true
+            switch ($mascaraCheck) {
+                "8"  { $mascaraCheck = "255.0.0.0"; break}
+                "16" { $mascaraCheck = "255.255.0.0"; break}
+                "24" { $mascaraCheck = "255.255.255.0"; break}
+                Default { $mascaraCheck = $mascaraCheck }
+            } 
             $rangoInicio, $rangoFin = ValidarRango -ipInicio $ipInicioCheck -ipFin $ipFinCheck -mascara $mascaraCheck -campo "$campo.Rango"
             $exclusiones = $scope.Exclusiones
             if($exclusiones){
