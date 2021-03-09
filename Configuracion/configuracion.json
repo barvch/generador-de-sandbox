@@ -19,16 +19,25 @@
             "Interfaces": [
                 {
                     "VirtualSwitch": {
+                        "Nombre": "PruebaPrivado",
+                        "Tipo": "Private",
+                        "AdaptadorRed": "Ethernet"
+                    },
+                    "Tipo": "Static",
+                    "Nombre": "Red Privada",
+                    "IP": "192.168.0.65",
+                    "MascaraRed": "24",
+                    "Gateway": "192.168.0.1",
+                    "DNS": "8.8.8.8"
+                },
+                {
+                    "VirtualSwitch": {
                         "Nombre": "SalidaInternet",
                         "Tipo": "External",
                         "AdaptadorRed": "Ethernet"
                     },
-                    "Tipo": "Static",
-                    "Nombre": "Red Externa",
-                    "IP": "192.168.0.56",
-                    "MascaraRed": "24",
-                    "Gateway": "192.168.0.1",
-                    "DNS": "8.8.8.8"
+                    "Tipo": "DHCP",
+                    "Nombre": "Interfaz Salida"
                 }
             ],
             "Servicios": {
@@ -42,7 +51,7 @@
                         "Bindings": [
                             {
                                 "Dominio": "misitio.local",
-                                "Interfaz": "Red Externa",
+                                "Interfaz": "Red Privada",
                                 "Protocolo": "https",
                                 "Puerto": 443,
                                 "WebDAV": false
@@ -55,7 +64,7 @@
                         "Bindings": [
                             {
                                 "Dominio": "misitiodos.local",
-                                "Interfaz": "Red Externa",
+                                "Interfaz": "Red Privada",
                                 "Protocolo": "https",
                                 "Puerto": 443,
                                 "WebDAV": true

@@ -144,12 +144,14 @@ function ValidarInterfaces { param ($interfaces, $hostname)
                 } 
                 $gatewayCheck = ValidarCadenas -campo "$interfacesNombreCheck.Gateway" -valor $interfaz.Gateway -validacionCaracter "ip"
                 $dnsCheck = ValidarCadenas -campo "$interfacesNombreCheck.DNS" -valor $interfaz.DNS -validacionCaracter "ip" 
+                $ips += $ipCheck
             }
             $interfacesNombreCheck = ValidarCadenas -campo "Interfaces.Nombre" -valor $interfaz.Nombre -validacionCaracter "alfaNum2" -validacionLongitud "longitud1" -obligatorio $true
             $nombres += $interfacesNombreCheck
             $interfazCheck = [ordered] @{"VirtualSwitch" = [ordered] @{"Nombre" = $VSNombreCheck; "Tipo" = $VSTipoCheck; "AdaptadorRed" = $adaptadorRedCheck}; "Tipo" = $tipoInterfazCheck;"Nombre" = $interfacesNombreCheck; "IP" = $ipCheck; "MascaraRed" = $mascaraCheck;"Gateway" = $gatewayCheck; "DNS" = $dnsCheck}
             $interfacesCheck += $interfazCheck
-            $ips += (ValidarRango -ipInicio $ipCheck -mascara $mascaraCheck -campo "$interfacesNombreCheck.IP" -unico $true)
+            
+            #$ips += (ValidarRango -ipInicio $ipCheck -mascara $mascaraCheck -campo "$interfacesNombreCheck.IP" -unico $true)
         }
         ValidarNombreUnico -campo "Interfaces.Nombre" -arreglo $nombres
         ValidarNombreUnico -campo "Interfaces.IP" -arreglo $ips -imprimeIP $true

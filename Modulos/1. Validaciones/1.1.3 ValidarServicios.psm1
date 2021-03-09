@@ -64,7 +64,12 @@ function ValidarIIS { param ($campo = "IIS.Sitios", $iis, $interfaces)
                 $bindingInterfazCheck = ValidarCadenas -campo "$campo.Bindings.Interfaz" -valor $binding.Interfaz -validacionCaracter "alfaNum2" -validacionLongitud "longitud1" -obligatorio $true
                 foreach($interfaz in $interfaces){
                     if($bindingInterfazCheck -eq $interfaz.Nombre){
+                        if ($interfaz.Tipo -eq "DHCP") {
+                            Write-Host "La interfaz ingresada debe de ser del tipo Static"
+                            exit
+                        }
                         $ipBindingCheck = $interfaz.IP
+                        break
                     }
                 }
                 if(-not $ipBindingCheck){
@@ -72,10 +77,6 @@ function ValidarIIS { param ($campo = "IIS.Sitios", $iis, $interfaces)
                     exit
                 }
                 $bindingProtocoloCheck = ValidarCatalogos -catalogo $protocolos -campo "$campo.Bindings.Protocolo" -valor $binding.Protocolo -obligatorio $true
-               # if($bindingProtocoloCheck -eq "https"){
-               #     $bindingCertCheck = ValidarRuta -campo "$campo.Bindings.RutaCertificado" -valor $binding.RutaCertificado -obligatorio $true
-               #     #Get-PfxCertificate -FilePath "E:\Proyecto Final\Windows Server 2019\certificado.pfx" -NoPromptForPassword
-               # }
                 $bindingPuertoCheck = ValidarArregloDato -campo "$campo.Bindings.Puerto" -valor $binding.Puerto -tipoDato "Int32"
                 if($bindingPuertoCheck){
                     if(($bindingProtocoloCheck -eq "http" -and $bindingPuertoCheck -eq 443) -or ($bindingProtocoloCheck -eq "https" -and $bindingPuertoCheck -eq 80)){

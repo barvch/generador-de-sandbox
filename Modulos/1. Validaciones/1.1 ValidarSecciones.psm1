@@ -42,6 +42,15 @@ function ValidarServicios { param ( $sistemaOperativo, $maquinaVirtual, $interfa
                 Write-Host "Si se configura el servicio de AD-DS el equipo no puede tener los servicios: CertificateServices, IIS, DNS o DHCP"
                 exit
             }
+            if ($IISCheck -or $DHCPCheck -or $DNSCheck) {
+                foreach ($interfaz in $interfaces) {
+                    if ($interfaz.Tipo -eq "Static") {$staticFlag = $true}
+                }
+                if (-not $staticFlag) {
+                    Write-Host "Se debe ingresar al menos una interfaz del tipo Static para los servicios: IIS, DHCP y/o DNS"
+                    exit
+                }
+            }
         }
         "Windows .*" { 
             $adminRemotaCheck = ValidarAdministracionRemota -adminRemota $maquinaVirtual.AdministracionRemota -so $sistemaOperativo 

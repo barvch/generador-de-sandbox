@@ -4,7 +4,7 @@ function ConfigurarIIS {
     #Realiza la creación de sitios con sus respectivos bindings
     foreach($sitio in $maquina.Servicios.IIS){
         $nombre = $sitio.Nombre
-        $directorio = "C:\inetpub\$($sitio.directorio)"
+        $directorio = "C:\inetpub\$($sitio.Directorio)"
         New-Item -ItemType "Directory" $directorio | Out-Null
         Write-Host "Directorio $directorio creado."
         $contador = 0
@@ -15,7 +15,8 @@ function ConfigurarIIS {
             $puerto = $binding.Puerto
             $webDAV = $binding.WebDAV
             $usuario = $maquina.Credenciales.Usuario
-            Add-Content -Path "C:\Windows\System32\drivers\etc\hosts" -Value "$ip $dominio"
+            $path = "C:\Windows\System32\drivers\etc\hosts"
+            Add-Content -Path $path -Value "$ip`t$dominio" -Force
             Write-Host "Se ha agregado al DNS el registro: $ip $dominio"
             $bindingInfo = "$($ip):$($puerto):$($dominio)"
             if($protocolo -eq "https"){
@@ -73,7 +74,7 @@ function ConfigurarDNS {
             Add-DnsServerPrimaryZone -Name $nombre -ZoneFile $file
             foreach($record in $zona.Registros){
                 switch ($record.Tipo) {
-                    A { Add-DnsServerResourceRecordA -Name $record.Hostname -ZoneName $nombre -AllowUpdateAny -IPv4Address $record.IP -CreatePtr; break}
+                    A { Add-DnsServerResourceRecordA -Name $record.Hostname -ZoneName $nombre -AllowUpdateAny -IPv4Address $record.IP; break}
                     CNAME { Add-DnsServerResourceRecordCName -Name $record.Alias -HostNameAlias $record.FQDN -ZoneName $nombre; break }
                     MX { Add-DnsServerResourceRecordMX -Name $record.ChildDomain -MailExchange $record.FQDN -ZoneName $nombre; break }
                 }
@@ -137,4 +138,4 @@ if($maquina.Servicios.DHCP){ Write-Host "Configurando DHCP..." -ForegroundColor 
 if($maquina.Servicios.ActiveDirectory){ Write-Host "Configurando AD... -ForegroundColor Yellow";ConfigurarAD }
 if($maquina.Servicios.IIS){ Write-Host "Configurando IIS..." -ForegroundColor Yellow; ConfigurarIIS }
 # Se elimina el contenido de los archivos y la tarea programada
-Unregister-ScheduledTask -TaskName "ConfigurarServicios"
+Unregister-ScheduledTask -TaskName "ConfigurarServicios" -Confirm:$false

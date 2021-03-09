@@ -12,19 +12,34 @@
                          "Usuario":  "prueba",
                          "Contrasena":  "hola12345.,"
                      },
-    "Interfaces":  {
-                       "VirtualSwitch":  {
-                                             "Nombre":  "SalidaInternet",
-                                             "Tipo":  "External",
-                                             "AdaptadorRed":  "Ethernet"
-                                         },
-                       "Tipo":  "Static",
-                       "Nombre":  "Red Externa",
-                       "IP":  "192.168.0.56",
-                       "MascaraRed":  "255.255.255.0",
-                       "Gateway":  "192.168.0.1",
-                       "DNS":  "8.8.8.8"
-                   },
+    "Interfaces":  [
+                       {
+                           "VirtualSwitch":  {
+                                                 "Nombre":  "PruebaPrivado",
+                                                 "Tipo":  "Private",
+                                                 "AdaptadorRed":  null
+                                             },
+                           "Tipo":  "Static",
+                           "Nombre":  "Red Privada",
+                           "IP":  "192.168.0.65",
+                           "MascaraRed":  "255.255.255.0",
+                           "Gateway":  "192.168.0.1",
+                           "DNS":  "8.8.8.8"
+                       },
+                       {
+                           "VirtualSwitch":  {
+                                                 "Nombre":  "SalidaInternet",
+                                                 "Tipo":  "External",
+                                                 "AdaptadorRed":  "Ethernet"
+                                             },
+                           "Tipo":  "DHCP",
+                           "Nombre":  "Interfaz Salida",
+                           "IP":  "192.168.0.65",
+                           "MascaraRed":  "255.255.255.0",
+                           "Gateway":  "192.168.0.1",
+                           "DNS":  "8.8.8.8"
+                       }
+                   ],
     "DatosDependientes":  {
                               "TipoAmbiente":  null,
                               "LlaveActivacion":  {
@@ -45,7 +60,7 @@
                                       "Bindings":  [
                                                        {
                                                            "Dominio":  "misitio.local",
-                                                           "Interfaz":  "192.168.0.56",
+                                                           "Interfaz":  "192.168.0.65",
                                                            "Protocolo":  "https",
                                                            "Puerto":  443,
                                                            "WebDAV":  ""
@@ -58,7 +73,7 @@
                                       "Bindings":  [
                                                        {
                                                            "Dominio":  "misitiodos.local",
-                                                           "Interfaz":  "192.168.0.56",
+                                                           "Interfaz":  "192.168.0.65",
                                                            "Protocolo":  "https",
                                                            "Puerto":  443,
                                                            "WebDAV":  true
@@ -103,13 +118,13 @@
                                       "Registros":  [
                                                         {
                                                             "Tipo":  "PTR",
-                                                            "Host":  "2",
-                                                            "IP":  null
+                                                            "Hostname":  "misitioRegi.local",
+                                                            "Host":  "2"
                                                         },
                                                         {
                                                             "Tipo":  "CNAME",
                                                             "Alias":  "alias",
-                                                            "FQDN":  null
+                                                            "FQDN":  "misitio2.local"
                                                         }
                                                     ]
                                   }
