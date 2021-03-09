@@ -80,13 +80,13 @@ function ConfigurarDNS {
             }
         }else{
             $netID = $zona.NetID
-            if(-not $zona.Backup){$file = "$($netID).in-addr.arpa.dns"}
+            if(-not $zona.Backup){$file = "$($netID.Split('/')[0]).in-addr.arpa.dns"}
             Add-DnsServerPrimaryZone -NetworkID $netID -ZoneFile $file
-            $netNombre = "$($netID.Split('/')[0]).in-addr.arpa"
+            $netNombre = "$($netID.Split('/')[0].Replace('.0', '')).in-addr.arpa"
             foreach($record in $zona.Registros){
                 switch ($record.Tipo) {
                     PTR { Add-DnsServerResourceRecordPtr -Name $record.Host -ZoneName $netNombre -AllowUpdateAny -PtrDomainName $record.Hostname; break}
-                    CNAME { Add-DnsServerResourceRecordPtr -Name $record.Alias -HostNameAlias $record.FQDN -ZoneName $netNombre; break }
+                    CNAME { Add-DnsServerResourceRecordCName -Name $record.Alias -HostNameAlias $record.FQDN -ZoneName $netNombre; break }
                 }
             }
         }
@@ -127,16 +127,14 @@ function ConfigurarAD {
 }
 
 # Se ejecuta el contenido de la tarea programada
-Write-Host "Espera..."
-Start-Sleep 30
-Write-Host "Leyendo archivo temp.json..."
+Write-Host "Esperando a que los servicios se encuentren disponibles..." -ForegroundColor Yellow
+Start-Sleep 60
+Write-Host "Leyendo archivo temp.json..." -ForegroundColor Yellow
 $maquina = Get-Content -Raw -Path "C:\sources\`$OEM`$\`$1\tmp.json" | ConvertFrom-Json
-Write-Host "Configurando servicios del equipo..."
-if($maquina.Servicios.DNS){ Write-Host "Configurando DNS..."; ConfigurarDNS }
-if($maquina.Servicios.DHCP){ Write-Host "Configurando DHCP..."; ConfigurarDHCP }
-if($maquina.Servicios.ActiveDirectory){ Write-Host "Configurando AD...";ConfigurarAD }
-#if($maquina.Servicios.IIS){ Write-Host "Configurando IIS..."; ConfigurarIIS }
+Write-Host "Configurando servicios del equipo..." -ForegroundColor Yellow
+if($maquina.Servicios.DNS){ Write-Host "Configurando DNS..." -ForegroundColor Yellow; ConfigurarDNS }
+if($maquina.Servicios.DHCP){ Write-Host "Configurando DHCP..." -ForegroundColor Yellow; ConfigurarDHCP }
+if($maquina.Servicios.ActiveDirectory){ Write-Host "Configurando AD... -ForegroundColor Yellow";ConfigurarAD }
+if($maquina.Servicios.IIS){ Write-Host "Configurando IIS..." -ForegroundColor Yellow; ConfigurarIIS }
 # Se elimina el contenido de los archivos y la tarea programada
-#Remove-Item -Path "C:\sources\`$OEM`$" | Out-Null
-#Unregister-ScheduledTask -TaskName "ConfigurarServicios"
-Write-Host "Servicios configurados"
+Unregister-ScheduledTask -TaskName "ConfigurarServicios"

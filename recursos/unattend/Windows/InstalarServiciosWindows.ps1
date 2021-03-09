@@ -1,3 +1,6 @@
+Write-Host "Iniciando maquina..." -ForegroundColor Yellow
+Start-Sleep 30
+Write-Host "Leyendo archivo temp.json..." -ForegroundColor Yellow
 $maquina = Get-Content -Raw -Path "C:\sources\`$OEM`$\`$1\tmp.json" | ConvertFrom-Json
 $so = $maquina.SistemaOperativo
 $servicio = $maquina.Servicios
@@ -8,6 +11,7 @@ $iis = $servicio.IIS
 $dhcp = $servicio.DHCP
 $dns = $servicio.DNS
 $cont = 0
+Write-Host "Configurando interfaces..." -ForegroundColor Yellow
 foreach ($interfaz in $maquina.Interfaces) {
     if ($interfaz.Tipo -eq "Static") {
         $ip = $interfaz.IP
@@ -21,16 +25,17 @@ foreach ($interfaz in $maquina.Interfaces) {
         }
         $indexInterfaz = $((Get-NetAdapter)[$cont].ifIndex)
         if ($gateway) {
-            New-NetIpAddress -InterfaceIndex $indexInterfaz -IpAddress "$ip" -PrefixLength "$prefix" -DefaultGateway "$gateway"
+            New-NetIpAddress -InterfaceIndex $indexInterfaz -IpAddress "$ip" -PrefixLength "$prefix" -DefaultGateway "$gateway" | Out-Null
         } else {
-            New-NetIpAddress -InterfaceIndex $indexInterfaz -IpAddress "$ip" -PrefixLength "$prefix"
+            New-NetIpAddress -InterfaceIndex $indexInterfaz -IpAddress "$ip" -PrefixLength "$prefix" | Out-Null
         }
         if ($dns) {
-            Set-DnsClientServerAddress -InterfaceIndex $indexInterfaz -ServerAddresses "$dns"
+            Set-DnsClientServerAddress -InterfaceIndex $indexInterfaz -ServerAddresses "$dns" | Out-Null
         }
     }
     $cont++
 }
+Write-Host "Instalando Servicios..." -ForegroundColor Yellow
 switch -regex ($so) {
     "Windows*" { 
         #RDP
@@ -52,6 +57,7 @@ switch -regex ($so) {
         if($activeDirectory){ Install-WindowsFeature -Name "AD-Domain-Services" -IncludeManagementTools }
      }
 }
+Write-Host "Creando tarea programada..." -ForegroundColor Yellow
 $principal = New-ScheduledTaskPrincipal -RunLevel "Highest" -GroupId "BUILTIN\Administrators"
 $taskAction = New-ScheduledTaskAction -Execute "PowerShell.exe" -Argument "-file C:\sources\`$OEM`$\`$1\ConfigurarServiciosWindows.ps1"
 $trigger = New-ScheduledTaskTrigger -AtLogOn 

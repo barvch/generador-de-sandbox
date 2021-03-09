@@ -115,7 +115,6 @@ function ValidarInterfaces { param ($interfaces, $hostname)
         foreach($interfaz in $interfaces){
             $interfazCheck = @{}
             $tipoInterfazCheck = ValidarCatalogos -campo "Interfaces.Tipo" -valor $interfaz.Tipo -obligatorio $true -catalogo $tipoInterfazConfig
-            
             $VSNombreCheck = ValidarCadenas -campo "$interfacesNombreCheck.VirtualSwitch.Nombre" -valor $interfaz.VirtualSwitch.Nombre -validacionCaracter "alfaNum2" -validacionLongitud "longitud1"
             if(-not $VSNombreCheck){
                 $VSNombreCheck = ValidarCadenas -campo "$interfacesNombreCheck.VirtualSwitch.Nombre" -valor (Read-Host -Prompt "`t> [$interfacesNombreCheck] Nombre del VirtualSwitch: ") -validacionCaracter "alfaNum2" -validacionLongitud "longitud1"
@@ -134,7 +133,7 @@ function ValidarInterfaces { param ($interfaces, $hostname)
                     }
                 }
             }
-            if ($tipoInterfazCheck) {
+            if($tipoInterfazCheck -eq "Static") {
                 $ipCheck = ValidarCadenas -campo "$interfacesNombreCheck.IP" -valor $interfaz.IP -validacionCaracter "ip" -obligatorio $true
                 $mascaraCheck = ValidarCatalogos -catalogo $mascaras -campo "$interfacesNombreCheck.MascaraRed" -valor $interfaz.MascaraRed -obligatorio $true
                 switch ($mascaraCheck) {
