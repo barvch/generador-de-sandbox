@@ -15,9 +15,16 @@ function ConfigurarIIS {
             $puerto = $binding.Puerto
             $webDAV = $binding.WebDAV
             $usuario = $maquina.Credenciales.Usuario
+
+            
             $path = "C:\Windows\System32\drivers\etc\hosts"
-            Add-Content -Path $path -Value "$ip`t$dominio" -Force
+            $registro = "$ip $dominio"
+            $comando = "@ECHO OFF`nstart /min cmd.exe /c `"echo $registro >> $path`""
+            Add-Content -Path "C:\sources\`$OEM`$\`$1\temp.bat" -Value $comando
+            Start-Process "C:\sources\`$OEM`$\`$1\temp.bat"
             Write-Host "Se ha agregado al DNS el registro: $ip $dominio"
+            Remove-Item -Path "C:\sources\`$OEM`$\`$1\temp.bat"
+
             $bindingInfo = "$($ip):$($puerto):$($dominio)"
             if($protocolo -eq "https"){
                 $rutaCert = $binding.RutaCertificado
