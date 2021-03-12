@@ -1,0 +1,93 @@
+{
+    "SistemaOperativo": "Debian 10",
+    "Hostname": "Contoso",
+    "DiscosVirtuales": [15],
+    "Procesadores": 2,
+    "RutaISO": "E:\\VMware\\Maquinas virtuales\\Test\\Win10_20H2_v2_English_x64.iso",
+    "MemoriaRAM": {
+        "Tipo": "Dynamic",
+        "Minima": 0.5,
+        "Maxima": 2.5
+    },
+    "Credenciales": {
+        "Usuario": "usuario2",
+        "Contrasena": "hola12345.,"
+    },
+    "Interfaces": [
+        {
+            "VirtualSwitch": {
+                "Nombre": "Internet",
+                "Tipo": "Externa"
+            },
+            "Nombre": "",
+            "IP": "192.168.1.1",
+            "MascaraRed": "255.255.255.0"
+        }
+    ],
+    "Servicios": {
+        "AdministracionRemota": "SSH",
+        "PuertoSSH": "2222",
+        "ManejadorBD": {
+            "Manejador": "PostgreSQL",
+            "NombreBD":"MiBasecita"
+        },
+        "DNS": [
+            {
+                "Tipo": "Forward",
+                "Nombre": "ZonaUno",
+                "Backup": "",
+                "Registros": [
+                    {
+                        "Tipo": "A",
+                        "Hostname": "misitio.local",
+                        "IP": "10.23.1.2"
+                    },
+                    {
+                        "Tipo": "CNAME",
+                        "Alias": "alias",
+                        "FQDN": "misitio2.local"
+                    },
+                    {
+                        "Tipo": "MX",
+                        "ChildDomain": "misitio2.local",
+                        "FQDN": "prueba.misitio2.local"
+                    }
+                ]
+            },
+                {
+                        "Tipo": "Reverse",
+                        "Nombre": "ZonaDos",
+                        "NetID": "12.11.13.0/24",
+                        "Registros": [
+                            {
+                                "Tipo": "PTR",
+                                "Hostname": "misitioRegi.local",
+                                "Host": "2"
+                            },
+                            {
+                                "Tipo": "CNAME",
+                                "Alias": "alias",
+                                "FQDN": "misitio2.local"
+                            }
+                        ]
+                    }
+        ],
+                "DHCP": [
+                    {
+                        "Rangos": [
+                            {
+                            "Inicio": "192.168.121.150",
+                            "Fin": "192.168.121.160"
+                            },
+                            {
+                            "Inicio": "192.168.121.170",
+                            "Fin": "192.168.121.180"
+                            }
+                        ],
+                        "MascaraRed": "255.255.255.0",
+                        "Lease": "30000",
+                        "DNS": "8.8.8.8"
+                    }
+                ]
+    }
+}
