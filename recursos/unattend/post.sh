@@ -1,0 +1,1 @@
+echo 'This is a test script!' >> /home/prueba/test2.txt
