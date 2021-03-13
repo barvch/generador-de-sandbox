@@ -1,0 +1,42 @@
+{
+    "SistemaOperativo": "Kali",
+    "Hostname": "Contoso",
+    "DiscosVirtuales": [15],
+    "Procesadores": 2,
+    "RutaISO": "E:\\VMware\\Maquinas virtuales\\Test\\Win10_20H2_v2_English_x64.iso",
+    "MemoriaRAM": {
+        "Tipo": "Dynamic",
+        "Minima": 0.5,
+        "Maxima": 2.5
+    },
+    "Credenciales": {
+        "Usuario": "usuario2",
+        "Contrasena": "hola12345.,"
+    },
+    "Interfaces": [
+        {
+            "VirtualSwitch": {
+                "Nombre": "Internet",
+                "Tipo": "Externa"
+            },
+            "Nombre": "",
+            "IP": "192.168.0.35",
+            "MascaraRed": "255.255.255.0"
+        }
+    ],
+    "Servicios": {
+        "ServidorWeb": {
+            "Servidor": "Apache",
+            "Sitios": [
+                {
+                "Nombre": "ninobomba",
+                "Dominio": "prueba.local",
+                "Interfaz": "192.168.0.35",
+                "Drupal": true,
+                "Puerto": "80",
+                "Protocolo": "http"
+                }
+            ]
+        }    
+    }
+}

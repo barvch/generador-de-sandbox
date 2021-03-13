@@ -53,26 +53,31 @@ function CrearISODebianFlavor {
         # Se copia el preseed base al directorio de trabajo y al archivo copiado, se hacen las modificaciones de las especificaciones para el equipo
         if ($os -eq "Debian 10"){
             Copy-Item ".\Recursos\unattend\Debian\preseed.cfg" "$directorio" -Force
-            (Get-Content "$directorio\preseed.cfg").replace('{{paquetes}}', "tree vim git") | Set-Content "$directorio\$seed_file"
         } else {
-            Copy-Item ".\Recursos\unattend\Kali\preseed.cfg" "$directorio" -Force
+            Copy-Item ".\Recursos\unattend\Debian\preseed.cfg" "$directorio" -Force
+            #Copy-Item ".\Recursos\unattend\Kali\preseed.cfg" "$directorio" -Force
         }
-        Write-Host $ambiente
         if ($ambiente -match "Core") { $insert = "tasksel tasksel/first multiselect standard`n" } else { $insert = "tasksel tasksel/first multiselect desktop, standard`nd-i tasksel/first multiselect Debian desktop environment, Standard system utilities`ntasksel tasksel/desktop string xfce" } 
         $configInterfaces = ""
         $contador = 0
         foreach ($interfaz in $interfaces) {
-            $ip = $interfaz.IP
-            $netmask = $interfaz.MascaraRed
-            $gateway = $interfaz.Gateway
-            $dns = $interfaz.DNS
-            if ($gateway) {$gateway = "" }
-            if ($dns) {$dns = ""}
-            $configInterfaces += "d-i netcfg/choose_interface select eth$contador`nd-i netcfg/disable_dhcp boolean true`n$dns`nd-i netcfg/get_ipaddress string $ip`nd-i netcfg/get_netmask string $netmask`n$gateway`nd-i netcfg/confirm_static boolean true`n"
+            $tipo = $interfaz.Tipo
+            if ($tipo -eq "DHCP") {
+                $configInterfaces += "d-i netcfg/choose_interface select eth$contador`nd-i netcfg/disable_dhcp boolean false`n"
+            } else {
+                $ip = $interfaz.IP
+                $netmask = $interfaz.MascaraRed
+                $gateway = $interfaz.Gateway
+                $dns = $interfaz.DNS
+                if ($gateway) {$gateway = "" }
+                if ($dns) {$dns = ""}
+                $configInterfaces += "d-i netcfg/choose_interface select eth$contador`nd-i netcfg/disable_dhcp boolean true`n$dns`nd-i netcfg/get_ipaddress string $ip`nd-i netcfg/get_netmask string $netmask`n$gateway`nd-i netcfg/confirm_static boolean true`n"
+            }
             $contador++
         }
+        #if ($ambiente -eq "Core") { $insert = "tasksel tasksel/first multiselect standard`n" } else { $insert = "tasksel tasksel/first multiselect desktop, standard`nd-i tasksel/first multiselect Debian desktop environment, Standard system utilities`ntasksel tasksel/desktop string xfce" } 
+        (Get-Content "$directorio\preseed.cfg").replace('{{paquetes}}', "git vim tree") | Set-Content "$directorio\$seed_file"
         (Get-Content "$directorio\preseed.cfg").replace('{{interfaces}}', $configInterfaces) | Set-Content "$directorio\$seed_file"
-        if ($ambiente -eq "Core") { $insert = "tasksel tasksel/first multiselect standard`n" } else { $insert = "tasksel tasksel/first multiselect desktop, standard`nd-i tasksel/first multiselect Debian desktop environment, Standard system utilities`ntasksel tasksel/desktop string xfce" } 
         (Get-Content "$directorio\preseed.cfg").replace('{{ambiente}}', $insert) | Set-Content "$directorio\$seed_file"
         (Get-Content "$directorio\preseed.cfg").replace('{{username}}', $username) | Set-Content "$directorio\$seed_file"
         (Get-Content "$directorio\preseed.cfg").replace('{{pwhash}}', $pwhash) | Set-Content "$directorio\$seed_file"
@@ -87,13 +92,12 @@ function CrearISODebianFlavor {
         # Se hacen modificaciones al archivo txt.cfg del directorio isolinux, para indicar que se lea el archivo de configuración agregado a la imagen 
         (Get-Content "$directorio\isolinux\txt.cfg").replace('label install', 'label unattended') | Set-Content "$directorio\isolinux\txt.cfg"
         (Get-Content "$directorio\isolinux\txt.cfg").replace('menu label ^Install', 'menu label ^Unattended Install') | Set-Content "$directorio\isolinux\txt.cfg"
-        $lol = "append preseed/file=/cdrom/preseed.cfg locale=en_US keymap=es hostname=$hostname domain=local.lan vga=788 initrd=/install.amd/initrd.gz --- quiet"
+        $lol = "append preseed/file=/cdrom/preseed.cfg locale=es_MX keymap=es hostname=$hostname domain=$hostname vga=788 initrd=/install.amd/initrd.gz --- quiet"
         if ($os -eq "Debian 10") {
             (Get-Content "$directorio\isolinux\txt.cfg").replace('append desktop=xfce vga=788 initrd=/install.amd/initrd.gz --- quiet', $lol) | Set-Content "$directorio\isolinux\txt.cfg"
         } else {
             (Get-Content "$directorio\isolinux\txt.cfg").replace('append preseed/file=/cdrom/simple-cdd/default.preseed simple-cdd/profiles=kali,offline desktop=xfce vga=788 initrd=/install.amd/initrd.gz --- quiet ', $lol) | Set-Content "$directorio\isolinux\txt.cfg"
         }
-
         # Se copia el script de post instalación dentro del ISO:
         Copy-Item ".\Recursos\unattend\post.sh" "$directorio" -Force
     }

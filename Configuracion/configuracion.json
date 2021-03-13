@@ -2,12 +2,12 @@
     "Root": "E:\\SanboxTest",
     "MaquinasVirtuales": [
         {
-            "SistemaOperativo": "Ubuntu 20.04",
-            "TipoAmbiente": "Ubuntu desktop",
-            "Hostname": "diezseis",
+            "SistemaOperativo": "Kali Linux 2020.04",
+            "TipoAmbiente": "Core",
+            "Hostname": "ninobomba",
             "DiscosVirtuales": [20],
             "Procesadores": 2,
-            "RutaISO": "E:\\SanboxTest\\ubuntu-20.04.2.0-desktop-amd64.iso",
+            "RutaISO": "E:\\SanboxTest\\kali-linux-2020.4-installer-amd64.iso",
             "MemoriaRAM": {
                 "Tipo": "Static",
                 "Memoria": 1.0
