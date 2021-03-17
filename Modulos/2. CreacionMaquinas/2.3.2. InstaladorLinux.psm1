@@ -29,17 +29,19 @@ function CrearISODebianFlavor {
         (Get-Content "$directorio\ks.cfg").replace('{{pwhash}}', $pwhash) | Set-Content "$directorio\ks.cfg"
         (Get-Content "$directorio\ks.cfg").replace('{{hostname}}', $hostname) | Set-Content "$directorio\ks.cfg"
 
-        #(Get-Content "$directorio\ks.preseed").replace('{{username}}', $username) | Set-Content "$directorio\ks.preseed"
-        #(Get-Content "$directorio\ks.preseed").replace('{{pwhash}}', $pwhash) | Set-Content "$directorio\ks.preseed"
-        #(Get-Content "$directorio\ks.preseed").replace('{{timezone}}', $time) | Set-Content "$directorio\ks.preseed"
-
-
-        # Se le agrega extension a algunos archivos necesarios para crear el ISO
-        Rename-Item -Path "$directorio\casper\initrd" -NewName "initrd.lz"
-        Rename-Item -Path "$directorio\casper\vmlinuz" -NewName "vmlinuz.efi"
+        if ($os -eq "Ubuntu 20.04") {
+            $install_lable="default live-install`nlabel live-install`n  menu label ^Install Ubuntu`n  kernel /casper/vmlinuz`n  append  file=/cdrom/ks.preseed auto=true priority=critical debian-installer/locale=es_MX keyboard-configuration/layoutcode=es ubiquity/reboot=true languagechooser/language-name=English countrychooser/shortlist=US localechooser/supported-locales=en_US.UTF-8 boot=casper automatic-ubiquity initrd=/casper/initrd ks=cdrom:/ks.cfg quiet splash ---"
+            #$install_lable="default live-install`nlabel live-install`n  menu label ^Install Ubuntu`n  kernel /casper/vmlinuz`n  append file=/cdrom/preseed/ubuntu.seed only-ubiquity preseed/file=/cdrom/ks.preseed debian-installer/locale=es_MX keyboard-configuration/layoutcode=es ubiquity/reboot=true languagechooser/language-name=English countrychooser/shortlist=US localechooser/supported-locales=en_US.UTF-8 initrd=/casper/initrd quiet splash ---"
+        } else {
+            # Se le agrega extension a algunos archivos necesarios para crear el ISO
+            Rename-Item -Path "$directorio\casper\initrd" -NewName "initrd.lz"
+            Rename-Item -Path "$directorio\casper\vmlinuz" -NewName "vmlinuz.efi"
+            $install_lable="default install`nlabel install`n  menu label ^Install Ubuntu Server`n  kernel /casper/vmlinuz.efi`n  append file=/cdrom/preseed/ubuntu.seed debian-installer/locale=es_MX keyboard-configuration/layoutcode=es ubiquity/reboot=true languagechooser/language-name=English countrychooser/shortlist=US localechooser/supported-locales=en_US.UTF-8 boot=casper automatic-ubiquity initrd=/casper/initrd.lz ks=cdrom:/ks.cfg preseed/file=/cdrom/ks.preseed --"
+        }
+        
 
         # Se modifica el archivo txt.cfg, el cual contiene las respuestas que instalación y se indican detalles de la instalación desatendida:    
-        $install_lable="default install`nlabel install`n  menu label ^Install Ubuntu Server`n  kernel /casper/vmlinuz.efi`n  append file=/cdrom/preseed/ubuntu.seed debian-installer/locale=es_MX keyboard-configuration/layoutcode=es ubiquity/reboot=true languagechooser/language-name=English countrychooser/shortlist=US localechooser/supported-locales=en_US.UTF-8 boot=casper automatic-ubiquity initrd=/casper/initrd.lz ks=cdrom:/ks.cfg preseed/file=/cdrom/ks.preseed --"
+        #$install_lable="default install`nlabel install`n  menu label ^Install Ubuntu Server`n  kernel /casper/vmlinuz.efi`n  append file=/cdrom/preseed/ubuntu.seed debian-installer/locale=es_MX keyboard-configuration/layoutcode=es ubiquity/reboot=true languagechooser/language-name=English countrychooser/shortlist=US localechooser/supported-locales=en_US.UTF-8 boot=casper automatic-ubiquity initrd=/casper/initrd.lz ks=cdrom:/ks.cfg preseed/file=/cdrom/ks.preseed --"
         # preseed/file=/cdrom/ks.preseed
         #$install_lable="default live-install`nlabel autoinstall`n  menu label ^Automatic Install Ubuntu`n  kernel /casper/vmlinuz.efi`n  append file=/cdrom/ks.preseed auto=true priority=critical debian-installer/locale=en_US keyboard-configuration/layoutcode=es ubiquity/reboot=true languagechooser/language-name=English countrychooser/shortlist=US localechooser/supported-locales=en_US.UTF-8 boot=casper automatic-ubiquity initrd=/casper/initrd.lz quiet splash noprompt noshell ---"
         #$install_lable="default live-install`nlabel autoinstall`n  menu label ^Automatic Install Ubuntu`n  kernel /casper/vmlinuz.efi`nappend file=/cdrom/preseed/ubuntu.seed ks.preseed vga=788 initrd=/casper/initrd.lz ks=cdrom/ks.cfg preseed/file=/cdrom/ks.preseed quiet ---"
@@ -47,15 +49,15 @@ function CrearISODebianFlavor {
         $install_lable | Set-Content "$directorio\isolinux\txt.cfg"
 
         # Se copia el script de post instalación dentro del ISO:
-        Copy-Item ".\Recursos\unattend\post.sh" "$directorio" -Force
+        #Copy-Item ".\Recursos\unattend\post.sh" "$directorio" -Force
         
     } elseif (@("Kali Linux 2020.04", "Debian 10") -contains $os) {
         # Se copia el preseed base al directorio de trabajo y al archivo copiado, se hacen las modificaciones de las especificaciones para el equipo
         if ($os -eq "Debian 10"){
             Copy-Item ".\Recursos\unattend\Debian\preseed.cfg" "$directorio" -Force
         } else {
-            Copy-Item ".\Recursos\unattend\Debian\preseed.cfg" "$directorio" -Force
-            #Copy-Item ".\Recursos\unattend\Kali\preseed.cfg" "$directorio" -Force
+            #Copy-Item ".\Recursos\unattend\Debian\preseed.cfg" "$directorio" -Force
+            Copy-Item ".\Recursos\unattend\Kali\preseed.cfg" "$directorio" -Force
         }
         if ($ambiente -match "Core") { $insert = "tasksel tasksel/first multiselect standard`n" } else { $insert = "tasksel tasksel/first multiselect desktop, standard`nd-i tasksel/first multiselect Debian desktop environment, Standard system utilities`ntasksel tasksel/desktop string xfce" } 
         $configInterfaces = ""
