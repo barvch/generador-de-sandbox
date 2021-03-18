@@ -1,12 +1,12 @@
 {
-    "SistemaOperativo":  "Ubuntu 20.04",
-    "Hostname":  "comolaves",
+    "SistemaOperativo":  "Debian 10",
+    "Hostname":  "ninobomba",
     "DiscosVirtuales":  20,
     "Procesadores":  2,
-    "RutaISO":  "E:\\SanboxTest\\ubuntu-20.04.2.0-desktop-amd64.iso",
+    "RutaISO":  "E:\\SanboxTest\\debian-10.8.0-amd64-xfce-CD-1.iso",
     "MemoriaRAM":  {
                        "Tipo":  "Static",
-                       "Memoria":  1.0
+                       "Memoria":  2.0
                    },
     "Credenciales":  {
                          "Usuario":  "prueba",
