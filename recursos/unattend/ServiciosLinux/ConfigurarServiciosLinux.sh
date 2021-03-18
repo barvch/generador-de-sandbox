@@ -3,7 +3,6 @@
 function creaCertificado (){
 	domain=$1
 	password=$2
-	file=$3
 	commonname=$domain
 	country=MX
 	state=CDMX
@@ -277,164 +276,70 @@ then
 	servidorWeb=$(jq ".ServidorWeb" servicios.json)
 	if [ "$servidorWeb" != "null" ]
 	then
-		instalarServidor=true
+		drupalFlag=true
 		servidor=$(jq -r ".ServidorWeb.Servidor" servicios.json | sed -r 's/\"//g')
-		case $servidor in
-			Apache)
-				apt install apache2 -y
-				noElementos=$(jq -r ".ServidorWeb.Sitios[]|\"\(.Nombre)\"" servicios.json | wc -l)
-				for index in $(eval echo {0..$(expr $noElementos - 1)})
-				do
-					nombreSitio=$(jq -r ".ServidorWeb.Sitios[$index].Nombre" servicios.json | sed -r 's/\"//g')
-					dominioSitio=$(jq -r ".ServidorWeb.Sitios[$index].Dominio" servicios.json | sed -r 's/\"//g')
-					ipSitio=$(jq -r ".ServidorWeb.Sitios[$index].Interfaz" servicios.json | sed -r 's/\"//g')
-					puerto=$(jq -r ".ServidorWeb.Sitios[$index].Puerto" servicios.json | sed -r 's/\"//g')
-					protocolo=$(jq -r ".ServidorWeb.Sitios[$index].Protocolo" servicios.json | sed -r 's/\"//g')
-					mkdir /var/www/$nombreSitio/
-					echo -e "<html>\n<head>\n\t<title>$nombreSitio</title>\n</head>\n<body>\n\t<h1>$nombreSitio</h1>\n</body>\n</html>" > /var/www/$nombreSitio/index.html
-					case $protocolo in
-						http)
-							file="/etc/apache2/sites-available/$nombreSitio.conf"
-							cp /etc/apache2/sites-available/000-default.conf $file
-							sed -i "s/\*:80/${ipSitio}:$puerto/g" $file
-							sed -i "s/html/$nombreSitio\//g" $file
-							sed -i "s/\#ServerName www.example.com/ServerName $dominioSitio/g" $file
-							sed -i "/ServerName $dominioSitio/a ServerAlias www.$dominioSitio" $file
-							drupal=$(jq -r ".ServidorWeb.Sitios[$index].Drupal" servicios.json)
-							if [ $drupal ]
-							then
-								apt-get install php libapache2-mod-php php-cli php-fpm php-json php-common php-mysql php-zip php-gd php-intl php-mbstring php-curl php-xml php-pear php-tidy php-soap php-bcmath php-xmlrpc -y
-								wget https://www.drupal.org/download-latest/tar.gz -O drupal.tar.gz
-								tar -xf drupal.tar.gz
-								nombreArchivo=$(echo drupal-*)
-								mv $nombreArchivo $nombreSitio
-								rm -r /var/www/$nombreSitio/
-								mv $nombreSitio /var/www/
-								chown -R www-data:www-data /var/www/$nombreSitio
-								chmod -R 755 /var/www/$nombreSitio/
-								drupalContent="
-								<Directory /var/www/$nombreSitio/>;\n\
-									Options FollowSymlinks\n\
-									AllowOverride All\n\
-									Require all granted\n\
-								</Directory>\n\
-								<Directory /var/www/>\n\
-									RewriteEngine on\n\
-									RewriteBase /\n\
-									RewriteCond %{REQUEST_FILENAME} !-f\n\
-									RewriteCond %{REQUEST_FILENAME} !-d\n\
-									RewriteRule ^(.*)$ index.php?q=$1 [L,QSA]\n\
-								</Directory>\n\
-								"
-								sed -i "/<\/VirtualHost>/a $drupalContent" $file
-								a2enmod rewrite
-								sitioEn=$nombreSitio.conf
-							fi
-						;;
-						https)
-							file="/etc/apache2/sites-available/$nombreSitio-ssl.conf"
-							cp /etc/apache2/sites-available/default-ssl.conf $file
-							sed -i "s/_default_:443/${ipSitio}:$puerto/g" $file
-							sed -i "s/html/$nombreSitio\//g" $file
-							sed -i "/\/$nombreSitio\//a ServerName $dominioSitio" $file
-							sed -i "/ServerName $dominioSitio/a ServerAlias www.$dominioSitio" $file
-							domain=$dominioSitio
-							commonname=$domain
-							password=$contrasena
-							country=MX
-							state=CDMX
-							locality=Coyoacan
-							organization=UNAM-CERT
-							organizationalunit=DGTIC
-							email=""
-							openssl genrsa -des3 -passout pass:$password -out $domain.key 2048
-							openssl rsa -in $domain.key -passin pass:$password -out $domain.key
-							openssl req -new -key $domain.key -out $domain.csr -passin pass:$password -subj "/C=$country/ST=$state/L=$locality/O=$organization/OU=$organizationalunit/CN=$commonname/emailAddress=$email"
-							openssl x509 -req -days 365 -in $domain.csr -signkey $domain.key -out $domain.crt
-							cp $domain.key /etc/ssl/private/$domain.key
-							cp $domain.crt /etc/ssl/certs/$domain.crt
-							sed -i "s/ssl-cert-snakeoil.pem/$domain.crt/g" $file
-							sed -i "s/ssl-cert-snakeoil.key/$domain.key/g" $file
-							sitioEn=$nombreSitio-ssl.conf
-						;;
-					esac
-					chmod -R 755 /var/www/$nombreSitio/
-					actual=$(pwd)
-					cd /etc/apache2/sites-available
-					a2ensite $sitioEn
-					cd $actual
-					echo -e "$ipSitio \t$dominioSitio" >> /etc/hosts
-				done
-				systemctl enable apache2
-				systemctl restart apache2
-			;;
-			Nginx)
-				apt install nginx -y
-				noElementos=$(jq -r ".ServidorWeb.Sitios[]|\"\(.Nombre)\"" servicios.json | wc -l)
-				for index in $(eval echo {0..$(expr $noElementos - 1)})
-				do
-					drupal=$(jq -r ".ServidorWeb.Sitios[$index].Drupal" servicios.json)
-					if [ $drupal = true ] && [ $instalarServidor = true ]
-					then
-						apt-get install php php-fpm php-gd php-common php-mysql php-apcu php-gmp php-curl php-intl php-mbstring php-xmlrpc php-gd php-xml php-cli php-zip -y
-						wget https://www.drupal.org/download-latest/tar.gz -O drupal.tar.gz
-						tar -xf drupal.tar.gz
-						nombreArchivo=$(echo drupal-*)
-						versionPHP=$(php -v | egrep "PHP [0-9]" | cut -d " " -f2 | cut -d "." -f1,2)
-						phpFile=/etc/php/$versionPHP/fpm/php.ini
-						sed -i "s/.*cgi.fix_pathinfo=.*/cgi.fix_pathinfo=0/g" $phpFile
-						sed -i "s/.*date.timezone =.*/date.timezone = America\/Mexico_City/g" $phpFile
-						instalarServidor=false
-					fi
-					nombreSitio=$(jq -r ".ServidorWeb.Sitios[$index].Nombre" servicios.json | sed -r 's/\"//g')
-					dominioSitio=$(jq -r ".ServidorWeb.Sitios[$index].Dominio" servicios.json | sed -r 's/\"//g')
-					ipSitio=$(jq -r ".ServidorWeb.Sitios[$index].Interfaz" servicios.json | sed -r 's/\"//g')
-					puerto=$(jq -r ".ServidorWeb.Sitios[$index].Puerto" servicios.json | sed -r 's/\"//g')
-					protocolo=$(jq -r ".ServidorWeb.Sitios[$index].Protocolo" servicios.json | sed -r 's/\"//g')
-					if [ $drupal = true ] 
-					then
-						cp -rf $nombreArchivo $nombreSitio
-						mv $nombreSitio /var/www/
-					else
-						mkdir /var/www/$nombreSitio
-						echo -e "<html>\n<head>\n\t<title>$nombreSitio</title>\n</head>\n<body>\n\t<h1>$nombreSitio</h1>\n</body>\n</html>" > /var/www/$nombreSitio/index.html
-					fi
-					case $protocolo in
-						http)
-							file=/etc/nginx/sites-available/$nombreSitio.conf
-							if [ $drupal = true ] 
-							then
-								configFile=ArchivosConfiguracion/ServidorWeb/Nginx/http/drupal.conf
-							else
-								configFile=ArchivosConfiguracion/ServidorWeb/Nginx/http/sitio.conf
-							fi
-						;;
-						https)
-							file=/etc/nginx/sites-available/$nombreSitio-ssl.conf
-							creaCertificado $dominioSitio $contrasena $file
-							if [ $drupal = true ] 
-							then
-								configFile=ArchivosConfiguracion/ServidorWeb/Nginx/https/drupal-ssl.conf
-							else
-								configFile=ArchivosConfiguracion/ServidorWeb/Nginx/https/sitio-ssl.conf
-							fi
-						;;
-					esac					
-					cp -f $configFile $file
-					sed -i "s/{{ip}}/$ipSitio/g" $file
-					sed -i "s/{{puerto}}/$puerto/g" $file
-					sed -i "s/{{nombreSitio}}/$nombreSitio/g" $file
-					sed -i "s/{{dominioSitio}}/$dominioSitio/g" $file
-					sed -i "s/{{versionPHP}}/$versionPHP/g" $file
-					ln -sf $file /etc/nginx/sites-enabled/
-					sed -i "s/# server_names_hash_bucket_size 64;/server_names_hash_bucket_size 64;/g" /etc/nginx/nginx.conf
-					nginx -t
-					echo -e "$ipSitio \t$dominioSitio" >> /etc/hosts
-				done
-				systemctl restart nginx
-			;;
-		esac
-		chmod -R 755 /var/www/$nombreSitio/
-		chown -R www-data:www-data /var/www/$nombreSitio/
+		noElementos=$(jq -r ".ServidorWeb.Sitios[]|\"\(.Nombre)\"" servicios.json | wc -l)
+		apt-get install $servidor -y
+		for index in $(eval echo {0..$(expr $noElementos - 1)})
+		do
+			nombreSitio=$(jq -r ".ServidorWeb.Sitios[$index].Nombre" servicios.json | sed -r 's/\"//g')
+			dominioSitio=$(jq -r ".ServidorWeb.Sitios[$index].Dominio" servicios.json | sed -r 's/\"//g')
+			ipSitio=$(jq -r ".ServidorWeb.Sitios[$index].Interfaz" servicios.json | sed -r 's/\"//g')
+			puerto=$(jq -r ".ServidorWeb.Sitios[$index].Puerto" servicios.json | sed -r 's/\"//g')
+			protocolo=$(jq -r ".ServidorWeb.Sitios[$index].Protocolo" servicios.json | sed -r 's/\"//g')
+			drupal=$(jq -r ".ServidorWeb.Sitios[$index].Drupal" servicios.json)
+			if [ $drupal = true ] && [ $drupalFlag = true ]
+			then
+				apt-get install libapache2-mod-php php php-fpm php-gd php-common php-mysql php-apcu php-gmp php-curl php-intl php-mbstring php-xmlrpc php-gd php-xml php-cli php-zip -y
+				wget https://www.drupal.org/download-latest/tar.gz -O drupal.tar.gz
+				tar -xf drupal.tar.gz
+				nombreArchivo=$(echo drupal-*)
+				versionPHP=$(php -v | egrep "PHP [0-9]" | cut -d " " -f2 | cut -d "." -f1,2)
+				phpFile=/etc/php/$versionPHP/fpm/php.ini
+				sed -i "s/.*cgi.fix_pathinfo=.*/cgi.fix_pathinfo=0/g" $phpFile
+				sed -i "s/.*date.timezone =.*/date.timezone = America\/Mexico_City/g" $phpFile
+				drupalFlag=false
+			fi
+			if [ $drupal = true ] 
+			then
+				cp -rf $nombreArchivo $nombreSitio
+				mv $nombreSitio /var/www/
+			else
+				indexFile=/var/www/$nombreSitio/
+				mkdir $indexFile
+				cp ArchivosConfiguracion/ServidorWeb/index.html $indexFile
+				sed -i "s/{{nombreSitio}}/$nombreSitio/g" $indexFile/index.html
+			fi
+			file="/etc/$servidor/sites-available/$nombreSitio.conf"
+			if [ $drupal = true ] 
+			then
+				configFile=ArchivosConfiguracion/ServidorWeb/$servidor/$protocolo/drupal.conf
+			else
+				configFile=ArchivosConfiguracion/ServidorWeb/$servidor/$protocolo/sitio.conf
+			fi
+			if [ $protocolo = "https" ] 
+			then
+				creaCertificado	$dominioSitio $contrasena
+			fi
+			cp -f $configFile $file
+			sed -i "s/{{ip}}/$ipSitio/g" $file
+			sed -i "s/{{puerto}}/$puerto/g" $file
+			sed -i "s/{{nombreSitio}}/$nombreSitio/g" $file
+			sed -i "s/{{dominioSitio}}/$dominioSitio/g" $file
+			sed -i "s/{{versionPHP}}/$versionPHP/g" $file
+			ln -sf $file /etc/$servidor/sites-enabled/
+			sed -i "s/# server_names_hash_bucket_size 64;/server_names_hash_bucket_size 64;/g" /etc/$servidor/$servidor.conf
+			echo -e "$ipSitio \t$dominioSitio" >> /etc/hosts
+			chmod -R 755 /var/www/$nombreSitio/
+			chown -R www-data:www-data /var/www/$nombreSitio/
+		done
+		if [ $servidor = "apache2" ]
+		then
+			echo IncludeOptional sites-enabled/*.conf >> /etc/apache2/apache2.conf
+			echo ServerName 127.0.0.1 >> /etc/apache2/apache2.conf
+			a2enmod ssl rewrite
+		fi
+		systemctl enable $servidor
+		systemctl restart $servidor
 	fi
 fi
