@@ -1,15 +1,34 @@
 #!/bin/bash
 
+function creaCertificado (){
+	domain=$1
+	password=$2
+	file=$3
+	commonname=$domain
+	country=MX
+	state=CDMX
+	locality=Coyoacan
+	organization=UNAM-CERT
+	organizationalunit=DGTIC
+	email=""
+	openssl genrsa -des3 -passout pass:$password -out $domain.key 2048
+	openssl rsa -in $domain.key -passin pass:$password -out $domain.key
+	openssl req -new -key $domain.key -out $domain.csr -passin pass:$password -subj "/C=$country/ST=$state/L=$locality/O=$organization/OU=$organizationalunit/CN=$commonname/emailAddress=$email"
+	openssl x509 -req -days 365 -in $domain.csr -signkey $domain.key -out $domain.crt
+	mv $domain.key /etc/ssl/private/$domain.key
+	mv $domain.crt /etc/ssl/certs/$domain.crt
+}
+
 apt-get update -y
 apt-get install jq -y
 usuario=$(jq ".Credenciales.Usuario" archivo.json | sed -r 's/\"//g')
 contrasena=$(jq ".Credenciales.Contrasena" archivo.json | sed -r 's/\"//g')
 sistemaOperativo=$(jq ".SistemaOperativo" archivo.json | sed -r 's/\"//g')
 ipBase=$(jq -r ".Interfaces[0].IP" archivo.json | sed -r 's/\"//g')
-if [ $sistemaOperativo = "Debian 10" ]
+if [[ $sistemaOperativo = "Debian 10" ]]
 then
 	interfaz=$(ip a | grep $ipBase | cut -d " " -f13)
-elif [ $sistemaOperativo = "Kali Linux 2020.04" ]
+elif [[ $sistemaOperativo = "Kali Linux 2020.04" ]]
 then
 	interfaz=$(ip a | grep $ipBase | cut -d " " -f11)
 fi
@@ -258,6 +277,7 @@ then
 	servidorWeb=$(jq ".ServidorWeb" servicios.json)
 	if [ "$servidorWeb" != "null" ]
 	then
+		instalarServidor=true
 		servidor=$(jq -r ".ServidorWeb.Servidor" servicios.json | sed -r 's/\"//g')
 		case $servidor in
 			Apache)
@@ -353,81 +373,60 @@ then
 				noElementos=$(jq -r ".ServidorWeb.Sitios[]|\"\(.Nombre)\"" servicios.json | wc -l)
 				for index in $(eval echo {0..$(expr $noElementos - 1)})
 				do
+					drupal=$(jq -r ".ServidorWeb.Sitios[$index].Drupal" servicios.json)
+					if [ $drupal = true ] && [ $instalarServidor = true ]
+					then
+						apt-get install php php-fpm php-gd php-common php-mysql php-apcu php-gmp php-curl php-intl php-mbstring php-xmlrpc php-gd php-xml php-cli php-zip -y
+						wget https://www.drupal.org/download-latest/tar.gz -O drupal.tar.gz
+						tar -xf drupal.tar.gz
+						nombreArchivo=$(echo drupal-*)
+						versionPHP=$(php -v | egrep "PHP [0-9]" | cut -d " " -f2 | cut -d "." -f1,2)
+						phpFile=/etc/php/$versionPHP/fpm/php.ini
+						sed -i "s/.*cgi.fix_pathinfo=.*/cgi.fix_pathinfo=0/g" $phpFile
+						sed -i "s/.*date.timezone =.*/date.timezone = America\/Mexico_City/g" $phpFile
+						instalarServidor=false
+					fi
 					nombreSitio=$(jq -r ".ServidorWeb.Sitios[$index].Nombre" servicios.json | sed -r 's/\"//g')
 					dominioSitio=$(jq -r ".ServidorWeb.Sitios[$index].Dominio" servicios.json | sed -r 's/\"//g')
 					ipSitio=$(jq -r ".ServidorWeb.Sitios[$index].Interfaz" servicios.json | sed -r 's/\"//g')
 					puerto=$(jq -r ".ServidorWeb.Sitios[$index].Puerto" servicios.json | sed -r 's/\"//g')
 					protocolo=$(jq -r ".ServidorWeb.Sitios[$index].Protocolo" servicios.json | sed -r 's/\"//g')
-					mkdir -p /var/www/$nombreSitio
-					echo -e "<html>\n<head>\n\t<title>$nombreSitio</title>\n</head>\n<body>\n\t<h1>$nombreSitio</h1>\n</body>\n</html>" > /var/www/$nombreSitio/index.html
+					if [ $drupal = true ] 
+					then
+						cp -rf $nombreArchivo $nombreSitio
+						mv $nombreSitio /var/www/
+					else
+						mkdir /var/www/$nombreSitio
+						echo -e "<html>\n<head>\n\t<title>$nombreSitio</title>\n</head>\n<body>\n\t<h1>$nombreSitio</h1>\n</body>\n</html>" > /var/www/$nombreSitio/index.html
+					fi
 					case $protocolo in
 						http)
-							file="/etc/nginx/sites-available/$nombreSitio.conf"
-							contenido="\n\
-									server {\n\
-							        	listen ${ipSitio}:$puerto;\n\
-							        	root /var/www/$nombreSitio/;\n\
-							        	index index.html index.htm index.nginx-debian.html;\n\
-							        	server_name $dominioSitio www.$dominioSitio;\n\
-							        	location / {\n\
-							                try_files \$uri \$uri/ =404;\n\
-							        	}\n\
-									}"
-							echo -e $contenido > $file
-							drupal=$(jq -r ".ServidorWeb.Sitios[$index].Drupal" servicios.json)
-							if [ $drupal ]
+							file=/etc/nginx/sites-available/$nombreSitio.conf
+							if [ $drupal = true ] 
 							then
-								apt-get install php php-fpm php-gd php-common php-mysql php-apcu php-gmp php-curl php-intl php-mbstring php-xmlrpc php-gd php-xml php-cli php-zip -y
-								wget https://www.drupal.org/download-latest/tar.gz -O drupal.tar.gz
-								tar -xf drupal.tar.gz
-								nombreArchivo=$(echo drupal-*)
-								mv $nombreArchivo $nombreSitio
-								rm -r /var/www/$nombreSitio/
-								mv $nombreSitio /var/www/
-								chown -R www-data:www-data /var/www/$nombreSitio/
-								chmod -R 755 /var/www/$nombreSitio/
+								configFile=ArchivosConfiguracion/ServidorWeb/Nginx/http/drupal.conf
+							else
+								configFile=ArchivosConfiguracion/ServidorWeb/Nginx/http/sitio.conf
 							fi
 						;;
 						https)
-							file="/etc/nginx/sites-available/$nombreSitio-ssl.conf"
-							domain=$dominioSitio
-							commonname=$domain
-							password=$contrasena
-							country=MX
-							state=CDMX
-							locality=Coyoacan
-							organization=UNAM-CERT
-							organizationalunit=DGTIC
-							email=""
-							openssl genrsa -des3 -passout pass:$password -out $domain.key 2048
-							openssl rsa -in $domain.key -passin pass:$password -out $domain.key
-							openssl req -new -key $domain.key -out $domain.csr -passin pass:$password -subj "/C=$country/ST=$state/L=$locality/O=$organization/OU=$organizationalunit/CN=$commonname/emailAddress=$email"
-							openssl x509 -req -days 365 -in $domain.csr -signkey $domain.key -out $domain.crt
-							cp $domain.key /etc/ssl/private/$domain.key
-							cp $domain.crt /etc/ssl/certs/$domain.crt
-							contenido="\n\
-							server {\n\
-									listen 80;\n\
-									server_name $dominioSitio www.$dominioSitio;\n\
-									return 301 https://$dominioSitio$request_uri;\n\
-							}\n\
-							server{\n\
-									listen $puerto ssl;\n\
-									server_name $dominioSitio www.$dominioSitio;\n\
-									ssl_certificate /etc/ssl/certs/$domain.crt;\n\
-									ssl_certificate_key /etc/ssl/private/$domain.key;\n\
-									root /var/www/$nombreSitio/;\n\
-									index index.html index.htm index.nginx-debian.html;\n\
-									location / {\n\
-											try_files \$uri \$uri/ =404;\n\
-									}\n\
-							}
-							"
-							echo -e $contenido > $file
+							file=/etc/nginx/sites-available/$nombreSitio-ssl.conf
+							creaCertificado $dominioSitio $contrasena $file
+							if [ $drupal = true ] 
+							then
+								configFile=ArchivosConfiguracion/ServidorWeb/Nginx/https/drupal-ssl.conf
+							else
+								configFile=ArchivosConfiguracion/ServidorWeb/Nginx/https/sitio-ssl.conf
+							fi
 						;;
-					esac
-					chmod -R 755 /var/www/$nombreSitio
-					ln -s $file /etc/nginx/sites-enabled/
+					esac					
+					cp -f $configFile $file
+					sed -i "s/{{ip}}/$ipSitio/g" $file
+					sed -i "s/{{puerto}}/$puerto/g" $file
+					sed -i "s/{{nombreSitio}}/$nombreSitio/g" $file
+					sed -i "s/{{dominioSitio}}/$dominioSitio/g" $file
+					sed -i "s/{{versionPHP}}/$versionPHP/g" $file
+					ln -sf $file /etc/nginx/sites-enabled/
 					sed -i "s/# server_names_hash_bucket_size 64;/server_names_hash_bucket_size 64;/g" /etc/nginx/nginx.conf
 					nginx -t
 					echo -e "$ipSitio \t$dominioSitio" >> /etc/hosts
@@ -435,5 +434,7 @@ then
 				systemctl restart nginx
 			;;
 		esac
+		chmod -R 755 /var/www/$nombreSitio/
+		chown -R www-data:www-data /var/www/$nombreSitio/
 	fi
 fi
