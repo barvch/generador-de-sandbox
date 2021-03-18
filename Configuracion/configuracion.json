@@ -2,12 +2,12 @@
     "Root": "E:\\SanboxTest",
     "MaquinasVirtuales": [
         {
-            "SistemaOperativo": "Kali Linux 2020.04",
+            "SistemaOperativo": "Debian 10",
             "TipoAmbiente": "Xfce",
-            "Hostname": "kidbomb",
+            "Hostname": "ninobomba",
             "DiscosVirtuales": [20],
             "Procesadores": 2,
-            "RutaISO": "E:\\SanboxTest\\kali-linux-2020.4-installer-amd64.iso",
+            "RutaISO": "E:\\SanboxTest\\debian-10.8.0-amd64-xfce-CD-1.iso",
             "MemoriaRAM": {
                 "Tipo": "Static",
                 "Memoria": 2.0
