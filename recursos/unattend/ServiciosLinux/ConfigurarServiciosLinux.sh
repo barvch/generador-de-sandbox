@@ -6,12 +6,12 @@ usuario=$(jq ".Credenciales.Usuario" archivo.json | sed -r 's/\"//g')
 contrasena=$(jq ".Credenciales.Contrasena" archivo.json | sed -r 's/\"//g')
 sistemaOperativo=$(jq ".SistemaOperativo" archivo.json | sed -r 's/\"//g')
 ipBase=$(jq -r ".Interfaces[0].IP" archivo.json | sed -r 's/\"//g')
-if [[ $sistemaOperativo = "Debian 10" ]]
+if [ $sistemaOperativo = "Debian 10" ]
 then
 	interfaz=$(ip a | grep $ipBase | cut -d " " -f13)
-elif [[ $sistemaOperativo = "Kali Linux 2020.04" ]]
+elif [ $sistemaOperativo = "Kali Linux 2020.04" ]
 then
-		interfaz=$(ip a | grep $ipBase | cut -d " " -f11)
+	interfaz=$(ip a | grep $ipBase | cut -d " " -f11)
 fi
 servicios=$(jq ".Servicios" archivo.json)
 if [ "$servicios" != "null" ]
@@ -195,10 +195,10 @@ then
 			esac
 		done
 		named-checkconf
-		if [[ $sistemaOperativo = "Kali Linux 2020.04" ]]; then
+		if [ $sistemaOperativo = "Kali Linux 2020.04" ]; then
 			systemctl named enable
 			systemctl named restart
-		elif [[ $sistemaOperativo = "Debian 10" ]]; then
+		elif [ $sistemaOperativo = "Debian 10" ]; then
 			systemctl bind9 enable
 			systemctl bind9 restart
 		fi
@@ -239,11 +239,11 @@ then
 				echo -e "\trange $inicio $fin;" >> /etc/dhcp/dhcpd.conf
 			done
 			dns=$(jq -r ".DHCP[$index].DNS" servicios.json)
-			if [[ "$dns" != "null" ]]; then
+			if [ "$dns" != "null" ]; then
 				echo -e "\toption domain-name-servers $dns;" >> /etc/dhcp/dhcpd.conf
 			fi
 			gateway=$(jq -r ".DHCP[$index].Gateway" servicios.json)
-			if [[ "$gateway" != "null" ]]; then
+			if [ "$gateway" != "null" ]; then
 				echo -e "\toption routers $gateway;" >> /etc/dhcp/dhcpd.conf
 			fi
 		    echo "}" >> /etc/dhcp/dhcpd.conf
@@ -254,7 +254,7 @@ then
 		systemctl restart networking.service
 		systemctl enable isc-dhcp-server
 		systemctl restart isc-dhcp-server
-	fi
+		fi
 	servidorWeb=$(jq ".ServidorWeb" servicios.json)
 	if [ "$servidorWeb" != "null" ]
 	then
@@ -281,34 +281,35 @@ then
 							sed -i "s/\#ServerName www.example.com/ServerName $dominioSitio/g" $file
 							sed -i "/ServerName $dominioSitio/a ServerAlias www.$dominioSitio" $file
 							drupal=$(jq -r ".ServidorWeb.Sitios[$index].Drupal" servicios.json)
-					if [[ $drupal ]]
-					then
-						apt-get install php libapache2-mod-php php-cli php-fpm php-json php-common php-mysql php-zip php-gd php-intl php-mbstring php-curl php-xml php-pear php-tidy php-soap php-bcmath php-xmlrpc -y
-						wget https://www.drupal.org/download-latest/tar.gz -O drupal.tar.gz
-						tar -xf drupal.tar.gz
-						nombreArchivo=$(echo drupal-*)
-						mv $nombreArchivo $nombreSitio
-						rm -r /var/www/$nombreSitio/
-						mv $nombreSitio /var/www/
-						chown -R www-data:www-data /var/www/$nombreSitio
-						chmod -R 755 /var/www/$nombreSitio/
-						drupalContent="<Directory /var/www/$nombreSitio/>;\n\
-	Options FollowSymlinks\n\
-    AllowOverride All\n\
-    Require all granted\n\
-</Directory>\n\
-<Directory /var/www/>\n\
-	RewriteEngine on\n\
-    RewriteBase /\n\
-    RewriteCond %{REQUEST_FILENAME} !-f\n\
-    RewriteCond %{REQUEST_FILENAME} !-d\n\
-    RewriteRule ^(.*)$ index.php?q=$1 [L,QSA]\n\
-</Directory>\n\
+							if [ $drupal ]
+							then
+								apt-get install php libapache2-mod-php php-cli php-fpm php-json php-common php-mysql php-zip php-gd php-intl php-mbstring php-curl php-xml php-pear php-tidy php-soap php-bcmath php-xmlrpc -y
+								wget https://www.drupal.org/download-latest/tar.gz -O drupal.tar.gz
+								tar -xf drupal.tar.gz
+								nombreArchivo=$(echo drupal-*)
+								mv $nombreArchivo $nombreSitio
+								rm -r /var/www/$nombreSitio/
+								mv $nombreSitio /var/www/
+								chown -R www-data:www-data /var/www/$nombreSitio
+								chmod -R 755 /var/www/$nombreSitio/
+								drupalContent="
+								<Directory /var/www/$nombreSitio/>;\n\
+									Options FollowSymlinks\n\
+									AllowOverride All\n\
+									Require all granted\n\
+								</Directory>\n\
+								<Directory /var/www/>\n\
+									RewriteEngine on\n\
+									RewriteBase /\n\
+									RewriteCond %{REQUEST_FILENAME} !-f\n\
+									RewriteCond %{REQUEST_FILENAME} !-d\n\
+									RewriteRule ^(.*)$ index.php?q=$1 [L,QSA]\n\
+								</Directory>\n\
 								"
-					sed -i "/<\/VirtualHost>/a $drupalContent" $file
-					a2enmod rewrite
-					sitioEn=$nombreSitio.conf
-				fi
+								sed -i "/<\/VirtualHost>/a $drupalContent" $file
+								a2enmod rewrite
+								sitioEn=$nombreSitio.conf
+							fi
 						;;
 						https)
 							file="/etc/apache2/sites-available/$nombreSitio-ssl.conf"
@@ -347,7 +348,7 @@ then
 				systemctl enable apache2
 				systemctl restart apache2
 			;;
-			Nginex)
+			Nginx)
 				apt install nginx -y
 				noElementos=$(jq -r ".ServidorWeb.Sitios[]|\"\(.Nombre)\"" servicios.json | wc -l)
 				for index in $(eval echo {0..$(expr $noElementos - 1)})
@@ -357,64 +358,78 @@ then
 					ipSitio=$(jq -r ".ServidorWeb.Sitios[$index].Interfaz" servicios.json | sed -r 's/\"//g')
 					puerto=$(jq -r ".ServidorWeb.Sitios[$index].Puerto" servicios.json | sed -r 's/\"//g')
 					protocolo=$(jq -r ".ServidorWeb.Sitios[$index].Protocolo" servicios.json | sed -r 's/\"//g')
-					mkdir /var/www/$nombreSitio/
+					mkdir -p /var/www/$nombreSitio
 					echo -e "<html>\n<head>\n\t<title>$nombreSitio</title>\n</head>\n<body>\n\t<h1>$nombreSitio</h1>\n</body>\n</html>" > /var/www/$nombreSitio/index.html
 					case $protocolo in
 						http)
-						file="/etc/nginx/sites-available/$nombreSitio.conf"
-						contenido="\n\
-								server {\n\
-						        	listen $puerto;\n\
-						        	root /var/www/$nombreSitio/;\n\
-						        	index index.html index.htm index.nginx-debian.html;\n\
-						        	server_name $dominioSitio www.$dominioSitio;\n\
-						        	location / {\n\
-						                try_files $uri $uri/ =404;\n\
-						        	}\n\
-								}"
-						echo -e $contenido > $file
+							file="/etc/nginx/sites-available/$nombreSitio.conf"
+							contenido="\n\
+									server {\n\
+							        	listen ${ipSitio}:$puerto;\n\
+							        	root /var/www/$nombreSitio/;\n\
+							        	index index.html index.htm index.nginx-debian.html;\n\
+							        	server_name $dominioSitio www.$dominioSitio;\n\
+							        	location / {\n\
+							                try_files \$uri \$uri/ =404;\n\
+							        	}\n\
+									}"
+							echo -e $contenido > $file
+							drupal=$(jq -r ".ServidorWeb.Sitios[$index].Drupal" servicios.json)
+							if [ $drupal ]
+							then
+								apt-get install php php-fpm php-gd php-common php-mysql php-apcu php-gmp php-curl php-intl php-mbstring php-xmlrpc php-gd php-xml php-cli php-zip -y
+								wget https://www.drupal.org/download-latest/tar.gz -O drupal.tar.gz
+								tar -xf drupal.tar.gz
+								nombreArchivo=$(echo drupal-*)
+								mv $nombreArchivo $nombreSitio
+								rm -r /var/www/$nombreSitio/
+								mv $nombreSitio /var/www/
+								chown -R www-data:www-data /var/www/$nombreSitio/
+								chmod -R 755 /var/www/$nombreSitio/
+							fi
 						;;
 						https)
-						file="/etc/nginx/sites-available/$nombreSitio-ssl.conf"
-						domain=$dominioSitio
-						commonname=$domain
-						password=$contrasena
-						country=MX
-						state=CDMX
-						locality=Coyoacan
-						organization=UNAM-CERT
-						organizationalunit=DGTIC
-						email=""
-						openssl genrsa -des3 -passout pass:$password -out $domain.key 2048
-						openssl rsa -in $domain.key -passin pass:$password -out $domain.key
-						openssl req -new -key $domain.key -out $domain.csr -passin pass:$password -subj "/C=$country/ST=$state/L=$locality/O=$organization/OU=$organizationalunit/CN=$commonname/emailAddress=$email"
-						openssl x509 -req -days 365 -in $domain.csr -signkey $domain.key -out $domain.crt
-						cp $domain.key /etc/ssl/private/$domain.key
-						cp $domain.crt /etc/ssl/certs/$domain.crt
-						contenido="\n\
-						server {\n\
-						        listen 80;\n\
-						        server_name $dominioSitio www.$dominioSitio;\n\
-						        return 301 https://$dominioSitio$request_uri;\n\
-						}\n\
-						server{\n\
-						        listen $puerto ssl;\n\
-						        server_name $dominioSitio www.$dominioSitio;\n\
-						        ssl_certificate /etc/ssl/certs/$domain.crt;\n\
-						        ssl_certificate_key /etc/ssl/private/$domain.key;\n\
-						        root /var/www/$nombreSitio/;\n\
-						        index index.html index.htm index.nginx-debian.html;\n\
-						        location / {\n\
-						                try_files $uri $uri/ =404;\n\
-						        }\n\
-						}
-						"
-						echo -e $contenido > $file
+							file="/etc/nginx/sites-available/$nombreSitio-ssl.conf"
+							domain=$dominioSitio
+							commonname=$domain
+							password=$contrasena
+							country=MX
+							state=CDMX
+							locality=Coyoacan
+							organization=UNAM-CERT
+							organizationalunit=DGTIC
+							email=""
+							openssl genrsa -des3 -passout pass:$password -out $domain.key 2048
+							openssl rsa -in $domain.key -passin pass:$password -out $domain.key
+							openssl req -new -key $domain.key -out $domain.csr -passin pass:$password -subj "/C=$country/ST=$state/L=$locality/O=$organization/OU=$organizationalunit/CN=$commonname/emailAddress=$email"
+							openssl x509 -req -days 365 -in $domain.csr -signkey $domain.key -out $domain.crt
+							cp $domain.key /etc/ssl/private/$domain.key
+							cp $domain.crt /etc/ssl/certs/$domain.crt
+							contenido="\n\
+							server {\n\
+									listen 80;\n\
+									server_name $dominioSitio www.$dominioSitio;\n\
+									return 301 https://$dominioSitio$request_uri;\n\
+							}\n\
+							server{\n\
+									listen $puerto ssl;\n\
+									server_name $dominioSitio www.$dominioSitio;\n\
+									ssl_certificate /etc/ssl/certs/$domain.crt;\n\
+									ssl_certificate_key /etc/ssl/private/$domain.key;\n\
+									root /var/www/$nombreSitio/;\n\
+									index index.html index.htm index.nginx-debian.html;\n\
+									location / {\n\
+											try_files \$uri \$uri/ =404;\n\
+									}\n\
+							}
+							"
+							echo -e $contenido > $file
 						;;
 					esac
-					chmod -R 755 /var/www/$nombreSitio/
+					chmod -R 755 /var/www/$nombreSitio
 					ln -s $file /etc/nginx/sites-enabled/
 					sed -i "s/# server_names_hash_bucket_size 64;/server_names_hash_bucket_size 64;/g" /etc/nginx/nginx.conf
+					nginx -t
 					echo -e "$ipSitio \t$dominioSitio" >> /etc/hosts
 				done
 				systemctl restart nginx
