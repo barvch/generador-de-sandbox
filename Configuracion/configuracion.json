@@ -2,15 +2,15 @@
     "Root": "E:\\SanboxTest",
     "MaquinasVirtuales": [
         {
-            "SistemaOperativo": "Ubuntu 20.04",
-            "TipoAmbiente": "Ubuntu desktop",
-            "Hostname": "comolaves",
+            "SistemaOperativo": "Kali Linux 2020.04",
+            "TipoAmbiente": "Xfce",
+            "Hostname": "kidbomb",
             "DiscosVirtuales": [20],
             "Procesadores": 2,
-            "RutaISO": "E:\\SanboxTest\\ubuntu-20.04.2.0-desktop-amd64.iso",
+            "RutaISO": "E:\\SanboxTest\\kali-linux-2020.4-installer-amd64.iso",
             "MemoriaRAM": {
                 "Tipo": "Static",
-                "Memoria": 1.0
+                "Memoria": 2.0
             },
             "Credenciales": {
                 "Usuario": "prueba",
