@@ -7,6 +7,9 @@ function CrearMaquinas { param ($maquinas, $rutaRaiz)
     $stepCounter = 0
     foreach($maquina in $maquinas){
         $maquina | ConvertTo-Json -depth 5 | Set-Content -Path ".\Recursos\unattend\tmp.json"
+        if(-not $maquina.SistemaOperativo.Contains("Windows")){
+            Copy-Item ".\Recursos\unattend\tmp.json" ".\Recursos\unattend\ServiciosLinux\archivo.json"
+        }
         $maquina = New-Object PSCustomObject -Property $maquina
         $hostname = $maquina.Hostname
         $so = $maquina.SistemaOperativo
