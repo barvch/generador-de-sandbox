@@ -1,7 +1,9 @@
 {
     "SistemaOperativo":  "Debian 10",
     "Hostname":  "ninobomba",
-    "DiscosVirtuales":  20,
+    "DiscosVirtuales":  [
+                            20
+                        ],
     "Procesadores":  2,
     "RutaISO":  "E:\\SanboxTest\\debian-10.8.0-amd64-xfce-CD-1.iso",
     "MemoriaRAM":  {
@@ -12,19 +14,21 @@
                          "Usuario":  "prueba",
                          "Contrasena":  "hola12345.,"
                      },
-    "Interfaces":  {
-                       "VirtualSwitch":  {
-                                             "Nombre":  "SalidaInternet",
-                                             "Tipo":  "External",
-                                             "AdaptadorRed":  "Ethernet"
-                                         },
-                       "Tipo":  "Static",
-                       "Nombre":  "miinterfaz",
-                       "IP":  "192.168.0.69",
-                       "MascaraRed":  "255.255.255.0",
-                       "Gateway":  "192.168.0.1",
-                       "DNS":  "8.8.8.8"
-                   },
+    "Interfaces":  [
+                       {
+                           "VirtualSwitch":  {
+                                                 "Nombre":  "SalidaInternet",
+                                                 "Tipo":  "External",
+                                                 "AdaptadorRed":  "Ethernet"
+                                             },
+                           "Tipo":  "Static",
+                           "Nombre":  "miinterfaz",
+                           "IP":  "192.168.0.69",
+                           "MascaraRed":  "255.255.255.0",
+                           "Gateway":  "192.168.0.1",
+                           "DNS":  "8.8.8.8"
+                       }
+                   ],
     "DatosDependientes":  {
                               "TipoAmbiente":  null,
                               "LlaveActivacion":  null,

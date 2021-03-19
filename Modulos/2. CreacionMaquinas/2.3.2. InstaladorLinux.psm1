@@ -102,6 +102,7 @@ function CrearISODebianFlavor {
         }
         # Se copia el script de post instalación dentro del ISO:
         Copy-Item -Path ".\Recursos\unattend\ServiciosLinux\" -Destination "$directorio\ServiciosLinux" -Recurse
+
     }
     # Se establece el orden de booteo para ver reflejados todos los cambios 
     (Get-Content "$directorio\isolinux\isolinux.cfg").replace('timeout 0', 'timeout 60') | Set-Content "$directorio\isolinux\isolinux.cfg"
