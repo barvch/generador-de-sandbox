@@ -11,7 +11,7 @@ function ValidarDatosGenerales { param ($maquinaVirtual, $rutaRaiz)
     $serviciosCheck = ValidarServicios -sistemaOperativo $SOCheck -maquinaVirtual $maquinaVirtual -interfaces $interfacesCheck
     $datosValidados = [ordered] @{"SistemaOperativo" = $SOCheck; "Hostname" = $hostnameCheck; "DiscosVirtuales" = @($discosVirtualesCheck); `
         "Procesadores" = $procesadoresCheck; "RutaISO" = $rutaISOCheck; "MemoriaRAM" = $memoriaRAMCheck; `
-        "Credenciales" = $credencialesCheck; "Interfaces" = @($interfacesCheck); "DatosDependientes" = $datosdepCheck; "Servicios" = @($serviciosCheck)}
+        "Credenciales" = $credencialesCheck; "Interfaces" = @($interfacesCheck); "DatosDependientes" = $datosdepCheck; "Servicios" = $serviciosCheck}
     return $datosValidados
 }
 
@@ -25,7 +25,7 @@ function ValidarDatosDependientes { param ($sistemaOperativo, $llaveActivacion, 
         }
         Default { }
         }
-    $datosDependientes = [ordered] @{"TipoAmbiente" = $tipoAmbienteCheck; "LlaveActivacion" = $llaveActivacionCheck; "RutaMSI" = @($rutaMSICheck); "ArchivoXML" = $rutaXML}
+    $datosDependientes = [ordered] @{"TipoAmbiente" = $tipoAmbienteCheck; "LlaveActivacion" = $llaveActivacionCheck; "RutaMSI" = $rutaMSICheck; "ArchivoXML" = $rutaXML}
     return $datosDependientes
 }
 
