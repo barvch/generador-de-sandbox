@@ -71,8 +71,8 @@ function CrearISODebianFlavor {
                 $netmask = $interfaz.MascaraRed
                 $gateway = $interfaz.Gateway
                 $dns = $interfaz.DNS
-                if ($gateway) {$gateway = "" }
-                if ($dns) {$dns = ""}
+                if (-not $gateway) {$gateway = "" } else { $gateway = "d-i netcfg/get_gateway string $gateway" }
+                if (-not $dns) {$dns = ""} else { $dns = "d-i netcfg/get_nameservers string $dns" }
                 $configInterfaces += "d-i netcfg/choose_interface select eth$contador`nd-i netcfg/disable_dhcp boolean true`n$dns`nd-i netcfg/get_ipaddress string $ip`nd-i netcfg/get_netmask string $netmask`n$gateway`nd-i netcfg/confirm_static boolean true`n"
             }
             $contador++
@@ -101,7 +101,7 @@ function CrearISODebianFlavor {
             (Get-Content "$directorio\isolinux\txt.cfg").replace('append preseed/file=/cdrom/simple-cdd/default.preseed simple-cdd/profiles=kali,offline desktop=xfce vga=788 initrd=/install.amd/initrd.gz --- quiet ', $lol) | Set-Content "$directorio\isolinux\txt.cfg"
         }
         # Se copia el script de post instalación dentro del ISO:
-        Copy-Item ".\Recursos\unattend\post.sh" "$directorio" -Force
+        Copy-Item -Path ".\Recursos\unattend\ServiciosLinux\" -Destination "$directorio\ServiciosLinux" -Recurse
     }
     # Se establece el orden de booteo para ver reflejados todos los cambios 
     (Get-Content "$directorio\isolinux\isolinux.cfg").replace('timeout 0', 'timeout 60') | Set-Content "$directorio\isolinux\isolinux.cfg"

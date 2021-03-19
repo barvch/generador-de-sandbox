@@ -421,4 +421,9 @@ then
 			;;
 		esac
 	fi
+	iptablesFile=$(jq ".Iptables" servicios.json)
+    if [ "$iptablesFile" != "null" ]
+    then
+        iptables-restore $iptablesFile
+    fi
 fi

@@ -9,15 +9,15 @@
                        "Memoria":  1.0
                    },
     "Credenciales":  {
-                         "Usuario":  "prueba",
-                         "Contrasena":  "hola12345.,"
+                        "Usuario":  "prueba",
+                        "Contrasena":  "hola12345.,"
                      },
     "Interfaces":  {
                        "VirtualSwitch":  {
-                                             "Nombre":  "SalidaInternet",
-                                             "Tipo":  "External",
-                                             "AdaptadorRed":  "Ethernet"
-                                         },
+                            "Nombre":  "SalidaInternet",
+                            "Tipo":  "External",
+                            "AdaptadorRed":  "Ethernet"
+                        },
                        "Tipo":  "Static",
                        "Nombre":  "miinterfaz",
                        "IP":  "192.168.0.69",
@@ -26,10 +26,10 @@
                        "DNS":  "8.8.8.8"
                    },
     "DatosDependientes":  {
-                              "TipoAmbiente":  null,
-                              "LlaveActivacion":  null,
-                              "RutaMSI":  null,
-                              "ArchivoXML":  null
+                            "TipoAmbiente":  null,
+                            "LlaveActivacion":  null,
+                            "RutaMSI":  null,
+                            "ArchivoXML":  null
                           },
     "Servicios":  null
 }
