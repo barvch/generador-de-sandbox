@@ -23,7 +23,7 @@ apt-get install jq -y
 usuario=$(jq ".Credenciales.Usuario" archivo.json | sed -r 's/\"//g')
 contrasena=$(jq ".Credenciales.Contrasena" archivo.json | sed -r 's/\"//g')
 sistemaOperativo=$(jq ".SistemaOperativo" archivo.json | sed -r 's/\"//g')
-ipBase=$(jq -r ".Interfaces[0].IP" archivo.json | sed -r 's/\"//g')
+ipBase=$(jq ".Interfaces[0].IP" archivo.json | sed -r 's/\"//g')
 if [[ $sistemaOperativo = "Debian 10" ]]
 then
 	interfaz=$(ip a | grep $ipBase | cut -d " " -f13)
@@ -342,4 +342,9 @@ then
 		systemctl enable $servidor
 		systemctl restart $servidor
 	fi
+	iptablesFile=$(jq ".Iptables" servicios.json)
+    if [ "$iptablesFile" != "null" ]
+    then
+        iptables-restore $iptablesFile
+    fi
 fi
