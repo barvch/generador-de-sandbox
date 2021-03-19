@@ -9,7 +9,7 @@ function ValidarDatosGenerales { param ($maquinaVirtual, $rutaRaiz)
     $interfacesCheck = ValidarInterfaces -interfaces $maquinaVirtual.Interfaces -hostname $hostnameCheck
     $datosdepCheck = ValidarDatosDependientes -sistemaOperativo $SOCheck -llaveActivacion $maquina.LlaveActivacion -rutaMSI $maquinaVirtual.RutaMSI -tipoAmbiente $maquinaVirtual.TipoAmbiente -WinIso $rutaISOCheck
     $serviciosCheck = ValidarServicios -sistemaOperativo $SOCheck -maquinaVirtual $maquinaVirtual -interfaces $interfacesCheck
-    $datosValidados = [ordered] @{"SistemaOperativo" = $SOCheck; "Hostname" = $hostnameCheck; "DiscosVirtuales" = @($discosVirtualesCheck); `
+    $datosValidados = [ordered] @{"SistemaOperativo" = $SOCheck; "Hostname" = $hostnameCheck; "DiscosVirtuales" = $discosVirtualesCheck; `
         "Procesadores" = $procesadoresCheck; "RutaISO" = $rutaISOCheck; "MemoriaRAM" = $memoriaRAMCheck; `
         "Credenciales" = $credencialesCheck; "Interfaces" = @($interfacesCheck); "DatosDependientes" = $datosdepCheck; "Servicios" = $serviciosCheck}
     return $datosValidados
