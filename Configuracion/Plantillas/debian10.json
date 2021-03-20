@@ -26,10 +26,44 @@
     ],
     "Servicios": {
         "AdministracionRemota": "SSH",
-        "PuertoSSH": "2222",
+        "PuertoSSH": "1234",
         "ManejadorBD": {
-            "Manejador": "PostgreSQL",
+            "Manejador": "MariaDB",
             "NombreBD":"MiBasecita"
+        },
+        "ServidorWeb": {
+            "Servidor": "apache2",
+            "Sitios": [
+                {
+                "Nombre": "sitio",
+                "Dominio": "sitio.local",
+                "Interfaz": "192.168.121.149",
+                "Puerto": "80",
+                "Protocolo": "http",
+                "Drupal": false                },
+                                {
+                "Nombre": "sitio2",
+                "Dominio": "sitio2.local",
+                "Interfaz": "192.168.121.149",
+                "Puerto": "80",
+                "Protocolo": "http",
+                "Drupal": true                },
+                                {
+                "Nombre": "sitio3",
+                "Dominio": "sitio3.local",
+                "Interfaz": "192.168.121.149",
+                "Puerto": "443",
+                "Protocolo": "https",
+                "Drupal": false                },
+                                {
+                "Nombre": "sitio4",
+                "Dominio": "sitio4.local",
+                "Interfaz": "192.168.121.149",
+                "Puerto": "443",
+                "Protocolo": "https",
+                "Drupal": true                }
+
+            ]
         },
         "DNS": [
             {
