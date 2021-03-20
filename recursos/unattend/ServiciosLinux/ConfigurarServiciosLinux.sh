@@ -262,13 +262,7 @@ then
 		done
 		inetmask=$(jq -r ".DHCP.MascaraRed" servicios.json)
 		ipBase=$(jq -r ".DHCP.Interfaz" servicios.json)
-		if [[ $sistemaOperativo = "Debian 10" ]]
-		then
-			interfaz=$(ip a | grep $ipBase | sed "s/\s/ /g" | cut -d " " -f 11)
-		elif [[ $sistemaOperativo = "Kali Linux 2020.04" ]]
-		then
-			interfaz=$(ip a | grep $ipBase | cut -d " " -f11)
-		fi
+		interfaz=$(ip addr show | grep $ipBase | tr -s " " | sed "s/^ //g" | cut -d " " -f8)
 		echo -e "allow-hotplug $interfaz\niface $interfaz inet static\naddress $ipBase\nnetmask $inetmask" >> /etc/network/interfaces
 		sed -i "s/INTERFACESv4=\"\"/INTERFACESv4=\"$interfaz\"/g" /etc/default/isc-dhcp-server 
 		systemctl restart networking.service
