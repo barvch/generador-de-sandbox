@@ -44,7 +44,7 @@
                         {
                         "Nombre": "sitio",
                         "Dominio": "sitio.local",
-                        "Interfaz": "192.168.0.69",
+                        "Interfaz":"192.168.0.69",
                         "Puerto": "80",
                         "Protocolo": "http",
                         "Drupal": false                },
@@ -113,19 +113,23 @@
                                 ]
                             }
                 ],
-                "DHCP": [
-                    {
-                        "Rangos": [
-                            {
-                            "Inicio": "192.168.0.100",
-                            "Fin": "192.168.0.110"
-                            }
-                        ],
-                        "MascaraRed": "255.255.255.0",
-                        "Lease": "30000",
-                        "DNS": "8.8.8.8"
-                    }
-                ]
+                "DHCP": {
+                    "Interfaz": "192.168.0.69",
+                    "MascaraRed": "255.255.255.0",
+                    "Scopes": [
+                        {
+                            "Rangos": [
+                                {
+                                "Inicio": "192.168.0.100",
+                                "Fin": "192.168.0.120"
+                                }
+                            ],
+                            "MascaraRed": "255.255.255.0",
+                            "Lease": "30000",
+                            "DNS": "8.8.8.8"
+                        }
+                    ]
+                }
             }
         }
     ]
