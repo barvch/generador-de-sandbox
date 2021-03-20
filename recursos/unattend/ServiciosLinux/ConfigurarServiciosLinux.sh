@@ -264,7 +264,7 @@ then
 		ipBase=$(jq -r ".DHCP.Interfaz" servicios.json)
 		if [[ $sistemaOperativo = "Debian 10" ]]
 		then
-			interfaz=$(ip a | grep $ipBase | cut -d " " -f13)
+			interfaz=$(ip a | grep $ipBase | sed "s/\s/ /g" | cut -d " " -f 11)
 		elif [[ $sistemaOperativo = "Kali Linux 2020.04" ]]
 		then
 			interfaz=$(ip a | grep $ipBase | cut -d " " -f11)
