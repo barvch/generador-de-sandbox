@@ -65,7 +65,10 @@
 
             ]
         },
-        "DNS": [
+        "DNS": { 
+        "Interfaz": "192.168.0.69",
+        "Zonas":
+        [
             {
                 "Tipo": "Forward",
                 "Nombre": "ZonaUno",
@@ -105,7 +108,8 @@
                             }
                         ]
                     }
-        ],
+        ]
+    },
                 "DHCP": {
                     "Interfaz": "192.168.0.69",
                     "MascaraRed": "255.255.255.0",

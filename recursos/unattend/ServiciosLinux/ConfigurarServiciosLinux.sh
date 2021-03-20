@@ -24,14 +24,6 @@ apt-get install jq -y
 usuario=$(jq ".Credenciales.Usuario" archivo.json | sed -r 's/\"//g')
 contrasena=$(jq ".Credenciales.Contrasena" archivo.json | sed -r 's/\"//g')
 sistemaOperativo=$(jq ".SistemaOperativo" archivo.json | sed -r 's/\"//g')
-ipBase=$(jq ".Interfaces[0].IP" archivo.json | sed -r 's/\"//g')
-if [[ $sistemaOperativo = "Debian 10" ]]
-then
-	interfaz=$(ip a | grep $ipBase | cut -d " " -f13)
-elif [[ $sistemaOperativo = "Kali Linux 2020.04" ]]
-then
-	interfaz=$(ip a | grep $ipBase | cut -d " " -f11)
-fi
 servicios=$(jq ".Servicios" archivo.json)
 if [ "$servicios" != \"\" ]
 then
@@ -113,11 +105,12 @@ then
 	then
 		apt-get install bind9 dnsutils -y
 		mkdir -p /etc/bind/zones/master
-		noElementos=$(jq -r ".Servicios.DNS[]|\"\(.Tipo)\"" archivo.json | wc -l)
+		noElementos=$(jq -r ".Servicios.DNS.Zonas[]|\"\(.Tipo)\"" archivo.json | wc -l)
+		ipBase=$(jq ".DNS.Interfaz" archivo.json | sed -r 's/\"//g')
 		for index in $(eval echo {0..$(expr $noElementos - 1)})
 		do
-			dominio=$(jq ".DNS[$index].Nombre" servicios.json | sed -r 's/\"//g')
-			tipo=$(jq ".DNS[$index].Tipo" servicios.json | sed -r 's/\"//g')
+			dominio=$(jq ".DNS.Zonas[$index].Nombre" servicios.json | sed -r 's/\"//g')
+			tipo=$(jq ".DNS.Zonas[$index].Tipo" servicios.json | sed -r 's/\"//g')
 			case $tipo in 
 				Forward)
 					file=db.$dominio
@@ -138,31 +131,31 @@ then
 						ns1\tIN\tA\t$ipBase\
 						"
 					echo -e $zoneFwdFile > /etc/bind/zones/master/$file
-					noElementosReg=$(jq -r ".DNS[$index].Registros[]|\"\(.Tipo)\"" servicios.json | wc -l)
+					noElementosReg=$(jq -r ".DNS.Zonas[$index].Registros[]|\"\(.Tipo)\"" servicios.json | wc -l)
 					for indexReg in $(eval echo {0..$(expr $noElementosReg - 1)})
 					do
-						tipoReg=$(jq -r ".DNS[$index].Registros[$indexReg].Tipo" servicios.json | sed -r 's/\"//g')
+						tipoReg=$(jq -r ".DNS.Zonas[$index].Registros[$indexReg].Tipo" servicios.json | sed -r 's/\"//g')
 						case $tipoReg in
 							A)
-							hostname=$(jq -r ".DNS[$index].Registros[$indexReg].Hostname" servicios.json | sed -r 's/\"//g')
-							ipDominio=$(jq -r ".DNS[$index].Registros[$indexReg].IP" servicios.json | sed -r 's/\"//g')
+							hostname=$(jq -r ".DNS.Zonas[$index].Registros[$indexReg].Hostname" servicios.json | sed -r 's/\"//g')
+							ipDominio=$(jq -r ".DNS.Zonas[$index].Registros[$indexReg].IP" servicios.json | sed -r 's/\"//g')
 							echo -e "$hostname.\tIN\tA\t$ipDominio." >> /etc/bind/zones/master/$file
 							;;
 							CNAME)
-							alias=$(jq -r ".DNS[$index].Registros[$indexReg].Alias" servicios.json | sed -r 's/\"//g')
-							fqdn=$(jq -r ".DNS[$index].Registros[$indexReg].FQDN" servicios.json | sed -r 's/\"//g')
+							alias=$(jq -r ".DNS.Zonas[$index].Registros[$indexReg].Alias" servicios.json | sed -r 's/\"//g')
+							fqdn=$(jq -r ".DNS.Zonas[$index].Registros[$indexReg].FQDN" servicios.json | sed -r 's/\"//g')
 							echo -e "$alias\tIN\tCNAME\t$fqdn." >> /etc/bind/zones/master/$file
 							;;
 							MX)
-							child=$(jq -r ".DNS[$index].Registros[$indexReg].ChildDomain" servicios.json | sed -r 's/\"//g')
-							fqdn=$(jq -r ".DNS[$index].Registros[$indexReg].FQDN" servicios.json | sed -r 's/\"//g')
+							child=$(jq -r ".DNS.Zonas[$index].Registros[$indexReg].ChildDomain" servicios.json | sed -r 's/\"//g')
+							fqdn=$(jq -r ".DNS.Zonas[$index].Registros[$indexReg].FQDN" servicios.json | sed -r 's/\"//g')
 							echo -e "$child.\tIN\tMX\t$fqdn." >> /etc/bind/zones/master/$file
 							;;
 						esac
 					done
 				;;
 				Reverse)
-					netID=$(jq ".DNS[$index].NetID" servicios.json | sed -r 's/\"//g')
+					netID=$(jq ".DNS.Zonas[$index].NetID" servicios.json | sed -r 's/\"//g')
 					mask=$(echo $netID | cut -d "/" -f2)
 					case $mask in
 						24)
@@ -193,19 +186,19 @@ then
 					file=db.$netName
 					echo -e "zone \"$netName.in-addr.arpa\" IN {\ntype master;\nfile \"/etc/bind/zones/master/$file\";\nallow-update {none;};\n};" >> /etc/bind/named.conf.local
 					echo -e $zoneRvsFile > /etc/bind/zones/master/$file
-					noElementosReg=$(jq -r ".DNS[$index].Registros[]|\"\(.Tipo)\"" servicios.json | wc -l)
+					noElementosReg=$(jq -r ".DNS.Zonas[$index].Registros[]|\"\(.Tipo)\"" servicios.json | wc -l)
 					for indexReg in $(eval echo {0..$(expr $noElementosReg - 1)})
 					do
-						tipoReg=$(jq -r ".DNS[$index].Registros[$indexReg].Tipo" servicios.json | sed -r 's/\"//g')
+						tipoReg=$(jq -r ".DNS.Zonas[$index].Registros[$indexReg].Tipo" servicios.json | sed -r 's/\"//g')
 						case $tipoReg in
 							PTR)
-							hostname=$(jq -r ".DNS[$index].Registros[$indexReg].Hostname" servicios.json | sed -r 's/\"//g')
-							host=$(jq -r ".DNS[$index].Registros[$indexReg].Host" servicios.json | sed -r 's/\"//g')
+							hostname=$(jq -r ".DNS.Zonas[$index].Registros[$indexReg].Hostname" servicios.json | sed -r 's/\"//g')
+							host=$(jq -r ".DNS.Zonas[$index].Registros[$indexReg].Host" servicios.json | sed -r 's/\"//g')
 							echo -e "$host.$netIDName.\tIN\tPTR\t$hostname." >> /etc/bind/zones/master/$file
 							;;
 							CNAME)
-							alias=$(jq -r ".DNS[$index].Registros[$indexReg].Alias" servicios.json | sed -r 's/\"//g')
-							fqdn=$(jq -r ".DNS[$index].Registros[$indexReg].FQDN" servicios.json | sed -r 's/\"//g')
+							alias=$(jq -r ".DNS.Zonas[$index].Registros[$indexReg].Alias" servicios.json | sed -r 's/\"//g')
+							fqdn=$(jq -r ".DNS.Zonas[$index].Registros[$indexReg].FQDN" servicios.json | sed -r 's/\"//g')
 							echo -e "$alias\tIN\tCNAME\t$fqdn." >> /etc/bind/zones/master/$file
 							;;
 						esac
@@ -268,7 +261,14 @@ then
 		    echo "}" >> /etc/dhcp/dhcpd.conf
 		done
 		inetmask=$(jq -r ".DHCP.MascaraRed" servicios.json)
-		interfaz=$(jq -r ".DHCP.Interfaz" servicios.json)
+		ipBase=$(jq -r ".DHCP.Interfaz" servicios.json)
+		if [[ $sistemaOperativo = "Debian 10" ]]
+		then
+			interfaz=$(ip a | grep $ipBase | cut -d " " -f13)
+		elif [[ $sistemaOperativo = "Kali Linux 2020.04" ]]
+		then
+			interfaz=$(ip a | grep $ipBase | cut -d " " -f11)
+		fi
 		echo -e "allow-hotplug $interfaz\niface $interfaz inet static\naddress $ipBase\nnetmask $inetmask" >> /etc/network/interfaces
 		sed -i "s/INTERFACESv4=\"\"/INTERFACESv4=\"$interfaz\"/g" /etc/default/isc-dhcp-server 
 		systemctl restart networking.service
