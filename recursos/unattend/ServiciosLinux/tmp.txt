@@ -1,37 +1,4 @@
-{
-    "Root": "E:\\SanboxTest",
-    "MaquinasVirtuales": [
-        {
-            "SistemaOperativo": "Debian 10",
-            "TipoAmbiente": "Xfce",
-            "Hostname": "ninobomba",
-            "DiscosVirtuales": [20],
-            "Procesadores": 2,
-            "RutaISO": "E:\\SanboxTest\\debian-10.8.0-amd64-xfce-CD-1.iso",
-            "MemoriaRAM": {
-                "Tipo": "Static",
-                "Memoria": 1.0
-            },
-            "Credenciales": {
-                "Usuario": "prueba",
-                "Contrasena": "hola12345.,"
-            },
-            "Interfaces": [
-                {
-                    "VirtualSwitch": {
-                        "Nombre": "SalidaInternet",
-                        "Tipo": "External",
-                        "AdaptadorRed": "Ethernet"
-                    },
-                    "Tipo": "Static",
-                    "Nombre": "miinterfaz",
-                    "IP": "192.168.0.69",
-                    "MascaraRed": "24",
-                    "Gateway": "192.168.0.1",
-                    "DNS": "8.8.8.8"
-                }
-            ],
-            "Servicios": {
+"Servicios": {
                 "AdministracionRemota": "SSH",
                 "PuertoSSH": "1234",
                 "ManejadorBD": {
@@ -135,6 +102,3 @@
                     ]
                 }
             }
-        }
-    ]
-}
