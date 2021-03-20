@@ -226,17 +226,17 @@ then
 	if [ "$DHCP" != \"\" ]
 	then
 		apt-get install isc-dhcp-server -y
-		noElementos=$(jq -r ".DHCP[]|\"\(.Nombre)\"" servicios.json | wc -l)
+		noElementos=$(jq -r ".DHCP.Scopes[]|\"\(.Rangos)\"" servicios.json | wc -l)
 		echo -e "default-lease-time 600;\nmax-lease-time 7200;\n\n" >> /etc/dhcp/dhcpd.conf
 		for index in $(eval echo {0..$(expr $noElementos - 1)})
 		do
-			netmask=$(jq -r ".DHCP[$index].MascaraRed" servicios.json)
-			noElementosRan=$(jq -r ".DHCP[$index].Rangos[]|\"\(.Inicio)\"" servicios.json | wc -l)
+			netmask=$(jq -r ".DHCP.Scopes[$index].MascaraRed" servicios.json)
+			noElementosRan=$(jq -r ".DHCP.Scopes[$index].Rangos[]|\"\(.Inicio)\"" servicios.json | wc -l)
 			for indexRan in $(eval echo {0..$(expr $noElementosRan - 1)})
 			do
 				case $netmask in
 				255.255.255.0)
-					inicioRango=$(jq -r ".DHCP[$index].Rangos[$indexRan].Inicio" servicios.json)
+					inicioRango=$(jq -r ".DHCP.Scopes[$index].Rangos[$indexRan].Inicio" servicios.json)
 					id=$(echo $inicioRango | cut -d "." -f1,2,3)
 					subnet=$id.0
 				;;
@@ -253,21 +253,22 @@ then
 			echo -e "subnet $subnet netmask $netmask {" >> /etc/dhcp/dhcpd.conf
 			for indexRan in $(eval echo {0..$(expr $noElementosRan - 1)})
 			do
-				inicio=$(jq -r ".DHCP[$index].Rangos[$indexRan].Inicio" servicios.json)
-				fin=$(jq -r ".DHCP[$index].Rangos[$indexRan].Fin" servicios.json)
+				inicio=$(jq -r ".DHCP.Scopes[$index].Rangos[$indexRan].Inicio" servicios.json)
+				fin=$(jq -r ".DHCP.Scopes[$index].Rangos[$indexRan].Fin" servicios.json)
 				echo -e "\trange $inicio $fin;" >> /etc/dhcp/dhcpd.conf
 			done
-			dns=$(jq -r ".DHCP[$index].DNS" servicios.json)
+			dns=$(jq -r ".DHCP.Scopes[$index].DNS" servicios.json)
 			if [ "$dns" != \"\" ]; then
 				echo -e "\toption domain-name-servers $dns;" >> /etc/dhcp/dhcpd.conf
 			fi
-			gateway=$(jq -r ".DHCP[$index].Gateway" servicios.json)
+			gateway=$(jq -r ".DHCP.Scopes[$index].Gateway" servicios.json)
 			if [ "$gateway" != \"\" ]; then
 				echo -e "\toption routers $gateway;" >> /etc/dhcp/dhcpd.conf
 			fi
 		    echo "}" >> /etc/dhcp/dhcpd.conf
 		done
-		inetmask=$(jq -r ".Interfaces[0].MascaraRed" archivo.json)
+		inetmask=$(jq -r ".DHCP.MascaraRed" servicios.json)
+		interfaz=$(jq -r ".DHCP.Interfaz" servicios.json)
 		echo -e "allow-hotplug $interfaz\niface $interfaz inet static\naddress $ipBase\nnetmask $inetmask" >> /etc/network/interfaces
 		sed -i "s/INTERFACESv4=\"\"/INTERFACESv4=\"$interfaz\"/g" /etc/default/isc-dhcp-server 
 		systemctl restart networking.service
