@@ -12,7 +12,7 @@ Generar ambientes
         juas
         juas
     ```
-
+Se utiliza la zona horaria America/Mexico_City en los archivos unattend .ks para Linux, .xml para Windows y php.ini para drupal-nginx
 ## Powershell madafaka, do you speak it?
 
 [//]:
