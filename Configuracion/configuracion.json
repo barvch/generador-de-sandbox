@@ -7,7 +7,7 @@
             "Hostname": "ninobomba",
             "DiscosVirtuales": [20],
             "Procesadores": 2,
-            "RutaISO": "E:\\SanboxTest\\debian-10.8.0-amd64-xfce-CD-1.iso",
+            "RutaISO": "E:\\debian-10.8.0-amd64-netinst.iso",
             "MemoriaRAM": {
                 "Tipo": "Static",
                 "Memoria": 1.0

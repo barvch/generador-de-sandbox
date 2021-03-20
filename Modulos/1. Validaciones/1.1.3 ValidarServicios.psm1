@@ -1,7 +1,7 @@
 #Se importan los catalogos
 . ".\Recursos\Validaciones\catalogos.ps1"
 
-function ValidarAdministracionRemota { param ($servicio = "AdministracionRemota", $adminRemota, $so)
+function ValidarAdministracionRemota { param ($servicio = "AdministracionRemota", $adminRemota, $so, $puertoCheck = "22")
     $adminRemotaCheck = ValidarCatalogos -catalogo $tiposAdminRemota -campo $servicio -valor $adminRemota
     if(-not $adminRemotaCheck){
         if($so.Contains("Windows")){
@@ -14,8 +14,13 @@ function ValidarAdministracionRemota { param ($servicio = "AdministracionRemota"
             Write-Host "No se puede configurar el servicio $adminRemota en el campo $servicio debido a que se ingreso el sistema operativo $so"
             exit
         }
+        if (-not $so.Contains("Windows")) {
+            if($puertoCheck -ne "22"){
+                $puertoCheck = ValidarPuerto -campo "Servicios.PuertoSSH" -puerto $puertoCheck -puertosBienConocidos $puertosBienConocidos
+            }
+        }
     }
-    return $adminRemotaCheck
+    return $adminRemotaCheck, $puertoCheck
 }
 
 function ValidarActiveDirectory { param ($servicio = "ActiveDirectory", $activeDirectory)

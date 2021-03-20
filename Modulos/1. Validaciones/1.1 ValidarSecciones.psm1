@@ -55,9 +55,14 @@ function ValidarServicios { param ( $sistemaOperativo, $maquinaVirtual, $interfa
         "Windows .*" { 
             $adminRemotaCheck = ValidarAdministracionRemota -adminRemota $maquinaVirtual.AdministracionRemota -so $sistemaOperativo 
             $servicios = [ordered] @{"AdministracionRemota" = $adminRemotaCheck; "CertificateServices" = $certServicesCheck; "WindowsDefender" = $winDefenderCheck; "ActiveDirectory" = $activeDirectoryCheck; "IIS" = $IISCheck; "DHCP" = $DHCPCheck; "DNS" = $DNSCheck }
+            break;
         }
 
-        "Ubuntu .*" { $adminRemotaCheck = ValidarAdministracionRemota -adminRemota $maquinaVirtual.AdministracionRemota -so $sistemaOperativo ; break }
+        Default { 
+            $adminRemotaCheck, $puertoCheck = ValidarAdministracionRemota -adminRemota $maquinaVirtual.AdministracionRemota -so $sistemaOperativo
+
+            break 
+        }
     }
     return $servicios
 

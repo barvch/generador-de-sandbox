@@ -3,7 +3,7 @@
     "Hostname": "Contoso",
     "DiscosVirtuales": [15],
     "Procesadores": 2,
-    "RutaISO": "E:\\VMware\\Maquinas virtuales\\Test\\Win10_20H2_v2_English_x64.iso",
+    "RutaISO": "E:\\debian-10.8.0-amd64-netinst.iso",
     "MemoriaRAM": {
         "Tipo": "Dynamic",
         "Minima": 0.5,
