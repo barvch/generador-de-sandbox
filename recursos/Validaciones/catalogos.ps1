@@ -21,6 +21,8 @@ $SOPermitidos = [ordered] @{"Windows Server 2019" = "70FEC2CB1D6759108820130C2B5
 "RHEL 8" = "94381C1EE1D07242FE3A38AA1FBA75FD"; `
 "FortiOS 6" = ""}
 $ambientesRHELCentOS = @("Core", "Gnome", "KDE" )
-$ambientesDebian = @("Core", "Xcfe")
+$ambientesDebian = @("Core", "Xfce")
 $ambientesUbuntu = @("Ubuntu desktop")
 $tipoInterfazConfig = @("Static", "DHCP")
+$servidoresWeb = @("apache2", "nginx")
+$manejadoresbd = @("SQLServer", "MariaDB", "MySQL", "PostgreSQL")

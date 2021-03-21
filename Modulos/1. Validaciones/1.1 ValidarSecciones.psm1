@@ -16,7 +16,7 @@ function ValidarDatosGenerales { param ($maquinaVirtual, $rutaRaiz)
 }
 
 function ValidarDatosDependientes { param ($sistemaOperativo, $llaveActivacion, $rutaMSI, $tipoAmbiente, $WinIso)
-    #$tipoAmbienteCheck = ValidarTipoAmbiente -tipoAmbiente $tipoAmbiente -sistemaOperativo $sistemaOperativo -WinIso $WinIso
+    $tipoAmbienteCheck = ValidarTipoAmbiente -tipoAmbiente $tipoAmbiente -sistemaOperativo $sistemaOperativo -WinIso $WinIso
     switch -regex ($sistemaOperativo) {
         "Windows 10" { $rutaMSICheck = ValidarRutaMSI -rutaMSI $rutaMSI }
         "Windows .*" { 
@@ -30,6 +30,7 @@ function ValidarDatosDependientes { param ($sistemaOperativo, $llaveActivacion, 
 }
 
 function ValidarServicios { param ( $sistemaOperativo, $maquinaVirtual, $interfaces = "")
+    $adminRemotaCheck, $puertoCheck = ValidarAdministracionRemota -adminRemota $maquinaVirtual.Servicios.AdministracionRemota -so $sistemaOperativo -puerto $maquinaVirtual.Servicios.PuertoSSH
     switch -regex ($sistemaOperativo) {
         "Windows Server 2019" { 
             $activeDirectoryCheck = ValidarActiveDirectory -activeDirectory $maquinaVirtual.Servicios.ActiveDirectory
@@ -52,18 +53,15 @@ function ValidarServicios { param ( $sistemaOperativo, $maquinaVirtual, $interfa
                 }
             }
         }
-        "Windows .*" { 
-            $adminRemotaCheck = ValidarAdministracionRemota -adminRemota $maquinaVirtual.AdministracionRemota -so $sistemaOperativo 
-            $servicios = [ordered] @{"AdministracionRemota" = $adminRemotaCheck; "CertificateServices" = $certServicesCheck; "WindowsDefender" = $winDefenderCheck; "ActiveDirectory" = $activeDirectoryCheck; "IIS" = $IISCheck; "DHCP" = $DHCPCheck; "DNS" = $DNSCheck }
-            break;
-        }
-
         Default { 
-            $adminRemotaCheck, $puertoCheck = ValidarAdministracionRemota -adminRemota $maquinaVirtual.AdministracionRemota -so $sistemaOperativo
-
-            break 
+            $servidorWebCheck = ValidarServidorWeb -servidorWeb $maquinaVirtual.Servicios.ServidorWeb -interfaces $interfaces
+            $manejadorbdCheck = ValidarManejadorBD -manejadorbd $maquinaVirtual.Servicios.ManejadorBD -so $sistemaOperativo
+            $DHCPCheck = ValidarISCDHCP -dhcp $maquinaVirtual.Servicios.DHCP -interfaces $interfaces
+            $DNSCheck = ValidarBindDNS -dns $maquinaVirtual.Servicios.DNS -interfaces $interfaces
         }
     }
+    $servicios = [ordered] @{"AdministracionRemota" = $adminRemotaCheck; "PuertoSSH" = $puertoCheck; "CertificateServices" = $certServicesCheck; `
+    "WindowsDefender" = $winDefenderCheck; "ActiveDirectory" = $activeDirectoryCheck; "IIS" = $IISCheck; "DHCP" = $DHCPCheck; `
+    "DNS" = $DNSCheck; "ServidorWeb" = $servidorWebCheck; "ManejadorBD" = $manejadorbdCheck}
     return $servicios
-
 }

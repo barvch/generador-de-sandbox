@@ -94,9 +94,6 @@ then
 				apt-get install -y mssql-server
 				MSSQL_SA_PASSWORD=$contrasena MSSQL_PID="developer" /opt/mssql/bin/mssql-conf -n setup accept-eula
 				systemctl restart mssql-server
-				echo -e "[mysql]\nuser=${usuario}\npassword=${contrasena}" > ~/.my.cnf
-				chmod 0600 ~/.my.cnf
-				mysql -u ${usuario} < script.sql
 				;;
 		esac
 	fi

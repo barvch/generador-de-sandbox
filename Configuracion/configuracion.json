@@ -1,5 +1,5 @@
 {
-    "Root": "E:\\SanboxTest",
+    "Root": "F:\\SanboxTest",
     "MaquinasVirtuales": [
         {
             "SistemaOperativo": "Debian 10",
@@ -7,7 +7,7 @@
             "Hostname": "ninobomba",
             "DiscosVirtuales": [20],
             "Procesadores": 2,
-            "RutaISO": "E:\\debian-10.8.0-amd64-netinst.iso",
+            "RutaISO": "F:\\debian-10.8.0-amd64-netinst.iso",
             "MemoriaRAM": {
                 "Tipo": "Static",
                 "Memoria": 1.0
@@ -33,7 +33,7 @@
             ],
             "Servicios": {
                 "AdministracionRemota": "SSH",
-                "PuertoSSH": "1234",
+                "PuertoSSH": 1234,
                 "ManejadorBD": {
                     "Manejador": "MariaDB",
                     "NombreBD":"MiBasecita"
@@ -44,42 +44,41 @@
                         {
                         "Nombre": "sitio",
                         "Dominio": "sitio.local",
-                        "Interfaz": "192.168.0.69",
-                        "Puerto": "80",
+                        "Interfaz": "miinterfaz",
+                        "Puerto": 80,
                         "Protocolo": "http",
                         "Drupal": false                },
                                         {
-                        "Nombre": "sitio2",
+                        "Nombre": "sitioDos",
                         "Dominio": "sitio2.local",
-                        "Interfaz": "192.168.0.69",
-                        "Puerto": "80",
+                        "Interfaz": "miinterfaz",
+                        "Puerto": 80,
                         "Protocolo": "http",
                         "Drupal": true                },
                                         {
-                        "Nombre": "sitio3",
+                        "Nombre": "sitioTres",
                         "Dominio": "sitio3.local",
-                        "Interfaz": "192.168.0.69",
-                        "Puerto": "443",
+                        "Interfaz": "miinterfaz",
+                        "Puerto": 443,
                         "Protocolo": "https",
                         "Drupal": false                },
                                         {
-                        "Nombre": "sitio4",
+                        "Nombre": "sitioCuatro",
                         "Dominio": "sitio4.local",
-                        "Interfaz": "192.168.0.69",
-                        "Puerto": "443",
+                        "Interfaz": "miinterfaz",
+                        "Puerto": 443,
                         "Protocolo": "https",
                         "Drupal": true                }
         
                     ]
                 },
                 "DNS": { 
-                "Interfaz": "192.168.0.69",
+                "Interfaz": "miinterfaz",
                 "Zonas":
                 [
                     {
                         "Tipo": "Forward",
                         "Nombre": "ZonaUno",
-                        "Backup": "",
                         "Registros": [
                             {
                                 "Tipo": "A",
@@ -118,14 +117,17 @@
                 ]
             },
                 "DHCP": {
-                    "Interfaz": "192.168.0.69",
-                    "MascaraRed": "255.255.255.0",
+                    "Interfaz": "miinterfaz",
                     "Scopes": [
                         {
                             "Rangos": [
                                 {
                                 "Inicio": "192.168.0.100",
                                 "Fin": "192.168.0.120"
+                                },
+                                {
+                                "Inicio": "192.168.0.130",
+                                "Fin": "192.168.0.140"
                                 }
                             ],
                             "MascaraRed": "255.255.255.0",
