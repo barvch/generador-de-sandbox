@@ -25,7 +25,7 @@ usuario=$(jq ".Credenciales.Usuario" archivo.json | sed -r 's/\"//g')
 contrasena=$(jq ".Credenciales.Contrasena" archivo.json | sed -r 's/\"//g')
 sistemaOperativo=$(jq ".SistemaOperativo" archivo.json | sed -r 's/\"//g')
 servicios=$(jq ".Servicios" archivo.json)
-if [ -v "$servicios" ]
+if [ "$servicios" != \"\" ]
 then
 	echo $servicios > servicios.json
 	apt-get install openssh-server -y
@@ -36,7 +36,7 @@ then
 	systemctl enable ssh
 	systemctl restart sshd
 	manejadorBD=$(jq ".ManejadorBD" servicios.json)
-	if [ -v "$manejadorBD" ]
+	if [ "$manejadorBD" != \"\" ]
 	then
 		manejador=$(jq ".ManejadorBD.Manejador" servicios.json | sed -r 's/\"//g')
 		nombreBD=$(jq ".ManejadorBD.NombreBD" servicios.json | sed -r 's/\"//g')
@@ -98,7 +98,7 @@ then
 		esac
 	fi
 	DNS=$(jq ".DNS" servicios.json)
-	if [ -v "$DNS" ]
+	if [ "$DNS" != \"\" ]
 	then
 		apt-get install bind9 dnsutils -y
 		mkdir -p /etc/bind/zones/master
@@ -213,7 +213,7 @@ then
 		fi
 	fi
 	DHCP=$(jq ".DHCP" servicios.json)
-	if [ -v "$DHCP" ]
+	if [ "$DHCP" != \"\" ]
 	then
 		apt-get install isc-dhcp-server -y
 		noElementos=$(jq -r ".DHCP.Scopes[]|\"\(.Rangos)\"" servicios.json | wc -l)
@@ -267,7 +267,7 @@ then
 		systemctl restart isc-dhcp-server
 		fi
 	servidorWeb=$(jq ".ServidorWeb" servicios.json)
-	if [ -v "$servidorWeb" ]
+	if [ "$servidorWeb" != \"\" ]
 	then
 		drupalFlag=true
 		servidor=$(jq -r ".ServidorWeb.Servidor" servicios.json | sed -r 's/\"//g')
