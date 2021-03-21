@@ -1,13 +1,13 @@
 {
-    "Root": "F:\\SanboxTest",
+    "Root": "E:\\SanboxTest",
     "MaquinasVirtuales": [
         {
             "SistemaOperativo": "Debian 10",
             "TipoAmbiente": "Xfce",
-            "Hostname": "ninobomba",
+            "Hostname": "cromos",
             "DiscosVirtuales": [20],
             "Procesadores": 2,
-            "RutaISO": "F:\\debian-10.8.0-amd64-netinst.iso",
+            "RutaISO": "E:\\SanboxTest\\debian-10.8.0-amd64-xfce-CD-1.iso",
             "MemoriaRAM": {
                 "Tipo": "Static",
                 "Memoria": 1.0
@@ -24,7 +24,7 @@
                         "AdaptadorRed": "Ethernet"
                     },
                     "Tipo": "Static",
-                    "Nombre": "miinterfaz",
+                    "Nombre": "SalidaInternet",
                     "IP": "192.168.0.69",
                     "MascaraRed": "24",
                     "Gateway": "192.168.0.1",
@@ -44,28 +44,28 @@
                         {
                         "Nombre": "sitio",
                         "Dominio": "sitio.local",
-                        "Interfaz": "miinterfaz",
+                        "Interfaz": "SalidaInternet",
                         "Puerto": 80,
                         "Protocolo": "http",
                         "Drupal": false                },
                                         {
                         "Nombre": "sitioDos",
                         "Dominio": "sitio2.local",
-                        "Interfaz": "miinterfaz",
+                        "Interfaz": "SalidaInternet",
                         "Puerto": 80,
                         "Protocolo": "http",
                         "Drupal": true                },
                                         {
                         "Nombre": "sitioTres",
                         "Dominio": "sitio3.local",
-                        "Interfaz": "miinterfaz",
+                        "Interfaz": "SalidaInternet",
                         "Puerto": 443,
                         "Protocolo": "https",
                         "Drupal": false                },
                                         {
                         "Nombre": "sitioCuatro",
                         "Dominio": "sitio4.local",
-                        "Interfaz": "miinterfaz",
+                        "Interfaz": "SalidaInternet",
                         "Puerto": 443,
                         "Protocolo": "https",
                         "Drupal": true                }
@@ -73,7 +73,7 @@
                     ]
                 },
                 "DNS": { 
-                "Interfaz": "miinterfaz",
+                "Interfaz": "SalidaInternet",
                 "Zonas":
                 [
                     {
@@ -117,7 +117,7 @@
                 ]
             },
                 "DHCP": {
-                    "Interfaz": "miinterfaz",
+                    "Interfaz": "SalidaInternet",
                     "Scopes": [
                         {
                             "Rangos": [

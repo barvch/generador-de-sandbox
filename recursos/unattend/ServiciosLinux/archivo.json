@@ -1,6 +1,6 @@
 {
     "SistemaOperativo":  "Debian 10",
-    "Hostname":  "ninobomba",
+    "Hostname":  "cromos",
     "DiscosVirtuales":  20,
     "Procesadores":  2,
     "RutaISO":  "E:\\SanboxTest\\debian-10.8.0-amd64-xfce-CD-1.iso",
@@ -20,7 +20,7 @@
                                                  "AdaptadorRed":  "Ethernet"
                                              },
                            "Tipo":  "Static",
-                           "Nombre":  "miinterfaz",
+                           "Nombre":  "SalidaInternet",
                            "IP":  "192.168.0.69",
                            "MascaraRed":  "255.255.255.0",
                            "Gateway":  "192.168.0.1",
@@ -28,10 +28,124 @@
                        }
                    ],
     "DatosDependientes":  {
-                              "TipoAmbiente":  null,
+                              "TipoAmbiente":  "Xfce",
                               "LlaveActivacion":  null,
                               "RutaMSI":  null,
                               "ArchivoXML":  null
                           },
-    "Servicios":  null
+    "Servicios":  {
+                      "AdministracionRemota":  "SSH",
+                      "PuertoSSH":  1234,
+                      "CertificateServices":  null,
+                      "WindowsDefender":  null,
+                      "ActiveDirectory":  null,
+                      "IIS":  null,
+                      "DHCP":  {
+                                   "Interfaz":  "192.168.0.69",
+                                   "MascaraRed":  "255.255.255.0",
+                                   "Scopes":  [
+                                                  {
+                                                      "Rangos":  [
+                                                                     {
+                                                                         "Inicio":  "192.168.0.100",
+                                                                         "Fin":  "192.168.0.120"
+                                                                     },
+                                                                     {
+                                                                         "Inicio":  "192.168.0.130",
+                                                                         "Fin":  "192.168.0.140"
+                                                                     }
+                                                                 ],
+                                                      "MascaraRed":  "255.255.255.0",
+                                                      "DNS":  "8.8.8.8",
+                                                      "Gateway":  ""
+                                                  }
+                                              ]
+                               },
+                      "DNS":  {
+                                  "Interfaz":  "192.168.0.69",
+                                  "Zonas":  [
+                                                {
+                                                    "Tipo":  "Forward",
+                                                    "Nombre":  "ZonaUno",
+                                                    "Backup":  "",
+                                                    "Registros":  [
+                                                                      {
+                                                                          "Tipo":  "A",
+                                                                          "Hostname":  "misitio.local",
+                                                                          "IP":  "10.23.1.2"
+                                                                      },
+                                                                      {
+                                                                          "Tipo":  "CNAME",
+                                                                          "Alias":  "alias",
+                                                                          "FQDN":  "misitio2.local"
+                                                                      },
+                                                                      {
+                                                                          "Tipo":  "MX",
+                                                                          "ChildDomain":  "misitio2.local",
+                                                                          "FQDN":  "prueba.misitio2.local"
+                                                                      }
+                                                                  ]
+                                                },
+                                                {
+                                                    "Tipo":  "Reverse",
+                                                    "NetID":  "12.11.13.0/24",
+                                                    "Backup":  "",
+                                                    "Registros":  [
+                                                                      {
+                                                                          "Tipo":  "PTR",
+                                                                          "Hostname":  "misitioRegi.local",
+                                                                          "Host":  "2"
+                                                                      },
+                                                                      {
+                                                                          "Tipo":  "CNAME",
+                                                                          "Alias":  "alias",
+                                                                          "FQDN":  "misitio2.local"
+                                                                      }
+                                                                  ]
+                                                }
+                                            ]
+                              },
+                      "ServidorWeb":  {
+                                          "Servidor":  "apache2",
+                                          "Sitios":  [
+                                                         {
+                                                             "Nombre":  "sitio",
+                                                             "Dominio":  "sitio.local",
+                                                             "Interfaz":  "192.168.0.69",
+                                                             "Puerto":  80,
+                                                             "Protocolo":  "http",
+                                                             "Drupal":  ""
+                                                         },
+                                                         {
+                                                             "Nombre":  "sitioDos",
+                                                             "Dominio":  "sitio2.local",
+                                                             "Interfaz":  "192.168.0.69",
+                                                             "Puerto":  80,
+                                                             "Protocolo":  "http",
+                                                             "Drupal":  true
+                                                         },
+                                                         {
+                                                             "Nombre":  "sitioTres",
+                                                             "Dominio":  "sitio3.local",
+                                                             "Interfaz":  "192.168.0.69",
+                                                             "Puerto":  443,
+                                                             "Protocolo":  "https",
+                                                             "Drupal":  ""
+                                                         },
+                                                         {
+                                                             "Nombre":  "sitioCuatro",
+                                                             "Dominio":  "sitio4.local",
+                                                             "Interfaz":  "192.168.0.69",
+                                                             "Puerto":  443,
+                                                             "Protocolo":  "https",
+                                                             "Drupal":  true
+                                                         }
+                                                     ]
+                                      },
+                      "ManejadorBD":  {
+                                          "Manejador":  "MariaDB",
+                                          "NombreBD":  "mibasecita",
+                                          "Script":  ""
+                                      }
+                  }
 }
