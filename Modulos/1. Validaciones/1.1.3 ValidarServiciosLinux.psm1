@@ -36,7 +36,7 @@ function ValidarManejadorBD { param ($servicio = "ManejadorBD", $manejadorbd, $s
             Write-Host "El manejador SQLServer solo se permite para sistemas Ubuntu x.04"
             exit
         }
-        $manejadorbdCheck = [ordered] @{"Manejador" = $manejadorCheck; "Nombre" = $nombreCheck; "Script" = $script}
+        $manejadorbdCheck = [ordered] @{"Manejador" = $manejadorCheck; "NombreBD" = $nombreCheck; "Script" = $script}
         return $manejadorbdCheck
     }
 }

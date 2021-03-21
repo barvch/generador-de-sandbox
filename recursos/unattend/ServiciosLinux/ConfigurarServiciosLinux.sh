@@ -128,7 +128,7 @@ then
 						ns1\tIN\tA\t$ipBase\
 						"
 					echo -e $zoneFwdFile > /etc/bind/zones/master/$file
-					noElementosReg=$(jq -r ".DNS.Zonas[$index].Registros[]|\"\(.Tipo)\"" servicios.json | wc -l)
+					noElementosReg=$(jq -r ".DNS.Zonas[$index]|\"\(.Registros[])\"" servicios.json | wc -l)
 					for indexReg in $(eval echo {0..$(expr $noElementosReg - 1)})
 					do
 						tipoReg=$(jq -r ".DNS.Zonas[$index].Registros[$indexReg].Tipo" servicios.json | sed -r 's/\"//g')
@@ -204,10 +204,10 @@ then
 			esac
 		done
 		named-checkconf
-		if [ $sistemaOperativo = "Kali Linux 2020.04" ]; then
+		if [ $sistemaOperativo == "Kali Linux 2020.04" ]; then
 			systemctl named enable
 			systemctl named restart
-		elif [ $sistemaOperativo = "Debian 10" ]; then
+		elif [ $sistemaOperativo == "Debian 10" ]; then
 			systemctl bind9 enable
 			systemctl bind9 restart
 		fi
@@ -281,7 +281,7 @@ then
 			puerto=$(jq -r ".ServidorWeb.Sitios[$index].Puerto" servicios.json | sed -r 's/\"//g')
 			protocolo=$(jq -r ".ServidorWeb.Sitios[$index].Protocolo" servicios.json | sed -r 's/\"//g')
 			drupal=$(jq -r ".ServidorWeb.Sitios[$index].Drupal" servicios.json)
-			if [ $drupal = true ] && [ $drupalFlag = true ]
+			if [ $drupal == true ] && [ $drupalFlag == true ]
 			then
 				apt-get install libapache2-mod-php php php-fpm php-gd php-common php-mysql php-apcu php-gmp php-curl php-intl php-mbstring php-xmlrpc php-gd php-xml php-cli php-zip -y
 				wget https://www.drupal.org/download-latest/tar.gz -O drupal.tar.gz
@@ -293,7 +293,7 @@ then
 				sed -i "s/.*date.timezone =.*/date.timezone = America\/Mexico_City/g" $phpFile
 				drupalFlag=false
 			fi
-			if [ $drupal = true ] 
+			if [ $drupal == true ] 
 			then
 				cp -rf $nombreArchivo $nombreSitio
 				mv $nombreSitio /var/www/
@@ -304,7 +304,7 @@ then
 				sed -i "s/{{nombreSitio}}/$nombreSitio/g" $indexFile/index.html
 			fi
 			file="/etc/$servidor/sites-available/$nombreSitio.conf"
-			if [ $drupal = true ] 
+			if [ $drupal == true ] 
 			then
 				configFile=ArchivosConfiguracion/ServidorWeb/$servidor/$protocolo/drupal.conf
 			else
