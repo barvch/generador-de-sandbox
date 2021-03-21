@@ -25,7 +25,7 @@ usuario=$(jq ".Credenciales.Usuario" archivo.json | sed -r 's/\"//g')
 contrasena=$(jq ".Credenciales.Contrasena" archivo.json | sed -r 's/\"//g')
 sistemaOperativo=$(jq ".SistemaOperativo" archivo.json | sed -r 's/\"//g')
 servicios=$(jq ".Servicios" archivo.json)
-if [ "$servicios" != \"\" ]
+if [ -v "$servicios" ]
 then
 	echo $servicios > servicios.json
 	apt-get install openssh-server -y
@@ -36,7 +36,7 @@ then
 	systemctl enable ssh
 	systemctl restart sshd
 	manejadorBD=$(jq ".ManejadorBD" servicios.json)
-	if [ "$manejadorBD" != \"\" ]
+	if [ -v "$manejadorBD" ]
 	then
 		manejador=$(jq ".ManejadorBD.Manejador" servicios.json | sed -r 's/\"//g')
 		nombreBD=$(jq ".ManejadorBD.NombreBD" servicios.json | sed -r 's/\"//g')
@@ -98,7 +98,7 @@ then
 		esac
 	fi
 	DNS=$(jq ".DNS" servicios.json)
-	if [ "$DNS" != \"\" ]
+	if [ -v "$DNS" ]
 	then
 		apt-get install bind9 dnsutils -y
 		mkdir -p /etc/bind/zones/master
@@ -213,7 +213,7 @@ then
 		fi
 	fi
 	DHCP=$(jq ".DHCP" servicios.json)
-	if [ "$DHCP" != \"\" ]
+	if [ -v "$DHCP" ]
 	then
 		apt-get install isc-dhcp-server -y
 		noElementos=$(jq -r ".DHCP.Scopes[]|\"\(.Rangos)\"" servicios.json | wc -l)
@@ -248,11 +248,11 @@ then
 				echo -e "\trange $inicio $fin;" >> /etc/dhcp/dhcpd.conf
 			done
 			dns=$(jq -r ".DHCP.Scopes[$index].DNS" servicios.json)
-			if [ "$dns" != \"\" ]; then
+			if [ -v $dns ]; then
 				echo -e "\toption domain-name-servers $dns;" >> /etc/dhcp/dhcpd.conf
 			fi
 			gateway=$(jq -r ".DHCP.Scopes[$index].Gateway" servicios.json)
-			if [ "$gateway" != \"\" ]; then
+			if [ -v $gateway ]; then
 				echo -e "\toption routers $gateway;" >> /etc/dhcp/dhcpd.conf
 			fi
 		    echo "}" >> /etc/dhcp/dhcpd.conf
@@ -267,7 +267,7 @@ then
 		systemctl restart isc-dhcp-server
 		fi
 	servidorWeb=$(jq ".ServidorWeb" servicios.json)
-	if [ "$servidorWeb" != \"\" ]
+	if [ -v "$servidorWeb" ]
 	then
 		drupalFlag=true
 		servidor=$(jq -r ".ServidorWeb.Servidor" servicios.json | sed -r 's/\"//g')
@@ -281,7 +281,7 @@ then
 			puerto=$(jq -r ".ServidorWeb.Sitios[$index].Puerto" servicios.json | sed -r 's/\"//g')
 			protocolo=$(jq -r ".ServidorWeb.Sitios[$index].Protocolo" servicios.json | sed -r 's/\"//g')
 			drupal=$(jq -r ".ServidorWeb.Sitios[$index].Drupal" servicios.json)
-			if [ $drupal == true ] && [ $drupalFlag == true ]
+			if [ $drupal = true ] && [ $drupalFlag = true ]
 			then
 				apt-get install libapache2-mod-php php php-fpm php-gd php-common php-mysql php-apcu php-gmp php-curl php-intl php-mbstring php-xmlrpc php-gd php-xml php-cli php-zip -y
 				wget https://www.drupal.org/download-latest/tar.gz -O drupal.tar.gz
@@ -293,7 +293,7 @@ then
 				sed -i "s/.*date.timezone =.*/date.timezone = America\/Mexico_City/g" $phpFile
 				drupalFlag=false
 			fi
-			if [ $drupal == true ] 
+			if [ $drupal = true ] 
 			then
 				cp -rf $nombreArchivo $nombreSitio
 				mv $nombreSitio /var/www/
@@ -304,7 +304,7 @@ then
 				sed -i "s/{{nombreSitio}}/$nombreSitio/g" $indexFile/index.html
 			fi
 			file="/etc/$servidor/sites-available/$nombreSitio.conf"
-			if [ $drupal == true ] 
+			if [ $drupal = true ] 
 			then
 				configFile=ArchivosConfiguracion/ServidorWeb/$servidor/$protocolo/drupal.conf
 			else
@@ -336,7 +336,7 @@ then
 		systemctl restart $servidor
 	fi
 	iptablesFile=$(jq ".Iptables" servicios.json)
-    if [ "$iptablesFile" != \"\" ]
+    if [ -v "$iptablesFile" ]
     then
         iptables-restore $iptablesFile
     fi
