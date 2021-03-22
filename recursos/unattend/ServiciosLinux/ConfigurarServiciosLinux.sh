@@ -18,14 +18,14 @@ function creaCertificado (){
 	mv $domain.crt /etc/ssl/certs/$domain.crt
 }
 
-sed -i "s/null/\"\"/g" archivo.json
+#sed -i "s/null/\"\"/g" archivo.json
 apt-get update -y
 apt-get install jq -y
 usuario=$(jq ".Credenciales.Usuario" archivo.json | sed -r 's/\"//g')
 contrasena=$(jq ".Credenciales.Contrasena" archivo.json | sed -r 's/\"//g')
 sistemaOperativo=$(jq ".SistemaOperativo" archivo.json | sed -r 's/\"//g')
 servicios=$(jq ".Servicios" archivo.json)
-if [ "$servicios" != \"\" ]
+if [ -v "$servicios" ]
 then
 	echo $servicios > servicios.json
 	apt-get install openssh-server -y
@@ -36,7 +36,7 @@ then
 	systemctl enable ssh
 	systemctl restart sshd
 	manejadorBD=$(jq ".ManejadorBD" servicios.json)
-	if [ "$manejadorBD" != \"\" ]
+	if [ -v "$manejadorBD" ]
 	then
 		manejador=$(jq ".ManejadorBD.Manejador" servicios.json | sed -r 's/\"//g')
 		nombreBD=$(jq ".ManejadorBD.NombreBD" servicios.json | sed -r 's/\"//g')
@@ -101,7 +101,7 @@ then
 		esac
 	fi
 	DNS=$(jq ".DNS" servicios.json)
-	if [ "$DNS" != \"\" ]
+	if [ -v "$DNS" ]
 	then
 		apt-get install bind9 dnsutils -y
 		mkdir -p /etc/bind/zones/master
@@ -216,7 +216,7 @@ then
 		fi
 	fi
 	DHCP=$(jq ".DHCP" servicios.json)
-	if [ "$DHCP" != \"\" ]
+	if [ -v "$DHCP" ]
 	then
 		apt-get install isc-dhcp-server -y
 		noElementos=$(jq -r ".DHCP.Scopes[]|\"\(.Rangos)\"" servicios.json | wc -l)
@@ -251,11 +251,11 @@ then
 				echo -e "\trange $inicio $fin;" >> /etc/dhcp/dhcpd.conf
 			done
 			dns=$(jq -r ".DHCP.Scopes[$index].DNS" servicios.json)
-			if [ "$dns" != \"\" ]; then
+			if [ -v "$dns" ]; then
 				echo -e "\toption domain-name-servers $dns;" >> /etc/dhcp/dhcpd.conf
 			fi
 			gateway=$(jq -r ".DHCP.Scopes[$index].Gateway" servicios.json)
-			if [ "$gateway" != \"\" ]; then
+			if [ -v "$gateway" ]; then
 				echo -e "\toption routers $gateway;" >> /etc/dhcp/dhcpd.conf
 			fi
 		    echo "}" >> /etc/dhcp/dhcpd.conf
@@ -270,7 +270,7 @@ then
 		systemctl restart isc-dhcp-server
 		fi
 	servidorWeb=$(jq ".ServidorWeb" servicios.json)
-	if [ "$servidorWeb" != \"\" ]
+	if [ -v "$servidorWeb" ]
 	then
 		drupalFlag=true
 		servidor=$(jq -r ".ServidorWeb.Servidor" servicios.json | sed -r 's/\"//g')
@@ -339,7 +339,7 @@ then
 		systemctl restart $servidor
 	fi
 	iptablesFile=$(jq ".Iptables" servicios.json)
-    if [ "$iptablesFile" != \"\" ]
+    if [ -v "$iptablesFile" ]
     then
         iptables-restore $iptablesFile
     fi
