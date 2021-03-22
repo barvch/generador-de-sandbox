@@ -17,7 +17,7 @@ function creaCertificado (){
 	mv $domain.key /etc/ssl/private/$domain.key
 	mv $domain.crt /etc/ssl/certs/$domain.crt
 }
-
+cd /servicios/
 sed -i "s/null/\"\"/g" archivo.json
 apt-get update -y
 apt-get install jq -y

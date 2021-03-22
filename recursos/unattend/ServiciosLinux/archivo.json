@@ -1,6 +1,6 @@
 {
     "SistemaOperativo":  "Debian 10",
-    "Hostname":  "cromos",
+    "Hostname":  "ninobombastic",
     "DiscosVirtuales":  20,
     "Procesadores":  2,
     "RutaISO":  "E:\\SanboxTest\\debian-10.8.0-amd64-xfce-CD-1.iso",
@@ -146,6 +146,7 @@
                                           "Manejador":  "MariaDB",
                                           "NombreBD":  "mibasecita",
                                           "Script":  ""
-                                      }
+                                      },
+                      "Iptables":  null
                   }
 }
