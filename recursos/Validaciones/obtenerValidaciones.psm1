@@ -193,3 +193,45 @@ function ValidarTiempo { param ($campo, $tiempo, $obligatorio=$false)
         exit
     }
 }
+function ValidarInterfaz { param ($interfaces, $nombre, $campo)
+    foreach($interfaz in $interfaces){
+        if($nombre -eq $interfaz.Nombre){
+            if ($interfaz.Tipo -eq "DHCP") {
+                Write-Host "La interfaz ingresada en el campo $campo debe de ser del tipo Static"
+                exit
+            }
+            return $interfaz.IP, $interfaz.MascaraRed
+        }else{
+            Write-Host "El campo $campo no coincide con alguna interfaz ingresada"
+            exit
+        }
+    }
+}
+
+function ObtenerPuertoDefault { param ($puerto, $protocolo, $campo)
+    if($puerto){
+        if(($protocolo -eq "http" -and $puerto -eq 443) -or ($protocolo -eq "https" -and $puerto -eq 80)){
+            Write-Host "El puerto $puerto no puede utilizarse para el protocolo $protocolo"
+            exit
+        }else{
+            if($puerto -ne 443){
+                if($puerto -ne 80){
+                    ValidarPuerto -campo $campo -puerto $puerto -puertosBienConocidos $puertosBienConocidos
+                }
+            }
+        }
+    }else{
+        if($protocolo -eq "http"){ $puerto = 80 }else{ $puerto = 443 }
+    }
+    return $puerto
+}
+function ObtenerMascaraRed { param ($mascaras, $campo, $valor)
+    $mascaraCheck = ValidarCatalogos -catalogo $mascaras -campo $campo -valor $valor -obligatorio $true
+    switch ($mascaraCheck) {
+        "8"  { $mascaraCheck = "255.0.0.0"; break}
+        "16" { $mascaraCheck = "255.255.0.0"; break}
+        "24" { $mascaraCheck = "255.255.255.0"; break}
+        Default { $mascaraCheck = $mascaraCheck }
+    }
+    return $mascaraCheck
+}

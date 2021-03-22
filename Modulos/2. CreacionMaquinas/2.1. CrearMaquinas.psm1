@@ -6,7 +6,7 @@ function CrearMaquinas { param ($maquinas, $rutaRaiz)
     $steps = ([System.Management.Automation.PsParser]::Tokenize($MyInvocation.MyCommand.Definition, [ref]$null) | Where-Object { $_.Type -eq 'Command' -and $_.Content -eq 'Write-ProgressHelper' }).Count * $maquinas.Count
     $stepCounter = 0
     foreach($maquina in $maquinas){
-        $maquina | ConvertTo-Json -depth 5 | Set-Content -Path ".\Recursos\unattend\tmp.json"
+        $maquina | ConvertTo-Json -depth 7 | Set-Content -Path ".\Recursos\unattend\tmp.json"
         if(-not $maquina.SistemaOperativo.Contains("Windows")){
             Copy-Item ".\Recursos\unattend\tmp.json" ".\Recursos\unattend\ServiciosLinux\archivo.json"
         }

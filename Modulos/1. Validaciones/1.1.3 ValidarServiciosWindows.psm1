@@ -1,7 +1,7 @@
 #Se importan los catalogos
 . ".\Recursos\Validaciones\catalogos.ps1"
 
-function ValidarAdministracionRemota { param ($servicio = "AdministracionRemota", $adminRemota, $so, $puertoCheck = "22")
+function ValidarAdministracionRemota { param ($servicio = "AdministracionRemota", $adminRemota, $so, $puerto = 22)
     $adminRemotaCheck = ValidarCatalogos -catalogo $tiposAdminRemota -campo $servicio -valor $adminRemota
     if(-not $adminRemotaCheck){
         if($so.Contains("Windows")){
@@ -15,8 +15,9 @@ function ValidarAdministracionRemota { param ($servicio = "AdministracionRemota"
             exit
         }
         if (-not $so.Contains("Windows")) {
-            if($puertoCheck -ne "22"){
-                $puertoCheck = ValidarPuerto -campo "Servicios.PuertoSSH" -puerto $puertoCheck -puertosBienConocidos $puertosBienConocidos
+            if($puerto -ne 22){
+                $puertoCheck = ValidarArregloDato -campo "Servicios.PuertoSSH" -valor $puerto -tipoDato "Int32"
+                ValidarPuerto -campo "Servicios.PuertoSSH" -puerto $puertoCheck -puertosBienConocidos $puertosBienConocidos
             }
         }
     }
@@ -67,40 +68,10 @@ function ValidarIIS { param ($campo = "IIS.Sitios", $iis, $interfaces)
                 $bindingObject = @{}
                 $bindingDominioCheck = ValidarCadenas -campo "$campo.Bindings.Dominio" -valor $binding.Dominio -validacionCaracter "dominio" -obligatorio $true
                 $bindingInterfazCheck = ValidarCadenas -campo "$campo.Bindings.Interfaz" -valor $binding.Interfaz -validacionCaracter "alfaNum2" -validacionLongitud "longitud1" -obligatorio $true
-                foreach($interfaz in $interfaces){
-                    if($bindingInterfazCheck -eq $interfaz.Nombre){
-                        if ($interfaz.Tipo -eq "DHCP") {
-                            Write-Host "La interfaz ingresada debe de ser del tipo Static"
-                            exit
-                        }
-                        $ipBindingCheck = $interfaz.IP
-                        break
-                    }
-                }
-                if(-not $ipBindingCheck){
-                    Write-Host "El campo $campo.Bindings.Interfaz no coincide con alguna interfaz ingresada"
-                    exit
-                }
+                $ipBindingCheck, $mascaraBindingTmp = ValidarInterfaz -interfaces $interfaces -nombre $bindingInterfazCheck -campo "$servicio.Interfaz"
                 $bindingProtocoloCheck = ValidarCatalogos -catalogo $protocolos -campo "$campo.Bindings.Protocolo" -valor $binding.Protocolo -obligatorio $true
                 $bindingPuertoCheck = ValidarArregloDato -campo "$campo.Bindings.Puerto" -valor $binding.Puerto -tipoDato "Int32"
-                if($bindingPuertoCheck){
-                    if(($bindingProtocoloCheck -eq "http" -and $bindingPuertoCheck -eq 443) -or ($bindingProtocoloCheck -eq "https" -and $bindingPuertoCheck -eq 80)){
-                        Write-Host "El puerto $bindingPuertoCheck no puede utilizarse para el protocolo $bindingProtocoloCheck"
-                        exit
-                    }else{
-                        if($bindingPuertoCheck -ne 443){
-                            if($bindingPuertoCheck -ne 80){
-                                $bindingPuertoCheck = ValidarPuerto -campo "$campo.Bindings.Puerto" -puerto $bindingPuertoCheck -puertosBienConocidos $puertosBienConocidos
-                            }
-                        }
-                    }
-                }else{
-                    if($bindingProtocoloCheck -eq "http"){
-                        $bindingPuertoCheck = 80
-                    }else{
-                        $bindingPuertoCheck = 443
-                    }
-                }
+                $bindingPuertoCheck = ObtenerPuertoDefault -puerto $bindingPuertoCheck -protocolo $bindingProtocoloCheck -campo "$campo.Bindings.Puerto"
                 $WebDAVCheck = ValidarArregloDato -campo "$campo.Bindings.WebDAV" -valor $binding.WebDAV -tipoDato "Boolean" 
                 $dominiosBindings += $bindingDominioCheck
                 ValidarNombreUnico -campo "$campo.Bindings.Dominio" -arreglo $dominiosBindings
@@ -127,13 +98,7 @@ function ValidarDHCP { param ($campo = "DHCP.Scopes", $dhcp)
             $nombreCheck = ValidarCadenas -campo "$campo.Nombre" -valor $scope.Nombre -validacionCaracter "alfaNum1" -validacionLongitud "longitud1" -obligatorio $true
             $ipInicioCheck = ValidarCadenas -campo "$campo.Rango.Inicio" -valor $scope.Rango.Inicio -validacionCaracter "ip" -obligatorio $true
             $ipFinCheck= ValidarCadenas -campo "$campo.Rango.Fin" -valor $scope.Rango.Fin -validacionCaracter "ip" -obligatorio $true
-            $mascaraCheck = ValidarCatalogos -catalogo $mascaras -campo "$campo.Rango.MascaraRed" -valor $scope.Rango.MascaraRed -obligatorio $true
-            switch ($mascaraCheck) {
-                "8"  { $mascaraCheck = "255.0.0.0"; break}
-                "16" { $mascaraCheck = "255.255.0.0"; break}
-                "24" { $mascaraCheck = "255.255.255.0"; break}
-                Default { $mascaraCheck = $mascaraCheck }
-            } 
+            $mascaraCheck =  ObtenerMascaraRed -mascaras $mascaras -campo "$campo.Rango.MascaraRed" -valor $scope.Rango.MascaraRed
             $rangoInicio, $rangoFin = ValidarRango -ipInicio $ipInicioCheck -ipFin $ipFinCheck -mascara $mascaraCheck -campo "$campo.Rango"
             $exclusiones = $scope.Exclusiones
             if($exclusiones){
@@ -236,7 +201,9 @@ function ValidarDNS { param ($campo = "DNS.Zonas", $dns)
                 $netIDs += $netIDCheck
                 $zonaCheck = [ordered] @{"Tipo" = $tipoZonaCheck; "NetID" = $netIDCheck; "Backup" = $backupZonaCheck; "Registros" = $registros}
             }
-            $backups += $backupZonaCheck
+            if($backupZonaCheck){
+                $backups += $backupZonaCheck
+            }
             $zonas += $zonaCheck
         }
     ValidarNombreUnico -campo "$campo.Nombre" -arreglo $nombres

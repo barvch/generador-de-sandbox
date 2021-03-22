@@ -94,9 +94,6 @@ then
 				apt-get install -y mssql-server
 				MSSQL_SA_PASSWORD=$contrasena MSSQL_PID="developer" /opt/mssql/bin/mssql-conf -n setup accept-eula
 				systemctl restart mssql-server
-				echo -e "[mysql]\nuser=${usuario}\npassword=${contrasena}" > ~/.my.cnf
-				chmod 0600 ~/.my.cnf
-				mysql -u ${usuario} < script.sql
 				;;
 		esac
 	fi
@@ -131,7 +128,7 @@ then
 						ns1\tIN\tA\t$ipBase\
 						"
 					echo -e $zoneFwdFile > /etc/bind/zones/master/$file
-					noElementosReg=$(jq -r ".DNS.Zonas[$index].Registros[]|\"\(.Tipo)\"" servicios.json | wc -l)
+					noElementosReg=$(jq -r ".DNS.Zonas[$index]|\"\(.Registros[])\"" servicios.json | wc -l)
 					for indexReg in $(eval echo {0..$(expr $noElementosReg - 1)})
 					do
 						tipoReg=$(jq -r ".DNS.Zonas[$index].Registros[$indexReg].Tipo" servicios.json | sed -r 's/\"//g')
@@ -207,10 +204,10 @@ then
 			esac
 		done
 		named-checkconf
-		if [ $sistemaOperativo = "Kali Linux 2020.04" ]; then
+		if [ $sistemaOperativo == "Kali Linux 2020.04" ]; then
 			systemctl named enable
 			systemctl named restart
-		elif [ $sistemaOperativo = "Debian 10" ]; then
+		elif [ $sistemaOperativo == "Debian 10" ]; then
 			systemctl bind9 enable
 			systemctl bind9 restart
 		fi
@@ -251,11 +248,11 @@ then
 				echo -e "\trange $inicio $fin;" >> /etc/dhcp/dhcpd.conf
 			done
 			dns=$(jq -r ".DHCP.Scopes[$index].DNS" servicios.json)
-			if [ -v "$dns" ]; then
+			if [ -v $dns ]; then
 				echo -e "\toption domain-name-servers $dns;" >> /etc/dhcp/dhcpd.conf
 			fi
 			gateway=$(jq -r ".DHCP.Scopes[$index].Gateway" servicios.json)
-			if [ -v "$gateway" ]; then
+			if [ -v $gateway ]; then
 				echo -e "\toption routers $gateway;" >> /etc/dhcp/dhcpd.conf
 			fi
 		    echo "}" >> /etc/dhcp/dhcpd.conf

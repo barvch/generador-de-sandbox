@@ -135,13 +135,7 @@ function ValidarInterfaces { param ($interfaces, $hostname)
             }
             if($tipoInterfazCheck -eq "Static") {
                 $ipCheck = ValidarCadenas -campo "$interfacesNombreCheck.IP" -valor $interfaz.IP -validacionCaracter "ip" -obligatorio $true
-                $mascaraCheck = ValidarCatalogos -catalogo $mascaras -campo "$interfacesNombreCheck.MascaraRed" -valor $interfaz.MascaraRed -obligatorio $true
-                switch ($mascaraCheck) {
-                    "8"  { $mascaraCheck = "255.0.0.0"; break}
-                    "16" { $mascaraCheck = "255.255.0.0"; break}
-                    "24" { $mascaraCheck = "255.255.255.0"; break}
-                    Default { $mascaraCheck = $mascaraCheck }
-                } 
+                $mascaraCheck = ObtenerMascaraRed -mascaras $mascaras -campo "$interfacesNombreCheck.MascaraRed" -valor $interfaz.MascaraRed
                 $gatewayCheck = ValidarCadenas -campo "$interfacesNombreCheck.Gateway" -valor $interfaz.Gateway -validacionCaracter "ip"
                 $dnsCheck = ValidarCadenas -campo "$interfacesNombreCheck.DNS" -valor $interfaz.DNS -validacionCaracter "ip" 
                 $ips += $ipCheck
