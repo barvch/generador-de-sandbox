@@ -27,7 +27,7 @@ function CrearISODebianFlavor {
         Copy-Item ".\Recursos\unattend\Ubuntu\ks.cfg" "$directorio" -Force
         (Get-Content "$directorio\ks.cfg").replace('{{username}}', $username) | Set-Content "$directorio\ks.cfg"
         (Get-Content "$directorio\ks.cfg").replace('{{pwhash}}', $pwhash) | Set-Content "$directorio\ks.cfg"
-        (Get-Content "$directorio\ks.cfg").replace('{{hostname}}', $hostname) | Set-Content "$directorio\ks.cfg"
+        #(Get-Content "$directorio\ks.cfg").replace('{{hostname}}', $hostname) | Set-Content "$directorio\ks.cfg"
 
         if ($os -eq "Ubuntu 20.04") {
             $install_lable="default live-install`nlabel live-install`n  menu label ^Install Ubuntu`n  kernel /casper/vmlinuz`n  append  file=/cdrom/ks.preseed auto=true priority=critical debian-installer/locale=es_MX keyboard-configuration/layoutcode=es ubiquity/reboot=true languagechooser/language-name=English countrychooser/shortlist=US localechooser/supported-locales=en_US.UTF-8 boot=casper automatic-ubiquity initrd=/casper/initrd ks=cdrom:/ks.cfg quiet splash ---"
@@ -36,7 +36,7 @@ function CrearISODebianFlavor {
             # Se le agrega extension a algunos archivos necesarios para crear el ISO
             Rename-Item -Path "$directorio\casper\initrd" -NewName "initrd.lz"
             Rename-Item -Path "$directorio\casper\vmlinuz" -NewName "vmlinuz.efi"
-            $install_lable="default install`nlabel install`n  menu label ^Install Ubuntu Server`n  kernel /casper/vmlinuz.efi`n  append file=/cdrom/preseed/ubuntu.seed debian-installer/locale=es_MX keyboard-configuration/layoutcode=es ubiquity/reboot=true languagechooser/language-name=English countrychooser/shortlist=US localechooser/supported-locales=en_US.UTF-8 boot=casper automatic-ubiquity initrd=/casper/initrd.lz ks=cdrom:/ks.cfg preseed/file=/cdrom/ks.preseed --"
+            $install_lable="default install`nlabel install`n  menu label ^Install Ubuntu Server`n  kernel /casper/vmlinuz.efi`n  append file=/cdrom/preseed/ubuntu.seed debian-installer/locale=en_US keyboard-configuration/layoutcode=es ubiquity/reboot=true languagechooser/language-name=English countrychooser/shortlist=US localechooser/supported-locales=en_US.UTF-8 boot=casper automatic-ubiquity initrd=/casper/initrd.lz ks=cdrom:/ks.cfg --" # preseed/file=/cdrom/ks.preseed
         }
         
 
@@ -48,8 +48,8 @@ function CrearISODebianFlavor {
         Clear-Content "$directorio\isolinux\txt.cfg"
         $install_lable | Set-Content "$directorio\isolinux\txt.cfg"
 
-        # Se copia el script de post instalación dentro del ISO:
-        #Copy-Item ".\Recursos\unattend\post.sh" "$directorio" -Force
+        #Copy-Item -Path ".\Recursos\unattend\ServiciosLinux\" -Destination "$directorio\ServiciosLinux" -Recurse
+        #(Get-Content "$directorio\ServiciosLinux\ConfigurarServiciosLinux.sh" -Raw).Replace("`r`n","`n") | Set-Content "$directorio\ServiciosLinux\ConfigurarServiciosLinux.sh" -Force
         
     } elseif (@("Kali Linux 2020.04", "Debian 10") -contains $os) {
         # Se copia el preseed base al directorio de trabajo y al archivo copiado, se hacen las modificaciones de las especificaciones para el equipo
@@ -100,15 +100,15 @@ function CrearISODebianFlavor {
         } else {
             (Get-Content "$directorio\isolinux\txt.cfg").replace('append preseed/file=/cdrom/simple-cdd/default.preseed simple-cdd/profiles=kali,offline desktop=xfce vga=788 initrd=/install.amd/initrd.gz --- quiet ', $lol) | Set-Content "$directorio\isolinux\txt.cfg"
         }
-        # Se copia el script de post instalación dentro del ISO:
-
-        Copy-Item -Path ".\Recursos\unattend\ServiciosLinux\" -Destination "$directorio\ServiciosLinux" -Recurse
-        (Get-Content "$directorio\ServiciosLinux\ConfigurarServiciosLinux.sh" -Raw).Replace("`r`n","`n") | Set-Content "$directorio\ServiciosLinux\ConfigurarServiciosLinux.sh" -Force
 
     }
     # Se establece el orden de booteo para ver reflejados todos los cambios 
     (Get-Content "$directorio\isolinux\isolinux.cfg").replace('timeout 0', 'timeout 60') | Set-Content "$directorio\isolinux\isolinux.cfg"
     (Get-Content "$directorio\isolinux\isolinux.cfg").replace('prompt 0', 'prompt 60') | Set-Content "$directorio\isolinux\isolinux.cfg"
+
+    # Se copia el script de los servicios a la VM objetivo:
+    Copy-Item -Path ".\Recursos\unattend\ServiciosLinux\" -Destination "$directorio\ServiciosLinux" -Recurse
+    (Get-Content "$directorio\ServiciosLinux\ConfigurarServiciosLinux.sh" -Raw).Replace("`r`n","`n") | Set-Content "$directorio\ServiciosLinux\ConfigurarServiciosLinux.sh" -Force
 }
 function CrearISOCentos {
     param ([string]$username, [string]$password,[string]$hostname, [string] $isoFile, [string]$seed_file, [string]$directorio, $interfaces, $ambiente)
@@ -142,6 +142,15 @@ function CrearISOCentos {
     }
     # Se copia el preseed base al directorio de trabajo y al archivo copiado, se hacen las modificaciones de las especificaciones para el equipo
     Copy-Item ".\Recursos\unattend\CentOS\ks.cfg" "$directorio" -Force
+    #(Get-Content "$directorio\ks.cfg" -Raw).Replace("^M$","") | Out-File -FilePath $dos2unix -Force -Encoding ascii -nonewline
+    
+    #$dos2unix = "$directorio\tmpks.cfg"
+    #Write-Host "Dos2Unixando el archivo ks..."
+    #(Get-Content "$directorio\ks.cfg" -Raw).Replace("`r`n","`n") | Out-File -FilePath $dos2unix -Force -Encoding ascii -nonewline
+    ##(Get-Content "$directorio\ks.cfg") -join "`n" > $dos2unix
+    #Remove-Item -Path "$directorio\ks.cfg"
+    #Rename-Item -Path $dos2unix -NewName "ks.cfg"
+    #Write-Host "OK..."
     if ($ambiente -eq "Core") {
         (Get-Content "$directorio\ks.cfg").replace('{{gui}}', "") | Set-Content "$directorio\$seed_file"
         (Get-Content "$directorio\ks.cfg").replace('{{paqueteambiente}}', "@^minimal-environment") | Set-Content "$directorio\$seed_file"
@@ -156,6 +165,15 @@ function CrearISOCentos {
     (Get-Content "$directorio\ks.cfg").replace('{{username}}', $username) | Set-Content "$directorio\$seed_file"
     (Get-Content "$directorio\ks.cfg").replace('{{interfaces}}', $configinterfaces) | Set-Content "$directorio\$seed_file"
     (Get-Content "$directorio\ks.cfg").replace('{{paquetes}}', "vim`ngit") | Set-Content "$directorio\$seed_file"
+
+    $repo = (Get-Location).Path
+    Set-Location $directorio
+    $lele = bash -c "pwd"
+    $antes = bash -c "cat -e ks.cfg"
+    bash -c "dos2unix ks.cfg"
+    $desp = bash -c "cat -e ks.cfg"
+    Write-Host "$lele`nANTES:$antes`nDESP:$desp"
+    Set-Location $repo
     
     # Dentro del directorio de trabajo, se elimina la configuracion por defecto del ISO y se copia la modificada 
     Remove-Item $directorio\isolinux\isolinux.cfg
@@ -165,8 +183,9 @@ function CrearISOCentos {
     $cambio = "linuxefi /images/pxeboot/vmlinuz  inst.stage2=hd:sr0 inst.ks=cdrom:/ks.cfg quiet"
     (Get-Content "$directorio\EFI\BOOT\grub.cfg").replace("menuentry 'Install CentOS Linux 8' --class fedora --class gnu-linux --class gnu --class os", "menuentry 'Kickstart Installation' --class fedora --class gnu-linux --class gnu --class os") | Set-Content "$directorio\EFI\BOOT\grub.cfg"
     (Get-Content "$directorio\EFI\BOOT\grub.cfg").replace('linuxefi /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=CentOS-8-3-2011-x86_64-dvd quiet', $cambio) | Set-Content "$directorio\EFI\BOOT\grub.cfg"
-    (Get-Content "$directorio\EFI\BOOT\grub.cfg").replace('set default="1"', 'set default="0"') | Set-Content "$directorio\EFI\BOOT\grub.cfg"
+    #(Get-Content "$directorio\EFI\BOOT\grub.cfg").replace('set default="1"', 'set default="0"') | Set-Content "$directorio\EFI\BOOT\grub.cfg"
 
-    # Se copia el script de post instalación dentro del ISO:
-    Copy-Item ".\Recursos\unattend\post.sh" "$directorio" -Force
+    # Se copia el script de los servicios a la VM objetivo:
+    Copy-Item -Path ".\Recursos\unattend\ServiciosLinux\" -Destination "$directorio\ServiciosLinux" -Recurse
+    (Get-Content "$directorio\ServiciosLinux\ConfigurarServiciosLinux.sh" -Raw).Replace("`r`n","`n") | Set-Content "$directorio\ServiciosLinux\ConfigurarServiciosLinux.sh" -Force
 }

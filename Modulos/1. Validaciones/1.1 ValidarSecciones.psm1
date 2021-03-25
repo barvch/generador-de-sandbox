@@ -58,7 +58,7 @@ function ValidarServicios { param ( $sistemaOperativo, $maquinaVirtual, $interfa
             $manejadorbdCheck = ValidarManejadorBD -manejadorbd $maquinaVirtual.Servicios.ManejadorBD -so $sistemaOperativo
             $DHCPCheck = ValidarISCDHCP -dhcp $maquinaVirtual.Servicios.DHCP -interfaces $interfaces
             $DNSCheck = ValidarBindDNS -dns $maquinaVirtual.Servicios.DNS -interfaces $interfaces
-            $iptablesCheck = ValidarIptables -iptables $maquinaVirtual.Servicios.Iptables
+            #$iptablesCheck = ValidarIptables -iptables $maquinaVirtual.Servicios.Iptables
         }
     }
     $servicios = [ordered] @{"AdministracionRemota" = $adminRemotaCheck; "PuertoSSH" = $puertoCheck; "CertificateServices" = $certServicesCheck; `

@@ -1,9 +1,9 @@
 {
-    "SistemaOperativo":  "Debian 10",
-    "Hostname":  "ninobombastic",
+    "SistemaOperativo":  "CentOS 8",
+    "Hostname":  "aberwe",
     "DiscosVirtuales":  20,
     "Procesadores":  2,
-    "RutaISO":  "E:\\SanboxTest\\debian-10.8.0-amd64-xfce-CD-1.iso",
+    "RutaISO":  "E:\\SanboxTest\\CentOS-8.3.2011-x86_64-dvd1.iso",
     "MemoriaRAM":  {
                        "Tipo":  "Static",
                        "Memoria":  1.0
@@ -28,7 +28,7 @@
                        }
                    ],
     "DatosDependientes":  {
-                              "TipoAmbiente":  "Xfce",
+                              "TipoAmbiente":  "gnome",
                               "LlaveActivacion":  null,
                               "RutaMSI":  null,
                               "ArchivoXML":  null
