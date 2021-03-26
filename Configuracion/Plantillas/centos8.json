@@ -2,12 +2,12 @@
     "Root": "E:\\SanboxTest",
     "MaquinasVirtuales": [
         {
-            "SistemaOperativo": "Ubuntu 16.04",
-            "TipoAmbiente": "Ubuntu desktop",
-            "Hostname": "ubuntuserver",
+            "SistemaOperativo": "CentOS 8",
+            "TipoAmbiente": "gnome",
+            "Hostname": "aberwe",
             "DiscosVirtuales": [20],
             "Procesadores": 2,
-            "RutaISO": "E:\\SanboxTest\\ubuntu-16.04.7-desktop-amd64.iso",
+            "RutaISO": "E:\\SanboxTest\\CentOS-8.3.2011-x86_64-dvd1.iso",
             "MemoriaRAM": {
                 "Tipo": "Static",
                 "Memoria": 1.0

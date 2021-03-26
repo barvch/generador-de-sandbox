@@ -36,7 +36,8 @@ function CrearISODebianFlavor {
             # Se le agrega extension a algunos archivos necesarios para crear el ISO
             Rename-Item -Path "$directorio\casper\initrd" -NewName "initrd.lz"
             Rename-Item -Path "$directorio\casper\vmlinuz" -NewName "vmlinuz.efi"
-            $install_lable="default install`nlabel install`n  menu label ^Install Ubuntu Server`n  kernel /casper/vmlinuz.efi`n  append file=/cdrom/preseed/ubuntu.seed debian-installer/locale=en_US keyboard-configuration/layoutcode=es ubiquity/reboot=true languagechooser/language-name=English countrychooser/shortlist=US localechooser/supported-locales=en_US.UTF-8 boot=casper automatic-ubiquity initrd=/casper/initrd.lz ks=cdrom:/ks.cfg --" # preseed/file=/cdrom/ks.preseed
+            #$install_lable="default install`nlabel install`n  menu label ^Install Ubuntu Server`n  kernel /casper/vmlinuz.efi`n  append file=/cdrom/preseed/ubuntu.seed debian-installer/locale=en_US keyboard-configuration/layoutcode=es ubiquity/reboot=true languagechooser/language-name=English countrychooser/shortlist=US localechooser/supported-locales=en_US.UTF-8 boot=casper automatic-ubiquity initrd=/casper/initrd.lz ks=cdrom:/ks.cfg --" # preseed/file=/cdrom/ks.preseed
+            $install_lable="default install`nlabel install`n  menu label ^Install Ubuntu Server`n  kernel /casper/vmlinuz.efi`n  append file=/cdrom/preseed/ubuntu.seed debian-installer/locale=en_US keyboard-configuration/layoutcode=es ubiquity/reboot=true languagechooser/language-name=English countrychooser/shortlist=US localechooser/supported-locales=en_US.UTF-8 boot=casper automatic-ubiquity initrd=/casper/initrd.lz ks=cdrom:/ks.cfg preseed/file=/cdrom/ks.preseed --"
         }
         
 
