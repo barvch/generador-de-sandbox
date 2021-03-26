@@ -1,0 +1,1 @@
+echo 'Esto es un texto generado a partir de script' > /home/prueba/msj.txt
