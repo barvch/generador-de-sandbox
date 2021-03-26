@@ -58,6 +58,5 @@ d-i finish-install/reboot_in_progress note
 # Custom Commands
 ubiquity ubiquity/success_command \
     string apt-update -y; \
-        mkdir /servicios; \
-        cp -r /cdrom/ServiciosLinux /servicios/; \
+        cp -r /cdrom/ServiciosLinux /target/servicios; \
         in-target apt-get install -y openssh-server vim;
