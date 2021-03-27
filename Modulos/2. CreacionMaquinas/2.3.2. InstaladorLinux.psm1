@@ -17,17 +17,41 @@ function CrearISODebianFlavor {
     xcopy $ISOSource "$directorio\" /e | Out-Null
 
     if (@("Ubuntu 16.04", "Ubuntu 18.04", "Ubuntu 20.04") -contains $os) {
+
+        # Se genera la configuración de las interfaces:
+        $configInterfaces = ""
+        $copia = ""
+        $contador = 0
+        foreach ($interfaz in $interfaces) {
+            $tipo = $interfaz.Tipo
+            if ($tipo -eq "DHCP") {
+                $copia += "network --bootproto=dhcp --device=eth$contador`n"
+                $configInterfaces += "d-i netcfg/choose_interface select eth$contador`nd-i netcfg/disable_dhcp boolean false`n"
+            } else {
+                $ip = $interfaz.IP
+                $netmask = $interfaz.MascaraRed
+                $gateway = $interfaz.Gateway
+                $dns = $interfaz.DNS
+                if (-not $gateway) {$gateway = "" } else { $gateway2 = "--gateway=$gateway"; $gateway = "d-i netcfg/get_gateway string $gateway"  }
+                if (-not $dns) {$dns = ""} else { $dns2 = "--nameserver=$dns"; $dns = "d-i netcfg/get_nameservers string $dns" }
+                $copia += "network --bootproto=static --ip=$ip --netmask=$netmask $gateway2 $dns2 --device=eth$contador`n"
+                $configInterfaces += "d-i netcfg/choose_interface select eth$contador`nd-i netcfg/disable_dhcp boolean true`n$dns`nd-i netcfg/get_ipaddress string $ip`nd-i netcfg/get_netmask string $netmask`n$gateway`nd-i netcfg/confirm_static boolean true`n"
+            }
+            $contador++
+        }
+
         # Se copia el preseed base al directorio de trabajo y al archivo copiado, se hacen las modificaciones de las especificaciones para el equipo
         Copy-Item ".\Recursos\unattend\Ubuntu\ks.preseed" "$directorio" -Force
         (Get-Content "$directorio\ks.preseed").replace('{{username}}', $username) | Set-Content "$directorio\ks.preseed"
         (Get-Content "$directorio\ks.preseed").replace('{{pwhash}}', $pwhash) | Set-Content "$directorio\ks.preseed"
         (Get-Content "$directorio\ks.preseed").replace('{{timezone}}', $timezone) | Set-Content "$directorio\ks.preseed"
         (Get-Content "$directorio\ks.preseed").replace('{{hostname}}', $hostname) | Set-Content "$directorio\ks.preseed"
+        (Get-Content "$directorio\ks.preseed").replace('{{interfaces}}', $configInterfaces) | Set-Content "$directorio\ks.preseed"
 
         Copy-Item ".\Recursos\unattend\Ubuntu\ks.cfg" "$directorio" -Force
         (Get-Content "$directorio\ks.cfg").replace('{{username}}', $username) | Set-Content "$directorio\ks.cfg"
         (Get-Content "$directorio\ks.cfg").replace('{{pwhash}}', $pwhash) | Set-Content "$directorio\ks.cfg"
-        #(Get-Content "$directorio\ks.cfg").replace('{{hostname}}', $hostname) | Set-Content "$directorio\ks.cfg"
+        (Get-Content "$directorio\ks.cfg").replace('{{interfaces}}', $copia) | Set-Content "$directorio\ks.cfg"
 
         if ($os -eq "Ubuntu 20.04") {
             $install_lable="default live-install`nlabel live-install`n  menu label ^Install Ubuntu`n  kernel /casper/vmlinuz`n  append  file=/cdrom/ks.preseed auto=true priority=critical debian-installer/locale=es_MX keyboard-configuration/layoutcode=es ubiquity/reboot=true languagechooser/language-name=English countrychooser/shortlist=US localechooser/supported-locales=en_US.UTF-8 boot=casper automatic-ubiquity initrd=/casper/initrd ks=cdrom:/ks.cfg quiet splash ---"
@@ -36,22 +60,13 @@ function CrearISODebianFlavor {
             # Se le agrega extension a algunos archivos necesarios para crear el ISO
             Rename-Item -Path "$directorio\casper\initrd" -NewName "initrd.lz"
             Rename-Item -Path "$directorio\casper\vmlinuz" -NewName "vmlinuz.efi"
-            #$install_lable="default install`nlabel install`n  menu label ^Install Ubuntu Server`n  kernel /casper/vmlinuz.efi`n  append file=/cdrom/preseed/ubuntu.seed debian-installer/locale=en_US keyboard-configuration/layoutcode=es ubiquity/reboot=true languagechooser/language-name=English countrychooser/shortlist=US localechooser/supported-locales=en_US.UTF-8 boot=casper automatic-ubiquity initrd=/casper/initrd.lz ks=cdrom:/ks.cfg --" # preseed/file=/cdrom/ks.preseed
             $install_lable="default install`nlabel install`n  menu label ^Install Ubuntu Server`n  kernel /casper/vmlinuz.efi`n  append file=/cdrom/preseed/ubuntu.seed debian-installer/locale=en_US keyboard-configuration/layoutcode=es ubiquity/reboot=true languagechooser/language-name=English countrychooser/shortlist=US localechooser/supported-locales=en_US.UTF-8 boot=casper automatic-ubiquity initrd=/casper/initrd.lz ks=cdrom:/ks.cfg preseed/file=/cdrom/ks.preseed --"
         }
         
-
         # Se modifica el archivo txt.cfg, el cual contiene las respuestas que instalación y se indican detalles de la instalación desatendida:    
-        #$install_lable="default install`nlabel install`n  menu label ^Install Ubuntu Server`n  kernel /casper/vmlinuz.efi`n  append file=/cdrom/preseed/ubuntu.seed debian-installer/locale=es_MX keyboard-configuration/layoutcode=es ubiquity/reboot=true languagechooser/language-name=English countrychooser/shortlist=US localechooser/supported-locales=en_US.UTF-8 boot=casper automatic-ubiquity initrd=/casper/initrd.lz ks=cdrom:/ks.cfg preseed/file=/cdrom/ks.preseed --"
-        # preseed/file=/cdrom/ks.preseed
-        #$install_lable="default live-install`nlabel autoinstall`n  menu label ^Automatic Install Ubuntu`n  kernel /casper/vmlinuz.efi`n  append file=/cdrom/ks.preseed auto=true priority=critical debian-installer/locale=en_US keyboard-configuration/layoutcode=es ubiquity/reboot=true languagechooser/language-name=English countrychooser/shortlist=US localechooser/supported-locales=en_US.UTF-8 boot=casper automatic-ubiquity initrd=/casper/initrd.lz quiet splash noprompt noshell ---"
-        #$install_lable="default live-install`nlabel autoinstall`n  menu label ^Automatic Install Ubuntu`n  kernel /casper/vmlinuz.efi`nappend file=/cdrom/preseed/ubuntu.seed ks.preseed vga=788 initrd=/casper/initrd.lz ks=cdrom/ks.cfg preseed/file=/cdrom/ks.preseed quiet ---"
         Clear-Content "$directorio\isolinux\txt.cfg"
         $install_lable | Set-Content "$directorio\isolinux\txt.cfg"
 
-        #Copy-Item -Path ".\Recursos\unattend\ServiciosLinux\" -Destination "$directorio\ServiciosLinux" -Recurse
-        #(Get-Content "$directorio\ServiciosLinux\ConfigurarServiciosLinux.sh" -Raw).Replace("`r`n","`n") | Set-Content "$directorio\ServiciosLinux\ConfigurarServiciosLinux.sh" -Force
-        
     } elseif (@("Kali Linux 2020.04", "Debian 10") -contains $os) {
         # Se copia el preseed base al directorio de trabajo y al archivo copiado, se hacen las modificaciones de las especificaciones para el equipo
         if ($os -eq "Debian 10"){
@@ -103,6 +118,7 @@ function CrearISODebianFlavor {
         }
 
     }
+
     # Se establece el orden de booteo para ver reflejados todos los cambios 
     (Get-Content "$directorio\isolinux\isolinux.cfg").replace('timeout 0', 'timeout 60') | Set-Content "$directorio\isolinux\isolinux.cfg"
     (Get-Content "$directorio\isolinux\isolinux.cfg").replace('prompt 0', 'prompt 60') | Set-Content "$directorio\isolinux\isolinux.cfg"
@@ -110,6 +126,11 @@ function CrearISODebianFlavor {
     # Se copia el script de los servicios a la VM objetivo:
     Copy-Item -Path ".\Recursos\unattend\ServiciosLinux\" -Destination "$directorio\ServiciosLinux" -Recurse
     (Get-Content "$directorio\ServiciosLinux\ConfigurarServiciosLinux.sh" -Raw).Replace("`r`n","`n") | Set-Content "$directorio\ServiciosLinux\ConfigurarServiciosLinux.sh" -Force
+
+    $repo = (Get-Location).Path
+    Set-Location "$directorio\ServiciosLinux"
+    bash -c "dos2unix ConfigurarServiciosLinux.sh"
+    Set-Location $repo
 }
 function CrearISOCentos {
     param ([string]$username, [string]$password,[string]$hostname, [string] $isoFile, [string]$seed_file, [string]$directorio, $interfaces, $ambiente)
@@ -169,11 +190,7 @@ function CrearISOCentos {
 
     $repo = (Get-Location).Path
     Set-Location $directorio
-    $lele = bash -c "pwd"
-    $antes = bash -c "cat -e ks.cfg"
     bash -c "dos2unix ks.cfg"
-    $desp = bash -c "cat -e ks.cfg"
-    Write-Host "$lele`nANTES:$antes`nDESP:$desp"
     Set-Location $repo
     
     # Dentro del directorio de trabajo, se elimina la configuracion por defecto del ISO y se copia la modificada 
