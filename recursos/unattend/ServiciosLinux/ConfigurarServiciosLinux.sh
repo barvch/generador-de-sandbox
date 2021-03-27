@@ -17,8 +17,8 @@ function creaCertificado (){
 	mv $domain.key /etc/ssl/private/$domain.key
 	mv $domain.crt /etc/ssl/certs/$domain.crt
 }
-sistemaOperativo=$(jq ".SistemaOperativo" archivo.json | sed -r 's/\"//g')
-if [[ $sistemaOperativo =~ (CentOS.*|RHEL.*) ]]
+so=$(cat archivo.json | grep SistemaOperativo | tr -s " " | cut -d ":" -f2 | sed -e "s/,//g" | sed -e "s/\"//g" | sed -e "s/^.//g")
+if [[ $so =~ (CentOS.*|RHEL.*) ]]
 then
 	yum update -y
 	yum install jq -y
@@ -27,6 +27,7 @@ else
 	apt-get update -y
 	apt-get install jq -y
 fi
+sistemaOperativo=$(jq ".SistemaOperativo" archivo.json | sed -r 's/\"//g')
 cd /servicios/
 mkdir /etc/ssl/private/
 sed -i "s/null/\"\"/g" archivo.json
@@ -104,20 +105,29 @@ then
 			MariaDB)
 				if [[ $sistemaOperativo =~ (CentOS.*|RHEL.*) ]]
 				then
-						yum install mariadb-server -y
-						systemctl start mariadb.service
+					yum install mariadb-server -y
+					systemctl start mariadb.service
+					mysql -e "CREATE USER ${usuario}@localhost IDENTIFIED BY '${contrasena}';"
+					mysql -e "CREATE DATABASE $nombreBD;"
+					mysql -e "GRANT ALL ON ${nombreBD}.* TO ${usuario}@localhost;"
+					systemctl enable mysql
+					systemctl restart mysql
+					echo -e "[mysql]\nuser=${usuario}\npassword=${contrasena}"> ~/.my.cnf
+					chmod 0600 ~/.my.cnf
+					mysql < script.sql
+					rm ~/.my.cnf
 				else
-						apt install mariadb-server -y
+					apt install mariadb-server -y
+					mariadb -e "CREATE USER ${usuario}@localhost IDENTIFIED BY '${contrasena}';"
+					mariadb -e "CREATE DATABASE $nombreBD;"
+					mariadb -e "GRANT ALL ON ${nombreBD}.* TO ${usuario}@localhost;"
+					systemctl enable mariadb
+					systemctl restart mariadb
+					echo -e "[mysql]\nuser=${usuario}\npassword=${contrasena}"> ~/.my.cnf
+					chmod 0600 ~/.my.cnf
+					mariadb < script.sql
+					rm ~/.my.cnf
 				fi
-				mariadb -e "CREATE USER ${usuario}@localhost IDENTIFIED BY '${contrasena}';"
-				mariadb -e "CREATE DATABASE $nombreBD;"
-				mariadb -e "GRANT ALL ON ${nombreBD}.* TO ${usuario}@localhost;"
-				systemctl enable mariadb
-				systemctl restart mariadb
-				echo -e "[mysql]\nuser=${usuario}\npassword=${contrasena}"> ~/.my.cnf
-				chmod 0600 ~/.my.cnf
-				mariadb < script.sql
-				rm ~/.my.cnf
 				;;
 			SQLServer)
 				version=$(echo $sistemaOperativo | cut -d " " -f2)
@@ -243,10 +253,10 @@ then
 			esac
 		done
 		named-checkconf
-		if [[ $sistemaOperativo == "Kali Linux 2020.04" ]]; then
+		if [[ $sistemaOperativo == (Kali.*|CentOS.*|RHEL.*) ]]; then
 			systemctl named enable
 			systemctl named restart
-		elif [[ $sistemaOperativo == "Debian 10" ]]; then
+		else
 			systemctl bind9 enable
 			systemctl bind9 restart
 		fi
