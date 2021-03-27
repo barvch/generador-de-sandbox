@@ -17,18 +17,31 @@ function creaCertificado (){
 	mv $domain.key /etc/ssl/private/$domain.key
 	mv $domain.crt /etc/ssl/certs/$domain.crt
 }
+sistemaOperativo=$(jq ".SistemaOperativo" archivo.json | sed -r 's/\"//g')
+if [[ $sistemaOperativo =~ (CentOS.*|RHEL.*) ]]
+then
+	yum update -y
+	yum install jq -y
+	setenforce 0
+else
+	apt-get update -y
+	apt-get install jq -y
+fi
 cd /servicios/
+mkdir /etc/ssl/private/
 sed -i "s/null/\"\"/g" archivo.json
-apt-get update -y
-apt-get install jq -y
 usuario=$(jq ".Credenciales.Usuario" archivo.json | sed -r 's/\"//g')
 contrasena=$(jq ".Credenciales.Contrasena" archivo.json | sed -r 's/\"//g')
-sistemaOperativo=$(jq ".SistemaOperativo" archivo.json | sed -r 's/\"//g')
 servicios=$(jq ".Servicios" archivo.json)
-if ! [[ -z "$servicios" ]]
+if ! [[ -z "$servicios" ]] && [[ $servicios != null ]]
 then
 	echo $servicios > servicios.json
-	apt-get install openssh-server -y
+	if [[ $sistemaOperativo =~ (CentOS.*|RHEL.*) ]]
+	then
+		yum install openssh-server -y
+	else
+		apt-get install openssh-server -y
+	fi
 	puertoSSH=$(jq ".PuertoSSH" servicios.json)
 	echo "${usuario} ALL=(ALL:ALL) ALL" >> /etc/sudoers
 	sed -i -e "s/^.*Port.*[0-9]*$/Port ${puertoSSH}/g" /etc/ssh/ssh_config
@@ -36,13 +49,20 @@ then
 	systemctl enable ssh
 	systemctl restart sshd
 	manejadorBD=$(jq ".ManejadorBD" servicios.json)
-	if ! [[ -z "$manejadorBD" ]]
+	if ! [[ -z "$manejadorBD" ]] && [[ $manejadorBD != null ]]
 	then
 		manejador=$(jq ".ManejadorBD.Manejador" servicios.json | sed -r 's/\"//g')
 		nombreBD=$(jq ".ManejadorBD.NombreBD" servicios.json | sed -r 's/\"//g')
 		case $manejador in 
 			PostgreSQL)
-				apt-get install postgresql postgresql-contrib -y
+			if [[ $sistemaOperativo =~ (CentOS.*|RHEL.*) ]]
+				then
+					yum install postgresql postgresql-server postgresql-contrib -y
+					postgresql-setup initdb
+					systemctl start postgresql.service 
+				else
+					apt-get install postgresql postgresql-contrib -y
+				fi
 				su - postgres -c "psql -c \"CREATE ROLE ${usuario} WITH SUPERUSER CREATEDB CREATEROLE REPLICATION BYPASSRLS LOGIN ENCRYPTED PASSWORD '${contrasena}'\""
 				su - postgres -c "psql -c \"CREATE DATABASE ${nombreBD} WITH OWNER ${usuario};\""
 				sed -i "/local   all             postgres                                peer/a local all $usuario md5" $(find /etc/postgresql -name pg_hba.conf)
@@ -51,19 +71,26 @@ then
 				nombreBD=$(echo $nombreBD | tr '[:upper:]' '[:lower:]')
 				psql postgresql://${usuario}:${contrasena}@localhost:5432/${nombreBD} < script.sql
 				;;
-			MySQL)
-				wget https://dev.mysql.com/get/mysql-apt-config_0.8.16-1_all.deb
-				apt install -y dirmngr
-				DEBIAN_FRONTEND=noninteractive dpkg -i mysql-apt-config*
-				debconf-set-selections <<< "mysql-apt-config mysql-apt-config/repo-codename select buster"
-				debconf-set-selections <<< 'mysql-apt-config mysql-apt-config/repo-url string http://repo.mysql.com/apt/'
-				debconf-set-selections <<< 'mysql-apt-config mysql-apt-config/select-preview select '
-				debconf-set-selections <<< 'mysql-apt-config mysql-apt-config/select-product select  Ok'
-				apt-get update
-				DEBIAN_FRONTEND=noninteractive apt install mysql-community-server mysql-community-client -y
-				debconf-set-selections <<< "mysql-community-server mysql-community-server/root-pass password $contrasena"
-				debconf-set-selections <<< "mysql-community-server mysql-community-server/re-root-pass password $contrasena"
-				debconf-set-selections <<< "mysql-community-server mysql-server/default-auth-override select Use Legacy Authentication Method (Retain MySQL 5.x Compatibility)"
+			MySQL)			
+				if [[ $sistemaOperativo =~ (CentOS.*|RHEL.*) ]]
+				then
+					yum install mysql-server -y
+					systemctl start mysqld.service 
+				else
+					apt install mariadb-server -y
+					wget https://dev.mysql.com/get/mysql-apt-config_0.8.16-1_all.deb
+					apt install -y dirmngr
+					DEBIAN_FRONTEND=noninteractive dpkg -i mysql-apt-config*
+					debconf-set-selections <<< "mysql-apt-config mysql-apt-config/repo-codename select buster"
+					debconf-set-selections <<< 'mysql-apt-config mysql-apt-config/repo-url string http://repo.mysql.com/apt/'
+					debconf-set-selections <<< 'mysql-apt-config mysql-apt-config/select-preview select '
+					debconf-set-selections <<< 'mysql-apt-config mysql-apt-config/select-product select  Ok'
+					apt-get update
+					DEBIAN_FRONTEND=noninteractive apt install mysql-community-server mysql-community-client -y
+					debconf-set-selections <<< "mysql-community-server mysql-community-server/root-pass password $contrasena"
+					debconf-set-selections <<< "mysql-community-server mysql-community-server/re-root-pass password $contrasena"
+					debconf-set-selections <<< "mysql-community-server mysql-server/default-auth-override select Use Legacy Authentication Method (Retain MySQL 5.x Compatibility)"
+				fi
 				mysql -e "CREATE USER ${usuario}@localhost IDENTIFIED BY '${contrasena}';"
 				mysql -e "CREATE DATABASE $nombreBD;"
 				mysql -e "GRANT ALL ON ${nombreBD}.* TO ${usuario}@localhost;"
@@ -75,7 +102,13 @@ then
 				rm ~/.my.cnf
 				;;
 			MariaDB)
-				apt install mariadb-server -y
+				if [[ $sistemaOperativo =~ (CentOS.*|RHEL.*) ]]
+				then
+						yum install mariadb-server -y
+						systemctl start mariadb.service
+				else
+						apt install mariadb-server -y
+				fi
 				mariadb -e "CREATE USER ${usuario}@localhost IDENTIFIED BY '${contrasena}';"
 				mariadb -e "CREATE DATABASE $nombreBD;"
 				mariadb -e "GRANT ALL ON ${nombreBD}.* TO ${usuario}@localhost;"
@@ -98,9 +131,15 @@ then
 		esac
 	fi
 	DNS=$(jq ".DNS" servicios.json)
-	if ! [[ -z "$DNS" ]]
+	if ! [[ -z "$DNS" ]] && [[ $DNS != null ]]
 	then
-		apt-get install bind9 dnsutils -y
+		if [[ $sistemaOperativo =~ (CentOS.*|RHEL.*) ]]
+		then
+			yum install -y bind bind-utils
+			systemctl start named
+		else
+			apt-get install bind9 dnsutils -y
+		fi
 		mkdir -p /etc/bind/zones/master
 		noElementos=$(jq -r ".Servicios.DNS.Zonas[]|\"\(.Tipo)\"" archivo.json | wc -l)
 		ipBase=$(jq ".DNS.Interfaz" archivo.json | sed -r 's/\"//g')
@@ -204,18 +243,23 @@ then
 			esac
 		done
 		named-checkconf
-		if [ $sistemaOperativo == "Kali Linux 2020.04" ]; then
+		if [[ $sistemaOperativo == "Kali Linux 2020.04" ]]; then
 			systemctl named enable
 			systemctl named restart
-		elif [ $sistemaOperativo == "Debian 10" ]; then
+		elif [[ $sistemaOperativo == "Debian 10" ]]; then
 			systemctl bind9 enable
 			systemctl bind9 restart
 		fi
 	fi
 	DHCP=$(jq ".DHCP" servicios.json)
-	if ! [[ -z "$DHCP" ]]
+	if ! [[ -z "$DHCP" ]] && [[ $DHCP != null ]]
 	then
-		apt-get install isc-dhcp-server -y
+		if [[ $sistemaOperativo =~ (CentOS.*|RHEL.*) ]]
+		then
+			yum install -y dhcp-server
+		else
+			apt-get install isc-dhcp-server -y
+		fi
 		noElementos=$(jq -r ".DHCP.Scopes[]|\"\(.Rangos)\"" servicios.json | wc -l)
 		echo -e "default-lease-time 600;\nmax-lease-time 7200;\n\n" >> /etc/dhcp/dhcpd.conf
 		for index in $(eval echo {0..$(expr $noElementos - 1)})
@@ -248,11 +292,11 @@ then
 				echo -e "\trange $inicio $fin;" >> /etc/dhcp/dhcpd.conf
 			done
 			dns=$(jq -r ".DHCP.Scopes[$index].DNS" servicios.json)
-			if ! [[ -z $dns ]]; then
+			if ! [[ -z $dns ]] && [[ $dns != null ]]; then
 				echo -e "\toption domain-name-servers $dns;" >> /etc/dhcp/dhcpd.conf
 			fi
 			gateway=$(jq -r ".DHCP.Scopes[$index].Gateway" servicios.json)
-			if ! [[ -z $gateway ]]; then
+			if ! [[ -z $gateway ]] && [[ $gateway != null ]]; then
 				echo -e "\toption routers $gateway;" >> /etc/dhcp/dhcpd.conf
 			fi
 		    echo "}" >> /etc/dhcp/dhcpd.conf
@@ -263,16 +307,28 @@ then
 		echo -e "allow-hotplug $interfaz\niface $interfaz inet static\naddress $ipBase\nnetmask $inetmask" >> /etc/network/interfaces
 		sed -i "s/INTERFACESv4=\"\"/INTERFACESv4=\"$interfaz\"/g" /etc/default/isc-dhcp-server 
 		systemctl restart networking.service
-		systemctl enable isc-dhcp-server
-		systemctl restart isc-dhcp-server
+		if [[ $sistemaOperativo =~ (CentOS.*|RHEL.*) ]]
+		then
+			systemctl enable dhcpd.service
+			systemctl restart dhcpd.service
+		else
+			systemctl enable isc-dhcp-server
+			systemctl restart isc-dhcp-server
 		fi
+	fi
 	servidorWeb=$(jq ".ServidorWeb" servicios.json)
-	if ! [[ -z "$servidorWeb" ]]
+	if ! [[ -z "$servidorWeb" ]] && [[ $servidorWeb != null ]]
 	then
 		drupalFlag=true
 		servidor=$(jq -r ".ServidorWeb.Servidor" servicios.json | sed -r 's/\"//g')
 		noElementos=$(jq -r ".ServidorWeb.Sitios[]|\"\(.Nombre)\"" servicios.json | wc -l)
-		apt-get install $servidor -y
+		if [[ $sistemaOperativo =~ (CentOS.*|RHEL.*) ]]
+		then
+			yum install $servidor -y
+			systemctl start $servidor
+		else
+			apt-get install $servidor -y
+		fi
 		for index in $(eval echo {0..$(expr $noElementos - 1)})
 		do
 			nombreSitio=$(jq -r ".ServidorWeb.Sitios[$index].Nombre" servicios.json | sed -r 's/\"//g')
@@ -281,38 +337,64 @@ then
 			puerto=$(jq -r ".ServidorWeb.Sitios[$index].Puerto" servicios.json | sed -r 's/\"//g')
 			protocolo=$(jq -r ".ServidorWeb.Sitios[$index].Protocolo" servicios.json | sed -r 's/\"//g')
 			drupal=$(jq -r ".ServidorWeb.Sitios[$index].Drupal" servicios.json)
-			if [ $drupal = true ] && [ $drupalFlag = true ]
+			if [[ $sistemaOperativo =~ (CentOS.*|RHEL.*) ]]
 			then
-				apt-get install libapache2-mod-php php php-fpm php-gd php-common php-mysql php-apcu php-gmp php-curl php-intl php-mbstring php-xmlrpc php-gd php-xml php-cli php-zip -y
+				file="/etc/$servidor/conf.d/$nombreSitio.conf"
+				httpdConfigFile="/etc/$servidor/conf/$nombreSitio.conf"
+				cp ArchivosConfiguracion/ServidorWeb/$servidor/httpd.conf $httpdConfigFile
+				sed -i "s/{{nombreSitio}}/$nombreSitio/g" $httpdConfigFile
+			else
+				file="/etc/$servidor/sites-available/$nombreSitio.conf"
+			fi
+			if [[ $drupal = true ]] && [[ $drupalFlag = true ]]
+			then
+				if [[ $sistemaOperativo =~ (CentOS.*|RHEL.*) ]]
+				then
+					dnf module reset php -y
+					sudo dnf module enable php:7.4 -y
+					dnf install -y @php
+					dnf install -y php php-{cli,mysqlnd,json,opcache,xml,mbstring,gd,curl}
+					systemctl enable --now php-fpm
+					phpFile=/etc/php.ini
+				else
+					apt-get install libapache2-mod-php php php-fpm php-gd php-common php-mysql php-apcu php-gmp php-curl php-intl php-mbstring php-xmlrpc php-gd php-xml php-cli php-zip -y
+					phpFile=/etc/php/$versionPHP/fpm/php.ini
+				fi
 				wget https://www.drupal.org/download-latest/tar.gz -O drupal.tar.gz
 				tar -xf drupal.tar.gz
 				nombreArchivo=$(echo drupal-*)
 				versionPHP=$(php -v | egrep "PHP [0-9]" | cut -d " " -f2 | cut -d "." -f1,2)
-				phpFile=/etc/php/$versionPHP/fpm/php.ini
 				sed -i "s/.*cgi.fix_pathinfo=.*/cgi.fix_pathinfo=0/g" $phpFile
 				sed -i "s/.*date.timezone =.*/date.timezone = America\/Mexico_City/g" $phpFile
 				drupalFlag=false
 			fi
-			if [ $drupal = true ] 
+			if [[ $drupal = true ]]
 			then
 				cp -rf $nombreArchivo $nombreSitio
 				mv $nombreSitio /var/www/
+				configFile=ArchivosConfiguracion/ServidorWeb/$servidor/$protocolo/drupal.conf
+				cp ArchivosConfiguracion/ServidorWeb/$servidor/drupalFile.conf /etc/php-fpm.d/drupal.conf
+				if [[ $sistemaOperativo =~ (CentOS.*|RHEL.*) ]] && [[ $servidor =~ nginx ]]
+				then
+					configFile=ArchivosConfiguracion/ServidorWeb/$servidor/$protocolo/drupalCR.conf
+					#openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
+					mkdir /etc/nginx/snippets/
+					cp ArchivosConfiguracion/ServidorWeb/$servidor/$protocolo/snippets.conf /etc/nginx/snippets/ssl.conf
+				fi
 			else
 				indexFile=/var/www/$nombreSitio/
 				mkdir $indexFile
 				cp ArchivosConfiguracion/ServidorWeb/index.html $indexFile
 				sed -i "s/{{nombreSitio}}/$nombreSitio/g" $indexFile/index.html
-			fi
-			file="/etc/$servidor/sites-available/$nombreSitio.conf"
-			if [ $drupal = true ] 
-			then
-				configFile=ArchivosConfiguracion/ServidorWeb/$servidor/$protocolo/drupal.conf
-			else
 				configFile=ArchivosConfiguracion/ServidorWeb/$servidor/$protocolo/sitio.conf
 			fi
-			if [ $protocolo = "https" ] 
+			if [[ $protocolo = "https" ]]
 			then
 				creaCertificado	$dominioSitio $contrasena
+				if [[ $servidor =~ httpd ]]
+				then
+					yum install mod_ssl -y
+				fi
 			fi
 			cp -f $configFile $file
 			sed -i "s/{{ip}}/$ipSitio/g" $file
@@ -320,23 +402,35 @@ then
 			sed -i "s/{{nombreSitio}}/$nombreSitio/g" $file
 			sed -i "s/{{dominioSitio}}/$dominioSitio/g" $file
 			sed -i "s/{{versionPHP}}/$versionPHP/g" $file
-			ln -sf $file /etc/$servidor/sites-enabled/
-			sed -i "s/# server_names_hash_bucket_size 64;/server_names_hash_bucket_size 64;/g" /etc/$servidor/$servidor.conf
 			echo -e "$ipSitio \t$dominioSitio" >> /etc/hosts
+			if [[ $sistemaOperativo =~ (CentOS.*|RHEL.*) ]]
+			then
+				mkdir -p /var/www/$nombreSitio/logs/
+				chown -R apache:apache /var/www/$nombreSitio/
+			else
+				ln -sf $file /etc/$servidor/sites-enabled/
+				sed -i "s/# server_names_hash_bucket_size 64;/server_names_hash_bucket_size 64;/g" /etc/$servidor/$servidor.conf
+				chown -R www-data:www-data /var/www/$nombreSitio/
+			fi
 			chmod -R 755 /var/www/$nombreSitio/
-			chown -R www-data:www-data /var/www/$nombreSitio/
 		done
-		if [ $servidor = "apache2" ]
+		if [[ $servidor =~ apache2 ]]
 		then
 			echo IncludeOptional sites-enabled/*.conf >> /etc/apache2/apache2.conf
 			echo ServerName 127.0.0.1 >> /etc/apache2/apache2.conf
 			a2enmod ssl rewrite
+		elif [[ $servidor =~ httpd ]]
+		then
+			echo ServerName 127.0.0.1 >> /etc/httpd/conf/httpd.conf
+			setsebool -P httpd_enable_cgi on
+			setsebool -P httpd_unified on
+			setsebool -P httpd_builtin_scripting on
 		fi
 		systemctl enable $servidor
 		systemctl restart $servidor
 	fi
 	iptablesFile=$(jq ".Iptables" servicios.json)
-    if ! [[ -z "$iptablesFile" ]]
+    if ! [[ -z "$iptablesFile" ]] && [[ $iptablesFile != null ]]
     then
         iptables-restore $iptablesFile
     fi
