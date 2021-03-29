@@ -16,7 +16,7 @@ function ValidarDatosGenerales { param ($maquinaVirtual, $rutaRaiz)
 }
 
 function ValidarDatosDependientes { param ($sistemaOperativo, $llaveActivacion, $rutaMSI, $tipoAmbiente, $WinIso)
-    $tipoAmbienteCheck = ValidarTipoAmbiente -tipoAmbiente $tipoAmbiente -sistemaOperativo $sistemaOperativo -WinIso $WinIso
+    #$tipoAmbienteCheck = ValidarTipoAmbiente -tipoAmbiente $tipoAmbiente -sistemaOperativo $sistemaOperativo -WinIso $WinIso
     switch -regex ($sistemaOperativo) {
         "Windows 10" { $rutaMSICheck = ValidarRutaMSI -rutaMSI $rutaMSI }
         "Windows .*" { 

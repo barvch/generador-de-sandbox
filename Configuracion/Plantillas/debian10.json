@@ -1,32 +1,39 @@
 {
-    "SistemaOperativo": "Debian 10",
-    "Hostname": "Contoso",
-    "DiscosVirtuales": [15],
-    "Procesadores": 2,
-    "RutaISO": "E:\\debian-10.8.0-amd64-netinst.iso",
-    "MemoriaRAM": {
-        "Tipo": "Dynamic",
-        "Minima": 0.5,
-        "Maxima": 2.5
-    },
-    "Credenciales": {
-        "Usuario": "usuario2",
-        "Contrasena": "hola12345.,"
-    },
-    "Interfaces": [
+    "Root": "E:\\SanboxTest",
+    "MaquinasVirtuales": [
         {
-            "VirtualSwitch": {
-                "Nombre": "Internet",
-                "Tipo": "Externa"
+            "SistemaOperativo": "Debian 10",
+            "Hostname": "Contoso",
+            "DiscosVirtuales": [15],
+            "Procesadores": 2,
+            "RutaISO": "E:\\SanboxTest\\debian-10.8.0-amd64-xfce-CD-1.iso",
+            "MemoriaRAM": {
+                "Tipo": "Dynamic",
+                "Minima": 1.0,
+                "Maxima": 2.0
             },
-            "Nombre": "",
-            "IP": "192.168.1.1",
-            "MascaraRed": "255.255.255.0"
-        }
-    ],
-    "Servicios": {
+            "Credenciales": {
+                "Usuario": "usuario",
+                "Contrasena": "hola12345.,"
+            },
+            "Interfaces": [
+                {
+                    "VirtualSwitch": {
+                        "Nombre": "SalidaInternet",
+                        "Tipo": "External",
+                        "AdaptadorRed": "Ethernet"
+                    },
+                    "Tipo": "Static",
+                    "Nombre": "SalidaInternet",
+                    "IP": "192.168.0.69",
+                    "MascaraRed": "24",
+                    "Gateway": "192.168.0.1",
+                    "DNS": "8.8.8.8"
+                }
+            ],
+            "Servicios": {
         "AdministracionRemota": "SSH",
-        "PuertoSSH": "1234",
+        "PuertoSSH": 22,
         "ManejadorBD": {
             "Manejador": "MariaDB",
             "NombreBD":"MiBasecita"
@@ -37,28 +44,28 @@
                 {
                 "Nombre": "sitio",
                 "Dominio": "sitio.local",
-                "Interfaz": "192.168.121.149",
+                "Interfaz": "SalidaInternet",
                 "Puerto": "80",
                 "Protocolo": "http",
                 "Drupal": false                },
                                 {
                 "Nombre": "sitio2",
                 "Dominio": "sitio2.local",
-                "Interfaz": "192.168.121.149",
+                "Interfaz": "SalidaInternet",
                 "Puerto": "80",
                 "Protocolo": "http",
                 "Drupal": true                },
                                 {
                 "Nombre": "sitio3",
                 "Dominio": "sitio3.local",
-                "Interfaz": "192.168.121.149",
+                "Interfaz": "SalidaInternet",
                 "Puerto": "443",
                 "Protocolo": "https",
                 "Drupal": false                },
                                 {
                 "Nombre": "sitio4",
                 "Dominio": "sitio4.local",
-                "Interfaz": "192.168.121.149",
+                "Interfaz": "SalidaInternet",
                 "Puerto": "443",
                 "Protocolo": "https",
                 "Drupal": true                }
@@ -66,7 +73,7 @@
             ]
         },
         "DNS": { 
-        "Interfaz": "192.168.0.69",
+        "Interfaz": "SalidaInternet",
         "Zonas":
         [
             {
@@ -111,7 +118,7 @@
         ]
     },
                 "DHCP": {
-                    "Interfaz": "192.168.0.69",
+                    "Interfaz": "SalidaInternet",
                     "MascaraRed": "255.255.255.0",
                     "Scopes": [
                         {
@@ -127,5 +134,7 @@
                         }
                     ]
                 }
-    }
-}
+            }
+        }
+    ]    
+}   

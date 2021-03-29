@@ -1,15 +1,16 @@
 {
-    "SistemaOperativo":  "Ubuntu 20.04",
-    "Hostname":  "ubuntuserver",
-    "DiscosVirtuales":  20,
+    "SistemaOperativo":  "Kali Linux 2020.04",
+    "Hostname":  "Contoso",
+    "DiscosVirtuales":  15,
     "Procesadores":  2,
-    "RutaISO":  "E:\\SanboxTest\\ubuntu-20.04.2.0-desktop-amd64.iso",
+    "RutaISO":  "E:\\SanboxTest\\kali-linux-2020.4-installer-amd64.iso",
     "MemoriaRAM":  {
-                       "Tipo":  "Static",
-                       "Memoria":  1.0
+                       "Tipo":  "Dynamic",
+                       "Minima":  1.0,
+                       "Maxima":  2.0
                    },
     "Credenciales":  {
-                         "Usuario":  "prueba",
+                         "Usuario":  "usuario",
                          "Contrasena":  "hola12345.,"
                      },
     "Interfaces":  [
@@ -28,14 +29,14 @@
                        }
                    ],
     "DatosDependientes":  {
-                              "TipoAmbiente":  "Ubuntu desktop",
+                              "TipoAmbiente":  null,
                               "LlaveActivacion":  null,
                               "RutaMSI":  null,
                               "ArchivoXML":  null
                           },
     "Servicios":  {
                       "AdministracionRemota":  "SSH",
-                      "PuertoSSH":  1234,
+                      "PuertoSSH":  null,
                       "CertificateServices":  null,
                       "WindowsDefender":  null,
                       "ActiveDirectory":  null,
@@ -49,10 +50,6 @@
                                                                      {
                                                                          "Inicio":  "192.168.0.100",
                                                                          "Fin":  "192.168.0.120"
-                                                                     },
-                                                                     {
-                                                                         "Inicio":  "192.168.0.130",
-                                                                         "Fin":  "192.168.0.140"
                                                                      }
                                                                  ],
                                                       "MascaraRed":  "255.255.255.0",
@@ -109,7 +106,7 @@
                                           "Servidor":  "apache2",
                                           "Sitios":  [
                                                          {
-                                                             "Nombre":  "sitio",
+                                                             "Nombre":  null,
                                                              "Dominio":  "sitio.local",
                                                              "Interfaz":  "192.168.0.69",
                                                              "Puerto":  80,
@@ -117,11 +114,27 @@
                                                              "Drupal":  ""
                                                          },
                                                          {
-                                                             "Nombre":  "sitioDos",
+                                                             "Nombre":  null,
                                                              "Dominio":  "sitio2.local",
                                                              "Interfaz":  "192.168.0.69",
                                                              "Puerto":  80,
                                                              "Protocolo":  "http",
+                                                             "Drupal":  true
+                                                         },
+                                                         {
+                                                             "Nombre":  null,
+                                                             "Dominio":  "sitio3.local",
+                                                             "Interfaz":  "192.168.0.69",
+                                                             "Puerto":  443,
+                                                             "Protocolo":  "https",
+                                                             "Drupal":  ""
+                                                         },
+                                                         {
+                                                             "Nombre":  null,
+                                                             "Dominio":  "sitio4.local",
+                                                             "Interfaz":  "192.168.0.69",
+                                                             "Puerto":  443,
+                                                             "Protocolo":  "https",
                                                              "Drupal":  true
                                                          }
                                                      ]

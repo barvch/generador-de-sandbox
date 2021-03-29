@@ -164,15 +164,7 @@ function CrearISOCentos {
     }
     # Se copia el preseed base al directorio de trabajo y al archivo copiado, se hacen las modificaciones de las especificaciones para el equipo
     Copy-Item ".\Recursos\unattend\CentOS\ks.cfg" "$directorio" -Force
-    #(Get-Content "$directorio\ks.cfg" -Raw).Replace("^M$","") | Out-File -FilePath $dos2unix -Force -Encoding ascii -nonewline
-    
-    #$dos2unix = "$directorio\tmpks.cfg"
-    #Write-Host "Dos2Unixando el archivo ks..."
-    #(Get-Content "$directorio\ks.cfg" -Raw).Replace("`r`n","`n") | Out-File -FilePath $dos2unix -Force -Encoding ascii -nonewline
-    ##(Get-Content "$directorio\ks.cfg") -join "`n" > $dos2unix
-    #Remove-Item -Path "$directorio\ks.cfg"
-    #Rename-Item -Path $dos2unix -NewName "ks.cfg"
-    #Write-Host "OK..."
+
     if ($ambiente -eq "Core") {
         (Get-Content "$directorio\ks.cfg").replace('{{gui}}', "") | Set-Content "$directorio\$seed_file"
         (Get-Content "$directorio\ks.cfg").replace('{{paqueteambiente}}', "@^minimal-environment") | Set-Content "$directorio\$seed_file"
@@ -205,5 +197,8 @@ function CrearISOCentos {
 
     # Se copia el script de los servicios a la VM objetivo:
     Copy-Item -Path ".\Recursos\unattend\ServiciosLinux\" -Destination "$directorio\ServiciosLinux" -Recurse
-    (Get-Content "$directorio\ServiciosLinux\ConfigurarServiciosLinux.sh" -Raw).Replace("`r`n","`n") | Set-Content "$directorio\ServiciosLinux\ConfigurarServiciosLinux.sh" -Force
+    $repo = (Get-Location).Path
+    Set-Location "$directorio\ServiciosLinux"
+    bash -c "dos2unix ConfigurarServiciosLinux.sh"
+    Set-Location $repo
 }

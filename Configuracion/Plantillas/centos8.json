@@ -33,13 +33,13 @@
             ],
             "Servicios": {
                 "AdministracionRemota": "SSH",
-                "PuertoSSH": 1234,
+                "PuertoSSH": 22,
                 "ManejadorBD": {
                     "Manejador": "MariaDB",
                     "NombreBD":"MiBasecita"
                 },
                 "ServidorWeb": {
-                    "Servidor": "apache2",
+                    "Servidor": "httpd",
                     "Sitios": [
                         {
                         "Nombre": "sitio",

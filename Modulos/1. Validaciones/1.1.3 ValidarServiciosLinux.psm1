@@ -6,7 +6,7 @@ function ValidarServidorWeb { param ($servicio = "ServidorWeb", $servidorWeb, $i
         $servidorCheck = ValidarCatalogos -catalogo $servidoresWeb -campo "$servicio.Servidor" -valor $servidorWeb.Servidor -obligatorio $true
         $sitiosCheck = $nombres = $dominios = @()
         foreach($sitio in $servidorWeb.Sitios){
-            $sitioNombreCheck = ValidarCadenas -campo "$servicio.Nombre" -valor $sitio.Nombre -validacionCaracter "alfaNum4" -validacionLongitud "longitud5" -obligatorio $true
+            #$sitioNombreCheck = ValidarCadenas -campo "$servicio.Nombre" -valor $sitio.Nombre -validacionCaracter "alfaNum4" -validacionLongitud "longitud5" -obligatorio $true
             $sitioDominioCheck = ValidarCadenas -campo "$servicio.$sitioNombreCheck.Dominio" -valor $sitio.Dominio -validacionCaracter "dominio" -obligatorio $true
             $interfazNombre = ValidarCadenas -campo "$servicio.$sitioNombreCheck.Interfaz" -valor $sitio.Interfaz -validacionCaracter "alfaNum2" -validacionLongitud "longitud1" -obligatorio $true
             $ipCheck, $mascaraCheck = ValidarInterfaz -interfaces $interfaces -nombre $interfazNombre -campo "$servicio.$sitioNombreCheck.Interfaz"
