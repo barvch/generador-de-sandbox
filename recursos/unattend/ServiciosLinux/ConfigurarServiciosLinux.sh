@@ -253,7 +253,7 @@ then
 			esac
 		done
 		named-checkconf
-		if [[ $sistemaOperativo == (Kali.*|CentOS.*|RHEL.*) ]]; then
+		if [[ $sistemaOperativo == (CentOS.*|RHEL.*) ]]; then
 			systemctl named enable
 			systemctl named restart
 		else
@@ -381,20 +381,19 @@ then
 			if [[ $drupal = true ]]
 			then
 				cp -rf $nombreArchivo $nombreSitio
-				mv $nombreSitio /var/www/
+				mv $nombreSitio /var/www/$nombreSitio
 				configFile=ArchivosConfiguracion/ServidorWeb/$servidor/$protocolo/drupal.conf
 				cp ArchivosConfiguracion/ServidorWeb/$servidor/drupalFile.conf /etc/php-fpm.d/drupal.conf
 				if [[ $sistemaOperativo =~ (CentOS.*|RHEL.*) ]] && [[ $servidor =~ nginx ]]
 				then
 					configFile=ArchivosConfiguracion/ServidorWeb/$servidor/$protocolo/drupalCR.conf
-					#openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
 					mkdir /etc/nginx/snippets/
 					cp ArchivosConfiguracion/ServidorWeb/$servidor/$protocolo/snippets.conf /etc/nginx/snippets/ssl.conf
 				fi
 			else
 				indexFile=/var/www/$nombreSitio/
 				mkdir $indexFile
-				cp ArchivosConfiguracion/ServidorWeb/index.html $indexFile
+				cp ArchivosConfiguracion/ServidorWeb/index.html $indexFile/index.html
 				sed -i "s/{{nombreSitio}}/$nombreSitio/g" $indexFile/index.html
 				configFile=ArchivosConfiguracion/ServidorWeb/$servidor/$protocolo/sitio.conf
 			fi
