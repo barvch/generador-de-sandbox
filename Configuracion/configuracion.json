@@ -2,18 +2,18 @@
     "Root": "E:\\SanboxTest",
     "MaquinasVirtuales": [
         {
-            "SistemaOperativo": "Kali Linux 2020.04",
-            "Hostname": "Contoso",
-            "DiscosVirtuales": [15],
+            "SistemaOperativo": "Ubuntu 16.04",
+            "TipoAmbiente": "Ubuntu desktop",
+            "Hostname": "ubuntuserver",
+            "DiscosVirtuales": [20],
             "Procesadores": 2,
-            "RutaISO": "E:\\SanboxTest\\kali-linux-2020.4-installer-amd64.iso",
+            "RutaISO": "E:\\SanboxTest\\ubuntu-16.04.7-desktop-amd64.iso",
             "MemoriaRAM": {
-                "Tipo": "Dynamic",
-                "Minima": 1.0,
-                "Maxima": 2.0
+                "Tipo": "Static",
+                "Memoria": 1.0
             },
             "Credenciales": {
-                "Usuario": "usuario",
+                "Usuario": "prueba",
                 "Contrasena": "hola12345.,"
             },
             "Interfaces": [
@@ -25,107 +25,94 @@
                     },
                     "Tipo": "Static",
                     "Nombre": "SalidaInternet",
-                    "IP": "192.168.0.69",
+                    "IP": "192.168.0.100",
                     "MascaraRed": "24",
                     "Gateway": "192.168.0.1",
                     "DNS": "8.8.8.8"
                 }
             ],
             "Servicios": {
-        "AdministracionRemota": "SSH",
-        "PuertoSSH": 22,
-        "ManejadorBD": {
-            "Manejador": "MariaDB",
-            "NombreBD":"MiBasecita"
-        },
-        "ServidorWeb": {
-            "Servidor": "apache2",
-            "Sitios": [
-                {
-                "Nombre": "sitio",
-                "Dominio": "sitio.local",
+                "AdministracionRemota": "SSH",
+                "PuertoSSH": 22,
+                "ManejadorBD": {
+                    "Manejador": "MariaDB",
+                    "NombreBD":"MiBasecita"
+                },
+                "ServidorWeb": {
+                    "Servidor": "apache2",
+                    "Sitios": [
+                        {
+                        "Nombre": "sitio",
+                        "Dominio": "sitio.local",
+                        "Interfaz": "SalidaInternet",
+                        "Puerto": 80,
+                        "Protocolo": "http",
+                        "Drupal": false                },
+                                        {
+                        "Nombre": "sitioDos",
+                        "Dominio": "sitio2.local",
+                        "Interfaz": "SalidaInternet",
+                        "Puerto": 80,
+                        "Protocolo": "http",
+                        "Drupal": true                }
+                    ]
+                },
+                "DNS": { 
                 "Interfaz": "SalidaInternet",
-                "Puerto": 80,
-                "Protocolo": "http",
-                "Drupal": false                },
-                                {
-                "Nombre": "sitio2",
-                "Dominio": "sitio2.local",
-                "Interfaz": "SalidaInternet",
-                "Puerto": 80,
-                "Protocolo": "http",
-                "Drupal": true                },
-                                {
-                "Nombre": "sitio3",
-                "Dominio": "sitio3.local",
-                "Interfaz": "SalidaInternet",
-                "Puerto": 443,
-                "Protocolo": "https",
-                "Drupal": false                },
-                                {
-                "Nombre": "sitio4",
-                "Dominio": "sitio4.local",
-                "Interfaz": "SalidaInternet",
-                "Puerto": 443,
-                "Protocolo": "https",
-                "Drupal": true                }
-
-            ]
-        },
-        "DNS": { 
-        "Interfaz": "SalidaInternet",
-        "Zonas":
-        [
-            {
-                "Tipo": "Forward",
-                "Nombre": "ZonaUno",
-                "Backup": "",
-                "Registros": [
+                "Zonas":
+                [
                     {
-                        "Tipo": "A",
-                        "Hostname": "misitio.local",
-                        "IP": "10.23.1.2"
-                    },
-                    {
-                        "Tipo": "CNAME",
-                        "Alias": "alias",
-                        "FQDN": "misitio2.local"
-                    },
-                    {
-                        "Tipo": "MX",
-                        "ChildDomain": "misitio2.local",
-                        "FQDN": "prueba.misitio2.local"
-                    }
-                ]
-            },
-                {
-                        "Tipo": "Reverse",
-                        "Nombre": "ZonaDos",
-                        "NetID": "12.11.13.0/24",
+                        "Tipo": "Forward",
+                        "Nombre": "ZonaUno",
                         "Registros": [
                             {
-                                "Tipo": "PTR",
-                                "Hostname": "misitioRegi.local",
-                                "Host": "2"
+                                "Tipo": "A",
+                                "Hostname": "misitio.local",
+                                "IP": "10.23.1.2"
                             },
                             {
                                 "Tipo": "CNAME",
                                 "Alias": "alias",
                                 "FQDN": "misitio2.local"
+                            },
+                            {
+                                "Tipo": "MX",
+                                "ChildDomain": "misitio2.local",
+                                "FQDN": "prueba.misitio2.local"
                             }
                         ]
-                    }
-        ]
-    },
+                    },
+                        {
+                                "Tipo": "Reverse",
+                                "Nombre": "ZonaDos",
+                                "NetID": "12.11.13.0/24",
+                                "Registros": [
+                                    {
+                                        "Tipo": "PTR",
+                                        "Hostname": "misitioRegi.local",
+                                        "Host": "2"
+                                    },
+                                    {
+                                        "Tipo": "CNAME",
+                                        "Alias": "alias",
+                                        "FQDN": "misitio2.local"
+                                    }
+                                ]
+                            }
+                ]
+            },
                 "DHCP": {
                     "Interfaz": "SalidaInternet",
-                    "MascaraRed": "255.255.255.0",
                     "Scopes": [
                         {
                             "Rangos": [
                                 {
                                 "Inicio": "192.168.0.100",
                                 "Fin": "192.168.0.120"
+                                },
+                                {
+                                "Inicio": "192.168.0.130",
+                                "Fin": "192.168.0.140"
                                 }
                             ],
                             "MascaraRed": "255.255.255.0",
@@ -136,5 +123,5 @@
                 }
             }
         }
-    ]    
-}   
+    ]
+}

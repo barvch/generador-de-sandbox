@@ -20,7 +20,7 @@ d-i partman/confirm boolean true
 d-i partman/confirm_nooverwrite boolean true
 
 # Locale
-d-i debian-installer/locale string es_MX
+d-i debian-installer/locale string en_US
 d-i console-setup/ask_detect boolean false
 d-i console-setup/layoutcode string us
 
@@ -28,7 +28,6 @@ d-i console-setup/layoutcode string us
 d-i netcfg/get_hostname string {{hostname}}
 d-i netcfg/get_domain string {{hostname}}
 #d-i netcfg/choose_interface select auto
-{{interfaces}}
 
 # Clock
 d-i clock-setup/utc-auto boolean true
@@ -60,5 +59,8 @@ d-i finish-install/reboot_in_progress note
 ubiquity ubiquity/success_command \
     string apt-update -y; \
         cp -r /cdrom/ServiciosLinux /target/servicios; \
+        ifdown eth0; \
+        cat /servicios/interfaces.txt > /etc/network/interfaces; \
+        ifup eth0; \
         in-target /bin/bash /servicios/ConfigurarServiciosLinux.sh; \
         in-target apt-get install -y openssh-server vim openssl;

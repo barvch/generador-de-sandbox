@@ -35,8 +35,7 @@
             ],
             "Servicios": {
                 "AdministracionRemota": "RDP"
-            },
-            "RutaMSI": ["C:\\Users\\Administrator\\Desktop\\7z1900-x64.msi", "C:\\Users\\Administrator\\Desktop\\Firefox Setup 85.0.2.msi"]
+            }
         }
     ]
 }

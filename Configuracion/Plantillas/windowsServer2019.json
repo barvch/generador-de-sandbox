@@ -27,7 +27,7 @@
                     },
                     "Tipo": "Static",
                     "Nombre": "SalidaInternet",
-                    "IP": "192.168.0.69",
+                    "IP": "192.168.0.80",
                     "MascaraRed": "24",
                     "Gateway": "192.168.0.1",
                     "DNS": "8.8.8.8"

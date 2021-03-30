@@ -8,6 +8,7 @@ function ConfigurarIIS {
         New-Item -ItemType "Directory" $directorio | Out-Null
         Write-Host "Directorio $directorio creado."
         $contador = 0
+        $path = "C:\Windows\System32\drivers\etc\hosts"
         foreach($binding in $sitio.Bindings){
             $dominio = $binding.Dominio
             $ip = $binding.Interfaz
@@ -15,19 +16,9 @@ function ConfigurarIIS {
             $puerto = $binding.Puerto
             $webDAV = $binding.WebDAV
             $usuario = $maquina.Credenciales.Usuario
-
             
-            $path = "C:\Windows\System32\drivers\etc\hosts"
-            $registro = "$ip $dominio"
-            $comando = "@ECHO OFF`nstart /min cmd.exe /c `"echo $registro >> $path`""
-            Add-Content -Path "C:\sources\`$OEM`$\`$1\temp.bat" -Value $comando
-            Start-Process "C:\sources\`$OEM`$\`$1\temp.bat"
-            Write-Host "Se ha agregado al DNS el registro: $ip $dominio"
-            Remove-Item -Path "C:\sources\`$OEM`$\`$1\temp.bat"
-
             $bindingInfo = "$($ip):$($puerto):$($dominio)"
             if($protocolo -eq "https"){
-                $rutaCert = $binding.RutaCertificado
                 if($contador -eq 0){
                     New-Item "IIS:\AppPools\$nombre" | Out-Null
                     New-Item "IIS:\Sites\$nombre" -physicalPath $directorio -bindings @{protocol=$protocolo;bindingInformation="$($ip):$($puerto):$dominio"} | Out-Null

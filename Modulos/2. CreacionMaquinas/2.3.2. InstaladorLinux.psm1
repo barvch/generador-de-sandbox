@@ -19,39 +19,38 @@ function CrearISODebianFlavor {
     if (@("Ubuntu 16.04", "Ubuntu 18.04", "Ubuntu 20.04") -contains $os) {
 
         # Se genera la configuración de las interfaces:
-        $configInterfaces = ""
-        $copia = ""
+        $configInterfaces = "auto lo`niface lo inet loopback`nallow-hotplug`n"
         $contador = 0
         foreach ($interfaz in $interfaces) {
             $tipo = $interfaz.Tipo
             if ($tipo -eq "DHCP") {
-                $copia += "network --bootproto=dhcp --device=eth$contador`n"
-                $configInterfaces += "d-i netcfg/choose_interface select eth$contador`nd-i netcfg/disable_dhcp boolean false`n"
+                #$copia += "network --bootproto=dhcp --device=eth$contador`n"
+                $configInterfaces += "iface eth$contador inet dhcp\n"
             } else {
                 $ip = $interfaz.IP
                 $netmask = $interfaz.MascaraRed
                 $gateway = $interfaz.Gateway
                 $dns = $interfaz.DNS
-                if (-not $gateway) {$gateway = "" } else { $gateway2 = "--gateway=$gateway"; $gateway = "d-i netcfg/get_gateway string $gateway"  }
-                if (-not $dns) {$dns = ""} else { $dns2 = "--nameserver=$dns"; $dns = "d-i netcfg/get_nameservers string $dns" }
-                $copia += "network --bootproto=static --ip=$ip --netmask=$netmask $gateway2 $dns2 --device=eth$contador`n"
-                $configInterfaces += "d-i netcfg/choose_interface select eth$contador`nd-i netcfg/disable_dhcp boolean true`n$dns`nd-i netcfg/get_ipaddress string $ip`nd-i netcfg/get_netmask string $netmask`n$gateway`nd-i netcfg/confirm_static boolean true`n"
+                if (-not $gateway) {$gateway = "" } else { $gateway = "gateway $gateway`n"  }
+                if (-not $dns) {$dns = ""} else { $dns = "dns-nameservers $dns`n" }
+                #$copia += "network --bootproto=static --ip=$ip --netmask=$netmask $gateway2 $dns2 --device=eth$contador`n"
+                $configInterfaces += "iface eth$contador inet static`naddress $ip`nnetmask $netmask`n$gateway$dns"
             }
             $contador++
         }
-
         # Se copia el preseed base al directorio de trabajo y al archivo copiado, se hacen las modificaciones de las especificaciones para el equipo
         Copy-Item ".\Recursos\unattend\Ubuntu\ks.preseed" "$directorio" -Force
         (Get-Content "$directorio\ks.preseed").replace('{{username}}', $username) | Set-Content "$directorio\ks.preseed"
         (Get-Content "$directorio\ks.preseed").replace('{{pwhash}}', $pwhash) | Set-Content "$directorio\ks.preseed"
         (Get-Content "$directorio\ks.preseed").replace('{{timezone}}', $timezone) | Set-Content "$directorio\ks.preseed"
         (Get-Content "$directorio\ks.preseed").replace('{{hostname}}', $hostname) | Set-Content "$directorio\ks.preseed"
-        (Get-Content "$directorio\ks.preseed").replace('{{interfaces}}', $configInterfaces) | Set-Content "$directorio\ks.preseed"
+        #(Get-Content "$directorio\ks.preseed").replace('{{interfaces}}', $configInterfaces) | Set-Content "$directorio\ks.preseed"
+
 
         Copy-Item ".\Recursos\unattend\Ubuntu\ks.cfg" "$directorio" -Force
         (Get-Content "$directorio\ks.cfg").replace('{{username}}', $username) | Set-Content "$directorio\ks.cfg"
         (Get-Content "$directorio\ks.cfg").replace('{{pwhash}}', $pwhash) | Set-Content "$directorio\ks.cfg"
-        (Get-Content "$directorio\ks.cfg").replace('{{interfaces}}', $copia) | Set-Content "$directorio\ks.cfg"
+        #(Get-Content "$directorio\ks.cfg").replace('{{interfaces}}', $copia) | Set-Content "$directorio\ks.cfg"
 
         if ($os -eq "Ubuntu 20.04") {
             $install_lable="default live-install`nlabel live-install`n  menu label ^Install Ubuntu`n  kernel /casper/vmlinuz`n  append  file=/cdrom/ks.preseed auto=true priority=critical debian-installer/locale=es_MX keyboard-configuration/layoutcode=es ubiquity/reboot=true languagechooser/language-name=English countrychooser/shortlist=US localechooser/supported-locales=en_US.UTF-8 boot=casper automatic-ubiquity initrd=/casper/initrd ks=cdrom:/ks.cfg quiet splash ---"
@@ -126,7 +125,7 @@ function CrearISODebianFlavor {
     # Se copia el script de los servicios a la VM objetivo:
     Copy-Item -Path ".\Recursos\unattend\ServiciosLinux\" -Destination "$directorio\ServiciosLinux" -Recurse
     (Get-Content "$directorio\ServiciosLinux\ConfigurarServiciosLinux.sh" -Raw).Replace("`r`n","`n") | Set-Content "$directorio\ServiciosLinux\ConfigurarServiciosLinux.sh" -Force
-
+    New-Item -Path "$directorio\ServiciosLinux\interfaces.txt" -ItemType "File" -Value $configInterfaces
     $repo = (Get-Location).Path
     Set-Location "$directorio\ServiciosLinux"
     bash -c "dos2unix ConfigurarServiciosLinux.sh"

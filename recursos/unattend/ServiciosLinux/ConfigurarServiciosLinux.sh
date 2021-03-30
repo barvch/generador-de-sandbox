@@ -253,7 +253,7 @@ then
 			esac
 		done
 		named-checkconf
-		if [[ $sistemaOperativo == (CentOS.*|RHEL.*) ]]; then
+		if [[ $sistemaOperativo =~ (CentOS.*|RHEL.*) ]]; then
 			systemctl named enable
 			systemctl named restart
 		else
@@ -265,6 +265,7 @@ then
 	if ! [[ -z "$DHCP" ]] && [[ $DHCP != null ]]
 	then
 		if [[ $sistemaOperativo =~ (CentOS.*|RHEL.*) ]]
+		
 		then
 			yum install -y dhcp-server
 		else
@@ -368,24 +369,25 @@ then
 					phpFile=/etc/php.ini
 				else
 					apt-get install libapache2-mod-php php php-fpm php-gd php-common php-mysql php-apcu php-gmp php-curl php-intl php-mbstring php-xmlrpc php-gd php-xml php-cli php-zip -y
+					versionPHP=$(php -v | egrep "PHP [0-9]" | cut -d " " -f2 | cut -d "." -f1,2)
 					phpFile=/etc/php/$versionPHP/fpm/php.ini
 				fi
 				wget https://www.drupal.org/download-latest/tar.gz -O drupal.tar.gz
 				tar -xf drupal.tar.gz
 				nombreArchivo=$(echo drupal-*)
-				versionPHP=$(php -v | egrep "PHP [0-9]" | cut -d " " -f2 | cut -d "." -f1,2)
+				
 				sed -i "s/.*cgi.fix_pathinfo=.*/cgi.fix_pathinfo=0/g" $phpFile
 				sed -i "s/.*date.timezone =.*/date.timezone = America\/Mexico_City/g" $phpFile
 				drupalFlag=false
 			fi
 			if [[ $drupal = true ]]
 			then
-				cp -rf $nombreArchivo $nombreSitio
+				cp -Rf $nombreArchivo $nombreSitio
 				mv $nombreSitio /var/www/$nombreSitio
 				configFile=ArchivosConfiguracion/ServidorWeb/$servidor/$protocolo/drupal.conf
-				cp ArchivosConfiguracion/ServidorWeb/$servidor/drupalFile.conf /etc/php-fpm.d/drupal.conf
 				if [[ $sistemaOperativo =~ (CentOS.*|RHEL.*) ]] && [[ $servidor =~ nginx ]]
 				then
+					cp ArchivosConfiguracion/ServidorWeb/$servidor/drupalFile.conf /etc/php-fpm.d/drupal.conf
 					configFile=ArchivosConfiguracion/ServidorWeb/$servidor/$protocolo/drupalCR.conf
 					mkdir /etc/nginx/snippets/
 					cp ArchivosConfiguracion/ServidorWeb/$servidor/$protocolo/snippets.conf /etc/nginx/snippets/ssl.conf
