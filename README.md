@@ -44,7 +44,7 @@ For all the kickstart files used in Linux, the XML used in Windows and services 
 
 ## Powershell madafaka, do you speak it?
 
-[//]: 
 
-   [here]: <https://docs.google.com/spreadsheets/d/13qQsPp08ocH_j-whSafJKate7DskU9h4aBCn-lr3qTU/edit#gid=492063908>
-   [LinuxSubsystem]: <https://docs.microsoft.com/en-us/windows/wsl/install-win10> 
+
+[here]: <https://docs.google.com/spreadsheets/d/13qQsPp08ocH_j-whSafJKate7DskU9h4aBCn-lr3qTU/edit#gid=492063908>
+[LinuxSubsystem]: <https://docs.microsoft.com/en-us/windows/wsl/install-win10> 
