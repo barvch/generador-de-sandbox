@@ -59,8 +59,5 @@ d-i finish-install/reboot_in_progress note
 ubiquity ubiquity/success_command \
     string apt-update -y; \
         cp -r /cdrom/ServiciosLinux /target/servicios; \
-        ifdown eth0; \
-        cat /servicios/interfaces.txt > /etc/network/interfaces; \
-        ifup eth0; \
         in-target /bin/bash /servicios/ConfigurarServiciosLinux.sh; \
         in-target apt-get install -y openssh-server vim openssl;

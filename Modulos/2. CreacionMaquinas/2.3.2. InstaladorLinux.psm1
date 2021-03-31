@@ -20,12 +20,12 @@ function CrearISODebianFlavor {
 
         # Se genera la configuración de las interfaces:
         $configInterfaces = "auto lo`niface lo inet loopback`nallow-hotplug`n"
+        $ifup = ""
         $contador = 0
         foreach ($interfaz in $interfaces) {
             $tipo = $interfaz.Tipo
             if ($tipo -eq "DHCP") {
-                #$copia += "network --bootproto=dhcp --device=eth$contador`n"
-                $configInterfaces += "iface eth$contador inet dhcp\n"
+                $configInterfaces += "iface eth$contador inet dhcp`n"
             } else {
                 $ip = $interfaz.IP
                 $netmask = $interfaz.MascaraRed
@@ -33,7 +33,7 @@ function CrearISODebianFlavor {
                 $dns = $interfaz.DNS
                 if (-not $gateway) {$gateway = "" } else { $gateway = "gateway $gateway`n"  }
                 if (-not $dns) {$dns = ""} else { $dns = "dns-nameservers $dns`n" }
-                #$copia += "network --bootproto=static --ip=$ip --netmask=$netmask $gateway2 $dns2 --device=eth$contador`n"
+                $ifup += "ifup eth$contador`n"
                 $configInterfaces += "iface eth$contador inet static`naddress $ip`nnetmask $netmask`n$gateway$dns"
             }
             $contador++
@@ -125,10 +125,12 @@ function CrearISODebianFlavor {
     # Se copia el script de los servicios a la VM objetivo:
     Copy-Item -Path ".\Recursos\unattend\ServiciosLinux\" -Destination "$directorio\ServiciosLinux" -Recurse
     (Get-Content "$directorio\ServiciosLinux\ConfigurarServiciosLinux.sh" -Raw).Replace("`r`n","`n") | Set-Content "$directorio\ServiciosLinux\ConfigurarServiciosLinux.sh" -Force
+    (Get-Content "$directorio\ServiciosLinux\ConfigurarInterfaces.sh" -Raw).Replace("{{ifup}}",$ifup) | Set-Content "$directorio\ServiciosLinux\ConfigurarInterfaces.sh" -Force
     New-Item -Path "$directorio\ServiciosLinux\interfaces.txt" -ItemType "File" -Value $configInterfaces
     $repo = (Get-Location).Path
     Set-Location "$directorio\ServiciosLinux"
     bash -c "dos2unix ConfigurarServiciosLinux.sh"
+    bash -c "dos2unix ConfigurarInterfaces.sh"
     Set-Location $repo
 }
 function CrearISOCentos {
