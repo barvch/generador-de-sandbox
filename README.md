@@ -1,12 +1,19 @@
-# generador-de-sandbox
+# Sandbox Generator
 
-## Description
+## Description of the tool
 
-This tool is a sandox generator for Hyper-V that allows you to create, configure and replicate a wide range of VMs in an unattended manner. The goal behind this project is to automate the process of creating and configuring both virtual machines and services using an input file that provides data for each VM indicated indicated within it. This way, mouting an infraestructure to create test enviroments for malware analisys or any other task, becomes really easy.
+* This tool is a sandox generator for Hyper-V that allows you to create, configure and replicate a wide range of VMs in an unattended manner. The goal behind this project is to automate the process of creating and configuring both virtual machines and services using an input file that provides data for each VM indicated indicated within it. This way, mouting an infraestructure to create test enviroments for malware analisys or any other task, becomes really easy.
 
-### Supported OS
+## The input file
 
- The list of current supported OS by the tool is the next one:
+This tool works from an input file in JSON format, which contains the following data:
+
+* **Root** - This is the root folder of the project. This is the place in the system where all the files of the virtual machines will reside.
+* **VMs** - This is the list of VMs that will be created.
+
+### OS Pool
+
+This is the list of current OS supported by the tool:
 
 * Windows 10
 * Windows Server 2019
@@ -19,24 +26,32 @@ This tool is a sandox generator for Hyper-V that allows you to create, configure
 * RHEL 8
 * FortiOS
 
-The goal behind this project is to automate the process of creating and configuring virtual machines using an input file in which you can provide generic and individual data for each VM, for example:
+###  Input file - Generic Values
+
+This tool expects some mandatory and necessary values foreach VM, regardless of the operating system that you want to install inside the machine, such as:
 
 * Credentials
-* Number and Size of Hard Drives 
-* RAM number and RAM type 
+* Hard Drive(s): Number & Size  
+* RAM: Number & Type 
 * Hostname
 * Network Configuration per interface
-    * DHCP
-    * Static
+    * Type ( DHCP / Static )
+    * Virtual Switch associated
 
-In the input file, relevant data can be set depending of the OS you want to install. The list of this particular values foreach SO, aswell as the data type and lenght can be found [here].
+### Input file - Individual values
 
-## Requirements by the tool:
+Depending on the operating system that is intended to be installed within the VM, the tool expects some mandatory values and other optional values that must be specified within the input file.
 
-* The [Linux Subsystem] for Windows with the following packages:
+The full documentation and list of this individual values available per SO can be found [here].
 
-    - *whois* - To create hashed password values
-    - *dos2unix* - To remove EOL issues
+## Requirements by the tool
+
+* Any flavor of the [Linux Subsystem for Windows] installed and running on the Hyper-V host with the following packages installed:
+
+    - **whois** - To create valid hashed password values for Unix
+    - **dos2unix** - To remove EOL issues with Windows/Unix
+
+* In order to be an Hyper-V Host, first you need to install the Hyper-V role in order to run this tool; if the tool detects that the role is not present in the Server, it will install it for you and reboot the server in order to apply changes.
 
 ## Post-Instalación
 
@@ -54,13 +69,11 @@ After the system reboots, by default all interfaces are down; to enable an inter
 ifup eth0
 ```
 
-## Defaults
+## Default Values in the tool
 
-For all the kickstart files used in Linux, the XML used in Windows and services configuration, the timezone used is *America/Mexico_City* 
+* The timezone used for all the kickstart files used in Linux, the XML used in Windows and services configuration,  is **America/Mexico_City**
 
 ## Powershell madafaka, do you speak it?
 
-
-
 [here]: <https://docs.google.com/spreadsheets/d/13qQsPp08ocH_j-whSafJKate7DskU9h4aBCn-lr3qTU/edit#gid=492063908>
-[Linux Subsystem]: <https://docs.microsoft.com/en-us/windows/wsl/install-win10> 
+[Linux Subsystem for Windows]: <https://docs.microsoft.com/en-us/windows/wsl/install-win10> 
