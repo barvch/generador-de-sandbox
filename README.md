@@ -2,7 +2,11 @@
 
 ## Description
 
-This tool is a sandox generator for Hyper-V that allows you to create, configure and replicate a wide range of VMs in an unattended manner. The list of current supported OS by the tool is the next one:
+This tool is a sandox generator for Hyper-V that allows you to create, configure and replicate a wide range of VMs in an unattended manner. The goal behind this project is to automate the process of creating and configuring both virtual machines and services using an input file that provides data for each VM indicated indicated within it. This way, mouting an infraestructure to create test enviroments for malware analisys or any other task, becomes really easy.
+
+### Supported OS
+
+ The list of current supported OS by the tool is the next one:
 
 * Windows 10
 * Windows Server 2019
@@ -29,14 +33,26 @@ In the input file, relevant data can be set depending of the OS you want to inst
 
 ## Requirements by the tool:
 
-* The [LinuxSubsystem] for Windows with the following packages:
+* The [Linux Subsystem] for Windows with the following packages:
 
     - *whois* - To create hashed password values
     - *dos2unix* - To remove EOL issues
 
 ## Post-Instalación
 
-jeje
+### Ubuntu X.04
+
+In order to set the network configuration stablished in the input file in the VM, you need to execute this as root:
+
+```sh
+/bin/bash /servicios/ConfigurarInterfaces.sh
+```
+
+After the system reboots, by default all interfaces are down; to enable an interface, just execute the following command:
+
+```sh
+ifup eth0
+```
 
 ## Defaults
 
@@ -47,4 +63,4 @@ For all the kickstart files used in Linux, the XML used in Windows and services 
 
 
 [here]: <https://docs.google.com/spreadsheets/d/13qQsPp08ocH_j-whSafJKate7DskU9h4aBCn-lr3qTU/edit#gid=492063908>
-[LinuxSubsystem]: <https://docs.microsoft.com/en-us/windows/wsl/install-win10> 
+[Linux Subsystem]: <https://docs.microsoft.com/en-us/windows/wsl/install-win10> 
