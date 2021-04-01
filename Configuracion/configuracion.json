@@ -2,20 +2,18 @@
     "Root": "E:\\SanboxTest",
     "MaquinasVirtuales": [
         {
-            "SistemaOperativo": "Windows Server 2019",
+            "SistemaOperativo": "Kali Linux 2020.04",
             "Hostname": "Contoso",
-            "TipoAmbiente": "Windows Server 2019 Standard Evaluation (Desktop Experience)",
-            "LlaveActivacion": "xxxx-xxxx-xxxx-xxxx-xxxx",
-            "DiscosVirtuales": [30],
+            "DiscosVirtuales": [15],
             "Procesadores": 2,
-            "RutaISO": "E:\\SanboxTest\\WindowsServer2019_SERVER_EVAL_x64FRE_en-us_1.iso",
+            "RutaISO": "E:\\SanboxTest\\kali-linux-2020.4-installer-amd64.iso",
             "MemoriaRAM": {
                 "Tipo": "Dynamic",
                 "Minima": 1.0,
                 "Maxima": 2.0
             },
             "Credenciales": {
-                "Usuario": "Barto",
+                "Usuario": "usuario",
                 "Contrasena": "hola12345.,"
             },
             "Interfaces": [
@@ -27,32 +25,16 @@
                     },
                     "Tipo": "Static",
                     "Nombre": "SalidaInternet",
-                    "IP": "192.168.0.80",
+                    "IP": "192.168.0.90",
                     "MascaraRed": "24",
                     "Gateway": "192.168.0.1",
                     "DNS": "8.8.8.8"
                 }
             ],
             "Servicios": {
-                "CertificateServices": true,
-                "WindowsDefender": true,
-                "AdministracionRemota": "RDP",
-                "IIS":  [
-                    {
-                        "Nombre": "MiSitio.local",
-                        "Directorio": "MiSitioUno",
-                        "Bindings": [
-                            {
-                                "Dominio": "misitio.local",
-                                "Interfaz": "SalidaInternet",
-                                "Protocolo": "https",
-                                "Puerto": 443,
-                                "WebDAV": false
-                            }
-                        ]
-                    }
-                ]
+        "AdministracionRemota": "SSH",
+        "PuertoSSH": 22
             }
         }
-    ]
-}
+    ]    
+}   

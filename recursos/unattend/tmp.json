@@ -1,16 +1,16 @@
 {
-    "SistemaOperativo":  "Windows Server 2019",
+    "SistemaOperativo":  "Kali Linux 2020.04",
     "Hostname":  "Contoso",
-    "DiscosVirtuales":  30,
+    "DiscosVirtuales":  15,
     "Procesadores":  2,
-    "RutaISO":  "E:\\SanboxTest\\WindowsServer2019_SERVER_EVAL_x64FRE_en-us_1.iso",
+    "RutaISO":  "E:\\SanboxTest\\kali-linux-2020.4-installer-amd64.iso",
     "MemoriaRAM":  {
                        "Tipo":  "Dynamic",
                        "Minima":  1.0,
                        "Maxima":  2.0
                    },
     "Credenciales":  {
-                         "Usuario":  "Barto",
+                         "Usuario":  "usuario",
                          "Contrasena":  "hola12345.,"
                      },
     "Interfaces":  [
@@ -22,7 +22,7 @@
                                              },
                            "Tipo":  "Static",
                            "Nombre":  "SalidaInternet",
-                           "IP":  "192.168.0.80",
+                           "IP":  "192.168.0.90",
                            "MascaraRed":  "255.255.255.0",
                            "Gateway":  "192.168.0.1",
                            "DNS":  "8.8.8.8"
@@ -30,35 +30,29 @@
                    ],
     "DatosDependientes":  {
                               "TipoAmbiente":  null,
-                              "LlaveActivacion":  {
-
-                                                  },
+                              "LlaveActivacion":  null,
                               "RutaMSI":  null,
-                              "ArchivoXML":  "C:\\Users\\Administrator\\Desktop\\generador-de-sandbox\\Recursos\\Unattend\\Windows\\unattend.xml"
+                              "ArchivoXML":  null
                           },
     "Servicios":  {
-                      "AdministracionRemota":  "RDP",
-                      "PuertoSSH":  null,
-                      "CertificateServices":  true,
-                      "WindowsDefender":  true,
-                      "ActiveDirectory":  "",
-                      "IIS":  {
-                                  "Nombre":  "MiSitio.local",
-                                  "Directorio":  "MiSitioUno",
-                                  "Bindings":  [
-                                                   {
-                                                       "Dominio":  "misitio.local",
-                                                       "Interfaz":  "192.168.0.80",
-                                                       "Protocolo":  "https",
-                                                       "Puerto":  443,
-                                                       "WebDAV":  ""
-                                                   }
-                                               ]
+                      "AdministracionRemota":  "SSH",
+                      "PuertoSSH":  22,
+                      "CertificateServices":  null,
+                      "WindowsDefender":  null,
+                      "ActiveDirectory":  null,
+                      "IIS":  null,
+                      "DHCP":  {
+
+                               },
+                      "DNS":  {
+
                               },
-                      "DHCP":  "",
-                      "DNS":  "",
-                      "ServidorWeb":  null,
-                      "ManejadorBD":  null,
+                      "ServidorWeb":  {
+
+                                      },
+                      "ManejadorBD":  {
+
+                                      },
                       "Iptables":  null
                   }
 }

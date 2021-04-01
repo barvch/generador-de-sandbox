@@ -102,19 +102,20 @@ function CrearISODebianFlavor {
 
         # Se copia el preseed del GRUB base al directorio de trabajo y al archivo copiado, se hacen las modificaciones de las especificaciones para el equipo
         Clear-Content "$directorio\boot\grub\grub.cfg"
-        Copy-Item ".\Recursos\unattend\grub.cfg" "$directorio\boot\grub\grub.cfg" -Force
+        Copy-Item ".\Recursos\unattend\grub.cfg" "$directorio\boot\grub\" -Force
         (Get-Content "$directorio\boot\grub\grub.cfg").replace('{{hostname}}', $hostname) | Set-Content "$directorio\boot\grub\grub.cfg"
 
         # Se hacen modificaciones al archivo txt.cfg del directorio isolinux, para indicar que se lea el archivo de configuración agregado a la imagen 
         (Get-Content "$directorio\isolinux\txt.cfg").replace('label install', 'label unattended') | Set-Content "$directorio\isolinux\txt.cfg"
         (Get-Content "$directorio\isolinux\txt.cfg").replace('menu label ^Install', 'menu label ^Unattended Install') | Set-Content "$directorio\isolinux\txt.cfg"
-        $lol = "append preseed/file=/cdrom/preseed.cfg locale=es_MX keymap=es hostname=$hostname domain=$hostname vga=788 initrd=/install.amd/initrd.gz --- quiet"
+        $lol = "append preseed/file=/cdrom/preseed.cfg locale=en_US keymap=es hostname=$hostname domain=$hostname vga=788 initrd=/install.amd/initrd.gz --- quiet"
         if ($os -eq "Debian 10") {
             (Get-Content "$directorio\isolinux\txt.cfg").replace('append desktop=xfce vga=788 initrd=/install.amd/initrd.gz --- quiet', $lol) | Set-Content "$directorio\isolinux\txt.cfg"
         } else {
             (Get-Content "$directorio\isolinux\txt.cfg").replace('append preseed/file=/cdrom/simple-cdd/default.preseed simple-cdd/profiles=kali,offline desktop=xfce vga=788 initrd=/install.amd/initrd.gz --- quiet ', $lol) | Set-Content "$directorio\isolinux\txt.cfg"
         }
-
+        Clear-Content "$directorio\isolinux\menu.cfg"
+        Copy-Item ".\Recursos\unattend\menu.cfg" "$directorio\isolinux\" -Force
     }
 
     # Se establece el orden de booteo para ver reflejados todos los cambios 
