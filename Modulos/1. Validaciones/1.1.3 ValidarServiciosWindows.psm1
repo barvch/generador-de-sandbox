@@ -18,7 +18,7 @@ function ValidarAdministracionRemota { param ($servicio = "AdministracionRemota"
             if($puerto -ne 22){
                 $puertoCheck = ValidarArregloDato -campo "Servicios.PuertoSSH" -valor $puerto -tipoDato "Int32"
                 ValidarPuerto -campo "Servicios.PuertoSSH" -puerto $puertoCheck -puertosBienConocidos $puertosBienConocidos
-            }
+            } else { $puertoCheck = $puerto}
         }
     }
     return $adminRemotaCheck, $puertoCheck

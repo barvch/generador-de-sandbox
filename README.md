@@ -51,7 +51,9 @@ The full documentation and list of this individual values available per SO can b
     - **whois** - To create valid hashed password values for Unix
     - **dos2unix** - To remove EOL issues with Windows/Unix
 
-* In order to be an Hyper-V Host, first you need to install the Hyper-V role in order to run this tool; if the tool detects that the role is not present in the Server, it will install it for you and reboot the server in order to apply changes.
+* In order to be an Hyper-V Host, first you need to **install the Hyper-V role** in order to run this tool; if the tool detects that the role is not present in the Server, it will install it for you and reboot the server in order to apply changes.
+
+* In order to be able to **install any packages in any VM running RHEL 8**, you neeed to **supply the credentials used in your Red Hat account in the crediantial section of the input file**. This is importart for a correct service install and configuration in the post-install section.
 
 ## Post-Instalación
 
@@ -72,6 +74,10 @@ ifup eth0
 ## Default Values in the tool
 
 * The timezone used for all the kickstart files used in Linux, the XML used in Windows and services configuration,  is **America/Mexico_City**
+
+* The default OS language for all the VMs is **US English**
+
+* The default keyboard layout for all the VMs is **MX Latin American**
 
 ## Powershell madafaka, do you speak it?
 

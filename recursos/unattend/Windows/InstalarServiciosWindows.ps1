@@ -48,6 +48,13 @@ switch -regex ($so) {
         if($iis){ 
             Add-WindowsFeature "Web-Scripting-Tools"
             Install-WindowsFeature -Name "Web-WebServer" -IncludeManagementTools -IncludeAllSubFeature 
+            Write-Host "Creando registros de IIS en DNS..."
+            foreach ($sitio in $iis) {
+                foreach ($binding in $sitio.Bindings) {
+                    $str = -join "$($binding.Interfaz) $($binding.Dominio)"
+                    Add-Content -Path "C:\Windows\System32\drivers\etc\hosts" -Value $str
+                }
+            }
         }
         if($dhcp){ 
             Install-WindowsFeature -Name "DHCP" -IncludeManagementTools

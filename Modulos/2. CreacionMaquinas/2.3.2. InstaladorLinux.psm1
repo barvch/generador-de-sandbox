@@ -17,7 +17,6 @@ function CrearISODebianFlavor {
     xcopy $ISOSource "$directorio\" /e | Out-Null
 
     if (@("Ubuntu 16.04", "Ubuntu 18.04", "Ubuntu 20.04") -contains $os) {
-
         # Se genera la configuración de las interfaces:
         $configInterfaces = "auto lo`niface lo inet loopback`nallow-hotplug`n"
         $ifup = ""
@@ -134,7 +133,7 @@ function CrearISODebianFlavor {
     Set-Location $repo
 }
 function CrearISOCentos {
-    param ([string]$username, [string]$password,[string]$hostname, [string] $isoFile, [string]$seed_file, [string]$directorio, $interfaces, $ambiente)
+    param ([string]$username, [string]$password,[string]$hostname, [string] $isoFile, [string]$seed_file, [string]$directorio, $interfaces, $ambiente, [string]$os)
     $timezone = 'America/Mexico_City'
     $pwhash = bash -c "echo $password | mkpasswd -s -m sha-512"   
     # Se monta el disco y se obtiene la letra que ha sido asignada al disco
@@ -180,7 +179,13 @@ function CrearISOCentos {
     (Get-Content "$directorio\ks.cfg").replace('{{username}}', $username) | Set-Content "$directorio\$seed_file"
     (Get-Content "$directorio\ks.cfg").replace('{{interfaces}}', $configinterfaces) | Set-Content "$directorio\$seed_file"
     (Get-Content "$directorio\ks.cfg").replace('{{paquetes}}', "vim`ngit") | Set-Content "$directorio\$seed_file"
-
+    if ($os -eq "RHEL 8") {
+        $cred = "subscription-manager register --username=$username --password=$password`nsubscription-manager attach --auto"
+        (Get-Content "$directorio\ks.cfg").replace('{{credenciales}}', $cred) | Set-Content "$directorio\$seed_file"
+    } else {
+        (Get-Content "$directorio\ks.cfg").replace('{{credenciales}}', "") | Set-Content "$directorio\$seed_file"
+    }
+    
     $repo = (Get-Location).Path
     Set-Location $directorio
     bash -c "dos2unix ks.cfg"
@@ -194,7 +199,7 @@ function CrearISOCentos {
     $cambio = "linuxefi /images/pxeboot/vmlinuz  inst.stage2=hd:sr0 inst.ks=cdrom:/ks.cfg quiet"
     (Get-Content "$directorio\EFI\BOOT\grub.cfg").replace("menuentry 'Install CentOS Linux 8' --class fedora --class gnu-linux --class gnu --class os", "menuentry 'Kickstart Installation' --class fedora --class gnu-linux --class gnu --class os") | Set-Content "$directorio\EFI\BOOT\grub.cfg"
     (Get-Content "$directorio\EFI\BOOT\grub.cfg").replace('linuxefi /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=CentOS-8-3-2011-x86_64-dvd quiet', $cambio) | Set-Content "$directorio\EFI\BOOT\grub.cfg"
-    #(Get-Content "$directorio\EFI\BOOT\grub.cfg").replace('set default="1"', 'set default="0"') | Set-Content "$directorio\EFI\BOOT\grub.cfg"
+    (Get-Content "$directorio\EFI\BOOT\grub.cfg").replace('set default="1"', 'set default="0"') | Set-Content "$directorio\EFI\BOOT\grub.cfg"
 
     # Se copia el script de los servicios a la VM objetivo:
     Copy-Item -Path ".\Recursos\unattend\ServiciosLinux\" -Destination "$directorio\ServiciosLinux" -Recurse

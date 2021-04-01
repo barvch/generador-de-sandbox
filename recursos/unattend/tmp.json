@@ -1,15 +1,16 @@
 {
-    "SistemaOperativo":  "Ubuntu 16.04",
-    "Hostname":  "ubuntuserver",
-    "DiscosVirtuales":  20,
+    "SistemaOperativo":  "Windows Server 2019",
+    "Hostname":  "Contoso",
+    "DiscosVirtuales":  30,
     "Procesadores":  2,
-    "RutaISO":  "E:\\SanboxTest\\ubuntu-16.04.7-desktop-amd64.iso",
+    "RutaISO":  "E:\\SanboxTest\\WindowsServer2019_SERVER_EVAL_x64FRE_en-us_1.iso",
     "MemoriaRAM":  {
-                       "Tipo":  "Static",
-                       "Memoria":  1.0
+                       "Tipo":  "Dynamic",
+                       "Minima":  1.0,
+                       "Maxima":  2.0
                    },
     "Credenciales":  {
-                         "Usuario":  "prueba",
+                         "Usuario":  "Barto",
                          "Contrasena":  "hola12345.,"
                      },
     "Interfaces":  [
@@ -21,7 +22,7 @@
                                              },
                            "Tipo":  "Static",
                            "Nombre":  "SalidaInternet",
-                           "IP":  "192.168.0.100",
+                           "IP":  "192.168.0.80",
                            "MascaraRed":  "255.255.255.0",
                            "Gateway":  "192.168.0.1",
                            "DNS":  "8.8.8.8"
@@ -29,108 +30,35 @@
                    ],
     "DatosDependientes":  {
                               "TipoAmbiente":  null,
-                              "LlaveActivacion":  null,
+                              "LlaveActivacion":  {
+
+                                                  },
                               "RutaMSI":  null,
-                              "ArchivoXML":  null
+                              "ArchivoXML":  "C:\\Users\\Administrator\\Desktop\\generador-de-sandbox\\Recursos\\Unattend\\Windows\\unattend.xml"
                           },
     "Servicios":  {
-                      "AdministracionRemota":  "SSH",
+                      "AdministracionRemota":  "RDP",
                       "PuertoSSH":  null,
-                      "CertificateServices":  null,
-                      "WindowsDefender":  null,
-                      "ActiveDirectory":  null,
-                      "IIS":  null,
-                      "DHCP":  {
-                                   "Interfaz":  "192.168.0.100",
-                                   "MascaraRed":  "255.255.255.0",
-                                   "Scopes":  [
-                                                  {
-                                                      "Rangos":  [
-                                                                     {
-                                                                         "Inicio":  "192.168.0.100",
-                                                                         "Fin":  "192.168.0.120"
-                                                                     },
-                                                                     {
-                                                                         "Inicio":  "192.168.0.130",
-                                                                         "Fin":  "192.168.0.140"
-                                                                     }
-                                                                 ],
-                                                      "MascaraRed":  "255.255.255.0",
-                                                      "DNS":  "8.8.8.8",
-                                                      "Gateway":  ""
-                                                  }
-                                              ]
-                               },
-                      "DNS":  {
-                                  "Interfaz":  "192.168.0.100",
-                                  "Zonas":  [
-                                                {
-                                                    "Tipo":  "Forward",
-                                                    "Nombre":  "ZonaUno",
-                                                    "Backup":  "",
-                                                    "Registros":  [
-                                                                      {
-                                                                          "Tipo":  "A",
-                                                                          "Hostname":  "misitio.local",
-                                                                          "IP":  "10.23.1.2"
-                                                                      },
-                                                                      {
-                                                                          "Tipo":  "CNAME",
-                                                                          "Alias":  "alias",
-                                                                          "FQDN":  "misitio2.local"
-                                                                      },
-                                                                      {
-                                                                          "Tipo":  "MX",
-                                                                          "ChildDomain":  "misitio2.local",
-                                                                          "FQDN":  "prueba.misitio2.local"
-                                                                      }
-                                                                  ]
-                                                },
-                                                {
-                                                    "Tipo":  "Reverse",
-                                                    "NetID":  "12.11.13.0/24",
-                                                    "Backup":  "",
-                                                    "Registros":  [
-                                                                      {
-                                                                          "Tipo":  "PTR",
-                                                                          "Hostname":  "misitioRegi.local",
-                                                                          "Host":  "2"
-                                                                      },
-                                                                      {
-                                                                          "Tipo":  "CNAME",
-                                                                          "Alias":  "alias",
-                                                                          "FQDN":  "misitio2.local"
-                                                                      }
-                                                                  ]
-                                                }
-                                            ]
+                      "CertificateServices":  true,
+                      "WindowsDefender":  true,
+                      "ActiveDirectory":  "",
+                      "IIS":  {
+                                  "Nombre":  "MiSitio.local",
+                                  "Directorio":  "MiSitioUno",
+                                  "Bindings":  [
+                                                   {
+                                                       "Dominio":  "misitio.local",
+                                                       "Interfaz":  "192.168.0.80",
+                                                       "Protocolo":  "https",
+                                                       "Puerto":  443,
+                                                       "WebDAV":  ""
+                                                   }
+                                               ]
                               },
-                      "ServidorWeb":  {
-                                          "Servidor":  "apache2",
-                                          "Sitios":  [
-                                                         {
-                                                             "Nombre":  "sitio",
-                                                             "Dominio":  "sitio.local",
-                                                             "Interfaz":  "192.168.0.100",
-                                                             "Puerto":  80,
-                                                             "Protocolo":  "http",
-                                                             "Drupal":  ""
-                                                         },
-                                                         {
-                                                             "Nombre":  "sitioDos",
-                                                             "Dominio":  "sitio2.local",
-                                                             "Interfaz":  "192.168.0.100",
-                                                             "Puerto":  80,
-                                                             "Protocolo":  "http",
-                                                             "Drupal":  true
-                                                         }
-                                                     ]
-                                      },
-                      "ManejadorBD":  {
-                                          "Manejador":  "MariaDB",
-                                          "NombreBD":  "mibasecita",
-                                          "Script":  ""
-                                      },
+                      "DHCP":  "",
+                      "DNS":  "",
+                      "ServidorWeb":  null,
+                      "ManejadorBD":  null,
                       "Iptables":  null
                   }
 }

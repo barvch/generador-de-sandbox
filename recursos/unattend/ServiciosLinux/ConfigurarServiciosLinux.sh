@@ -17,18 +17,19 @@ function creaCertificado (){
 	mv $domain.key /etc/ssl/private/$domain.key
 	mv $domain.crt /etc/ssl/certs/$domain.crt
 }
+
+cd /servicios/
 so=$(cat archivo.json | grep SistemaOperativo | tr -s " " | cut -d ":" -f2 | sed -e "s/,//g" | sed -e "s/\"//g" | sed -e "s/^.//g")
 if [[ $so =~ (CentOS.*|RHEL.*) ]]
 then
 	yum update -y
-	yum install jq -y
+	yum install jq wget -y
 	setenforce 0
 else
 	apt-get update -y
 	apt-get install jq -y
 fi
 sistemaOperativo=$(jq ".SistemaOperativo" archivo.json | sed -r 's/\"//g')
-cd /servicios/
 mkdir /etc/ssl/private/
 sed -i "s/null/\"\"/g" archivo.json
 usuario=$(jq ".Credenciales.Usuario" archivo.json | sed -r 's/\"//g')

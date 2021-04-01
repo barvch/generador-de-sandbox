@@ -33,7 +33,7 @@ function ConfigurarInstalacionRapida { param ($maquina, $rutaRaiz)
                     break 
                 }
                 "(CentOS.*|RHEL .*)" {$seedfile = "ks.cfg"
-                    CrearISOCentos -username $username -password $password -hostname $hostname -isoFile $isoFile -seed_file $seedfile -directorio $directorio -interfaces $interfaces -ambiente $ambiente| Out-Null
+                    CrearISOCentos -username $username -password $password -hostname $hostname -isoFile $isoFile -seed_file $seedfile -directorio $directorio -interfaces $interfaces -ambiente $ambiente -os $os| Out-Null
                     break
                 }
                 Default { 

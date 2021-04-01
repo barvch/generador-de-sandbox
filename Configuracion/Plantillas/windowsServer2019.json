@@ -46,7 +46,6 @@
                                 "Dominio": "misitio.local",
                                 "Interfaz": "SalidaInternet",
                                 "Protocolo": "https",
-                                "RutaCertificado": "E:\\Proyecto Final\\Windows Server 2019\\certificado.pfx",
                                 "Puerto": 443,
                                 "WebDAV": false
                             }

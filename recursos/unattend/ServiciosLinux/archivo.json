@@ -1,15 +1,15 @@
 {
-    "SistemaOperativo":  "Ubuntu 16.04",
-    "Hostname":  "ubuntuserver",
+    "SistemaOperativo":  "RHEL 8",
+    "Hostname":  "contoso",
     "DiscosVirtuales":  20,
     "Procesadores":  2,
-    "RutaISO":  "E:\\SanboxTest\\ubuntu-16.04.7-desktop-amd64.iso",
+    "RutaISO":  "E:\\SanboxTest\\rhel-8.3-x86_64-dvd.iso",
     "MemoriaRAM":  {
                        "Tipo":  "Static",
-                       "Memoria":  1.0
+                       "Memoria":  2.0
                    },
     "Credenciales":  {
-                         "Usuario":  "prueba",
+                         "Usuario":  "albertovm",
                          "Contrasena":  "hola12345.,"
                      },
     "Interfaces":  [
@@ -21,7 +21,7 @@
                                              },
                            "Tipo":  "Static",
                            "Nombre":  "SalidaInternet",
-                           "IP":  "192.168.0.100",
+                           "IP":  "192.168.0.69",
                            "MascaraRed":  "255.255.255.0",
                            "Gateway":  "192.168.0.1",
                            "DNS":  "8.8.8.8"
@@ -35,13 +35,13 @@
                           },
     "Servicios":  {
                       "AdministracionRemota":  "SSH",
-                      "PuertoSSH":  null,
+                      "PuertoSSH":  22,
                       "CertificateServices":  null,
                       "WindowsDefender":  null,
                       "ActiveDirectory":  null,
                       "IIS":  null,
                       "DHCP":  {
-                                   "Interfaz":  "192.168.0.100",
+                                   "Interfaz":  "192.168.0.69",
                                    "MascaraRed":  "255.255.255.0",
                                    "Scopes":  [
                                                   {
@@ -62,7 +62,7 @@
                                               ]
                                },
                       "DNS":  {
-                                  "Interfaz":  "192.168.0.100",
+                                  "Interfaz":  "192.168.0.69",
                                   "Zonas":  [
                                                 {
                                                     "Tipo":  "Forward",
@@ -106,12 +106,12 @@
                                             ]
                               },
                       "ServidorWeb":  {
-                                          "Servidor":  "apache2",
+                                          "Servidor":  "httpd",
                                           "Sitios":  [
                                                          {
                                                              "Nombre":  "sitio",
                                                              "Dominio":  "sitio.local",
-                                                             "Interfaz":  "192.168.0.100",
+                                                             "Interfaz":  "192.168.0.69",
                                                              "Puerto":  80,
                                                              "Protocolo":  "http",
                                                              "Drupal":  ""
@@ -119,9 +119,25 @@
                                                          {
                                                              "Nombre":  "sitioDos",
                                                              "Dominio":  "sitio2.local",
-                                                             "Interfaz":  "192.168.0.100",
+                                                             "Interfaz":  "192.168.0.69",
                                                              "Puerto":  80,
                                                              "Protocolo":  "http",
+                                                             "Drupal":  true
+                                                         },
+                                                         {
+                                                             "Nombre":  "sitioTres",
+                                                             "Dominio":  "sitio3.local",
+                                                             "Interfaz":  "192.168.0.69",
+                                                             "Puerto":  443,
+                                                             "Protocolo":  "https",
+                                                             "Drupal":  ""
+                                                         },
+                                                         {
+                                                             "Nombre":  "sitioCuatro",
+                                                             "Dominio":  "sitio4.local",
+                                                             "Interfaz":  "192.168.0.69",
+                                                             "Puerto":  443,
+                                                             "Protocolo":  "https",
                                                              "Drupal":  true
                                                          }
                                                      ]
