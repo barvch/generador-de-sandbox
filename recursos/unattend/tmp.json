@@ -1,16 +1,16 @@
 {
-    "SistemaOperativo":  "Kali Linux 2020.04",
+    "SistemaOperativo":  "Debian 10",
     "Hostname":  "Contoso",
     "DiscosVirtuales":  15,
     "Procesadores":  2,
-    "RutaISO":  "E:\\SanboxTest\\kali-linux-2020.4-installer-amd64.iso",
+    "RutaISO":  "E:\\SanboxTest\\debian-10.8.0-amd64-xfce-CD-1.iso",
     "MemoriaRAM":  {
                        "Tipo":  "Dynamic",
                        "Minima":  1.0,
                        "Maxima":  2.0
                    },
     "Credenciales":  {
-                         "Usuario":  "usuario",
+                         "Usuario":  "baruch",
                          "Contrasena":  "hola12345.,"
                      },
     "Interfaces":  [
@@ -22,9 +22,9 @@
                                              },
                            "Tipo":  "Static",
                            "Nombre":  "SalidaInternet",
-                           "IP":  "192.168.0.90",
+                           "IP":  "192.168.100.198",
                            "MascaraRed":  "255.255.255.0",
-                           "Gateway":  "192.168.0.1",
+                           "Gateway":  "192.168.100.1",
                            "DNS":  "8.8.8.8"
                        }
                    ],

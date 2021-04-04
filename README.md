@@ -4,14 +4,17 @@
 
 * This tool is a sandox generator for Hyper-V that allows you to create, configure and replicate a wide range of VMs in an unattended manner. The goal behind this project is to automate the process of creating and configuring both virtual machines and services using an input file that provides data for each VM indicated indicated within it. This way, mouting an infraestructure to create test enviroments for malware analisys or any other task, becomes really easy.
 
-## The input file
-
-This tool works from an input file in JSON format, which contains the following data:
-
-* **Root** - This is the root folder of the project. This is the place in the system where all the files of the virtual machines will reside.
-* **VMs** - This is the list of VMs that will be created.
-
 ### OS Pool
+
+### Requirements by the tool
+
+### Default Values in the tool
+
+* The timezone used for all the kickstart files used in Linux, the XML used in Windows and services configuration, is **America/Mexico_City**
+
+* The default OS language for all the VMs is **English**
+
+* The default keyboard layout for all the VMs is **Latin American**
 
 This is the list of current OS supported by the tool:
 
@@ -25,6 +28,13 @@ This is the list of current OS supported by the tool:
 * CentOS 8
 * RHEL 8
 * FortiOS
+
+## The input file
+
+This tool works from an input file in JSON format, which contains the following data:
+
+* **Root** - This is the root folder of the project. This is the place in the system where all the files of the virtual machines will reside.
+* **VMs** - This is the list of VMs that will be created.
 
 ###  Input file - Generic Values
 
@@ -44,7 +54,7 @@ Depending on the operating system that is intended to be installed within the VM
 
 The full documentation and list of this individual values available per SO can be found [here].
 
-## Requirements by the tool
+
 
 * Any flavor of the [Linux Subsystem for Windows] installed and running on the Hyper-V host with the following packages installed:
 
@@ -55,11 +65,30 @@ The full documentation and list of this individual values available per SO can b
 
 * In order to be able to **install any packages in any VM running RHEL 8**, you neeed to **supply the credentials used in your Red Hat account in the crediantial section of the input file**. This is importart for a correct service install and configuration in the post-install section.
 
-## Post-Instalación
+## Post-Install Instructions
+
+In some cases, in order to get the full configuration ready in the VMs, human interaction es needed. The list is the following:
+
+* Debian 10 Buster
+* Kali Linux 20.04
+* Ubuntu family
+
+Specifications foreach system can be found bellow:
+
+
+### Buster & Kali
+
+*  In order to install and configure the services stablished in the input file for this systems, you need to execute this as root:
+
+```sh
+/bin/bash /servicios/ConfigurarServiciosLinux.sh
+```
 
 ### Ubuntu X.04
 
-In order to set the network configuration stablished in the input file in the VM, you need to execute this as root:
+* You'll need to press **"Enter"** after the install completes in order to boot to the system.
+
+* In order to set the network configuration stablished in the input file in the VM, you need to execute this as root:
 
 ```sh
 /bin/bash /servicios/ConfigurarInterfaces.sh
@@ -71,13 +100,7 @@ After the system reboots, by default all interfaces are down; to enable an inter
 ifup eth0
 ```
 
-## Default Values in the tool
 
-* The timezone used for all the kickstart files used in Linux, the XML used in Windows and services configuration,  is **America/Mexico_City**
-
-* The default OS language for all the VMs is **US English**
-
-* The default keyboard layout for all the VMs is **MX Latin American**
 
 ## Powershell madafaka, do you speak it?
 

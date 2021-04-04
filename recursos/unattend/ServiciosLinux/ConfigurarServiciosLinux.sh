@@ -35,7 +35,7 @@ sed -i "s/null/\"\"/g" archivo.json
 usuario=$(jq ".Credenciales.Usuario" archivo.json | sed -r 's/\"//g')
 contrasena=$(jq ".Credenciales.Contrasena" archivo.json | sed -r 's/\"//g')
 servicios=$(jq ".Servicios" archivo.json)
-if ! [[ -z "$servicios" ]] && [[ $servicios != null ]]
+if ! [[ -z "$servicios" ]]  && [[ $servicios != null ]]
 then
 	echo $servicios > servicios.json
 	if [[ $sistemaOperativo =~ (CentOS.*|RHEL.*) ]]
@@ -51,7 +51,7 @@ then
 	systemctl enable ssh
 	systemctl restart sshd
 	manejadorBD=$(jq ".ManejadorBD" servicios.json)
-	if ! [[ -z "$manejadorBD" ]] && [[ $manejadorBD != null ]]
+	if ! [[ -z "$manejadorBD" ]] && [[ $manejadorBD != null ]] && [[ $manejadorBD != "{}" ]]
 	then
 		manejador=$(jq ".ManejadorBD.Manejador" servicios.json | sed -r 's/\"//g')
 		nombreBD=$(jq ".ManejadorBD.NombreBD" servicios.json | sed -r 's/\"//g')
@@ -142,7 +142,7 @@ then
 		esac
 	fi
 	DNS=$(jq ".DNS" servicios.json)
-	if ! [[ -z "$DNS" ]] && [[ $DNS != null ]]
+	if ! [[ -z "$DNS" ]] && [[ $DNS != null ]] && [[ $DNS != "{}" ]]
 	then
 		if [[ $sistemaOperativo =~ (CentOS.*|RHEL.*) ]]
 		then
@@ -263,7 +263,7 @@ then
 		fi
 	fi
 	DHCP=$(jq ".DHCP" servicios.json)
-	if ! [[ -z "$DHCP" ]] && [[ $DHCP != null ]]
+	if ! [[ -z "$DHCP" ]] && [[ $DHCP != null ]] && [[ $DHCP != "{}" ]]
 	then
 		if [[ $sistemaOperativo =~ (CentOS.*|RHEL.*) ]]
 		
@@ -329,7 +329,7 @@ then
 		fi
 	fi
 	servidorWeb=$(jq ".ServidorWeb" servicios.json)
-	if ! [[ -z "$servidorWeb" ]] && [[ $servidorWeb != null ]]
+	if ! [[ -z "$servidorWeb" ]] && [[ $servidorWeb != null ]] && [[ $servidorWeb != "{}" ]]
 	then
 		drupalFlag=true
 		servidor=$(jq -r ".ServidorWeb.Servidor" servicios.json | sed -r 's/\"//g')
@@ -442,7 +442,7 @@ then
 		systemctl restart $servidor
 	fi
 	iptablesFile=$(jq ".Iptables" servicios.json)
-    if ! [[ -z "$iptablesFile" ]] && [[ $iptablesFile != null ]]
+    if ! [[ -z "$iptablesFile" ]] && [[ $iptablesFile != null ]] && [[ $iptablesFile != "{}" ]]
     then
         iptables-restore $iptablesFile
     fi

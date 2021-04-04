@@ -27,7 +27,6 @@ d-i console-setup/layoutcode string us
 # Network
 d-i netcfg/get_hostname string {{hostname}}
 d-i netcfg/get_domain string {{hostname}}
-#d-i netcfg/choose_interface select auto
 
 # Clock
 d-i clock-setup/utc-auto boolean true
@@ -60,4 +59,4 @@ ubiquity ubiquity/success_command \
     string apt-update -y; \
         cp -r /cdrom/ServiciosLinux /target/servicios; \
         in-target /bin/bash /servicios/ConfigurarServiciosLinux.sh; \
-        in-target apt-get install -y openssh-server vim openssl;
+        in-target apt-get install -y openssh-server xterm vim openssl ifupdown;
