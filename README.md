@@ -66,7 +66,14 @@ Depending on the operating system that is intended to be installed within the VM
 
 The full documentation and list of this individual values available per SO can be found [here].
 
+### Input file - Services 
 
+The list of services available per SO is the following:
+
+| SO | Services |
+| ------ | ------ |
+| Windows Server |  <ul><li>Windows Defender</li><li>AD</li><li>Certificate Services</li><li>IIS</li><li>DHCP</li><li>DNS</li><li>Bind DNS</li><li>AD</li></ul> |
+| Linux | <ul><li>Web Server (apache/nginx)</li><li>RDBMS (SQL Server, MariaDB, MySQL, PostgreSQL)</li><li>DHCP</li><li>Bind DNS</li><li>iptables</li></ul> |
 
 
 ## Post-Install Instructions
@@ -103,10 +110,6 @@ After the system reboots, by default all interfaces are down; to enable an inter
 ```sh
 ifup eth0
 ```
-
-
-
-## Powershell madafaka, do you speak it?
 
 [here]: <https://docs.google.com/spreadsheets/d/13qQsPp08ocH_j-whSafJKate7DskU9h4aBCn-lr3qTU/edit#gid=492063908>
 [Linux Subsystem for Windows]: <https://docs.microsoft.com/en-us/windows/wsl/install-win10> 
