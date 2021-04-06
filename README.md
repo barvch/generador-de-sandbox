@@ -46,9 +46,11 @@ This is the list of current OS supported by the tool:
 This tool works from an input file in JSON format, which contains the following data:
 
 * **Root** - This is the root folder of the project. This is the place in the system where all the files of the virtual machines will reside.
-* **VMs** - This is the list of VMs that will be created.
+* **VMs** - This is the list and specifications of VMs that will be created.
 
-###  Input file - Generic Values
+In the VMs section, there are a number of values required by the tool to work, which are detailed below:
+
+### Generic Values
 
 This tool expects some mandatory and necessary values foreach VM, regardless of the operating system that you want to install inside the machine, such as:
 
@@ -60,29 +62,35 @@ This tool expects some mandatory and necessary values foreach VM, regardless of 
     * Type ( DHCP / Static )
     * Virtual Switch associated
 
-### Input file - Individual values
+### Individual values
 
 Depending on the operating system that is intended to be installed within the VM, the tool expects some mandatory values and other optional values that must be specified within the input file.
 
 The full documentation and list of this individual values available per SO can be found [here].
 
-### Input file - Services 
+### Services 
+
+This tool also allows you to configure some common services within supported operating systems.
 
 The list of services available per SO is the following:
 
 | SO | Services |
 | ------ | ------ |
-| Windows Server |  <ul><li>Windows Defender</li><li>AD</li><li>Certificate Services</li><li>IIS</li><li>DHCP</li><li>DNS</li><li>Bind DNS</li><li>AD</li></ul> |
-| Linux | <ul><li>Web Server (apache/nginx)</li><li>RDBMS (SQL Server, MariaDB, MySQL, PostgreSQL)</li><li>DHCP</li><li>Bind DNS</li><li>iptables</li></ul> |
+| Windows Server 2019 |  <ul><li>Windows Defender</li><li>AD</li><li>Certificate Services</li><li>IIS</li><li>DHCP</li><li>DNS</li><li>Bind DNS</li></ul> |
+| Linux/Unix | <ul><li>Web Server (apache/nginx)</li><li>RDBMS (SQL Server, MariaDB, MySQL, PostgreSQL)</li><li>DHCP</li><li>Bind DNS</li><li>iptables</li></ul> |
+
+Extensive documentation on the values expected by the tool for proper installation and configuration can be found [here][servicios]
 
 
-## Post-Install Instructions
+This tool provides some [examples of valid input files], which can serve as a reference and can be loaded directly into the tool by making the corresponding modifications for the environment you want to create. You can find templates to create VMs specifically of each supported operating system, as well as other templates creating a whole infrastructure of VMs.
+
+## Finish & post-install Instructions
 
 In some cases, in order to get the full configuration ready in the VMs, human interaction es needed. The list is the following:
 
 * Debian 10 Buster
 * Kali Linux 20.04
-* Ubuntu family
+* Ubuntu Family
 
 Specifications foreach system can be found bellow:
 
@@ -111,5 +119,7 @@ After the system reboots, by default all interfaces are down; to enable an inter
 ifup eth0
 ```
 
-[here]: <https://docs.google.com/spreadsheets/d/13qQsPp08ocH_j-whSafJKate7DskU9h4aBCn-lr3qTU/edit#gid=492063908>
+[here]: <https://docs.google.com/spreadsheets/d/13qQsPp08ocH_j-whSafJKate7DskU9h4aBCn-lr3qTU/edit#gid=0s>
 [Linux Subsystem for Windows]: <https://docs.microsoft.com/en-us/windows/wsl/install-win10> 
+[examples of valid input files]: <https://github.com/barvch/generador-de-sandbox/tree/main/Configuracion/Plantillas>
+[servcicios]: <https://docs.google.com/spreadsheets/d/13qQsPp08ocH_j-whSafJKate7DskU9h4aBCn-lr3qTU/edit#gid=492063908>
