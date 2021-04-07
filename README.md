@@ -48,6 +48,8 @@ This tool works from an input file in JSON format, which contains the following 
 * **Root** - This is the root folder of the project. This is the place in the system where all the files of the virtual machines will reside.
 * **VMs** - This is the list and specifications of VMs that will be created.
 
+This tool provides some [examples of valid input files], which can serve as a reference and can be loaded directly into the tool by making the corresponding modifications for the environment you want to create. You can find templates to create VMs specifically of each supported operating system, as well as other templates creating a whole infrastructure of VMs.
+
 In the VMs section, there are a number of values required by the tool to work, which are detailed below:
 
 ### Generic Values
@@ -79,14 +81,15 @@ The list of services available per SO is the following:
 | Windows Server 2019 |  <ul><li>Windows Defender</li><li>AD</li><li>Certificate Services</li><li>IIS</li><li>DHCP</li><li>DNS</li><li>Bind DNS</li></ul> |
 | Linux/Unix | <ul><li>Web Server (apache/nginx)</li><li>RDBMS (SQL Server, MariaDB, MySQL, PostgreSQL)</li><li>DHCP</li><li>Bind DNS</li><li>iptables</li></ul> |
 
-Extensive documentation on the values expected by the tool for proper installation and configuration foreach service can be found [here][servicios]
+Extensive documentation on the values expected by the tool for proper installation and configuration foreach service can be found [here][servicios].
 
+* **NOTE**: The RDP or SSH service is installed by default within all windows and Linux machines, respectively.
 
-This tool provides some [examples of valid input files], which can serve as a reference and can be loaded directly into the tool by making the corresponding modifications for the environment you want to create. You can find templates to create VMs specifically of each supported operating system, as well as other templates creating a whole infrastructure of VMs.
 
 ## Finish & post-install Instructions
 
-In some cases, in order to get the full configuration ready in the VMs, human interaction es needed. The list is the following:
+In some cases, in order to get the full configuration ready in the VMs, human interaction i
+s needed. The list is the following:
 
 * Debian 10 Buster
 * Kali Linux 20.04
