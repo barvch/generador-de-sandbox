@@ -88,7 +88,7 @@ function ConfigurarInstalacionRapida { param ($maquina, $rutaRaiz)
             }
             else{
                 $seedfile = "FortiOS.conf"
-                CrearBackup -os $os -hostname $hostname -username $username - password $password -directorio $directorio -seed_file $seedfile -interfaces $interfaces -vhdpath $maquina.DatosDependientes.VHDRuta -vname $vname | Out-Null
+                CrearBackup -os $os -hostname $hostname -username $username -password $password -directorio $directorio -seed_file $seedfile -interfaces $interfaces -vhdpath $maquina.DatosDependientes.VHDRuta -vname $vname | Out-Null
             }
         }   
     }
