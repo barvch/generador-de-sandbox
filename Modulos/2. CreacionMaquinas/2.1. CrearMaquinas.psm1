@@ -18,8 +18,6 @@ function CrearMaquinas { param ($maquinas, $rutaRaiz)
         ConfigurarMaquinaHyperV -maquina $maquina -rutaRaiz $rutaRaiz
         Write-ProgressHelper -currentOperation "Creando Disco De Instalacion Rapida" -StepNumber ($stepCounter++)
         ConfigurarInstalacionRapida -maquina $maquina -rutaRaiz $rutaRaiz
-        #Write-ProgressHelper -currentOperation "Instalando Sistema Operativo y Configurando Servicios" -StepNumber ($stepCounter++)
-        #InstalarServicios $maquina, $rutaRaiz
         Write-ProgressHelper -currentOperation "Iniciando Maquina" -StepNumber ($stepCounter++)
         Start-VM -Name $vname
     }

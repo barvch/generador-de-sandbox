@@ -122,6 +122,14 @@ After the system reboots, by default all interfaces are down; to enable an inter
 ifup eth0
 ```
 
+## Videos
+
+* Create a valid JSON input file:
+
+* Run the tool to test the JSON file created:
+
+
+
 [here]: <https://docs.google.com/spreadsheets/d/13qQsPp08ocH_j-whSafJKate7DskU9h4aBCn-lr3qTU/edit#gid=0s>
 [Linux Subsystem for Windows]: <https://docs.microsoft.com/en-us/windows/wsl/install-win10> 
 [examples of valid input files]: <https://github.com/barvch/generador-de-sandbox/tree/main/Configuracion/Plantillas>

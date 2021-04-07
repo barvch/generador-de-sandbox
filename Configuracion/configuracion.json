@@ -2,181 +2,13 @@
     "Root": "E:\\SanboxTest",
     "MaquinasVirtuales": [
         {
-            "SistemaOperativo": "Debian 10",
-            "Hostname": "magumbosito",
-            "DiscosVirtuales": [15],
-            "Procesadores": 2,
-            "RutaISO": "E:\\SanboxTest\\debian-10.8.0-amd64-xfce-CD-1.iso",
-            "MemoriaRAM": {
-                "Tipo": "Dynamic",
-                "Minima": 1.0,
-                "Maxima": 2.0
-            },
-            "Credenciales": {
-                "Usuario": "usuario",
-                "Contrasena": "hola12345.,"
-            },
-            "Interfaces": [
-                {
-                    "VirtualSwitch": {
-                        "Nombre": "SalidaInternet",
-                        "Tipo": "External",
-                        "AdaptadorRed": "Ethernet"
-                    },
-                    "Tipo": "Static",
-                    "Nombre": "SalidaInternet",
-                    "IP": "192.168.100.220",
-                    "MascaraRed": "24",
-                    "Gateway": "192.168.100.1",
-                    "DNS": "8.8.8.8"
-                }
-            ],
-        "Servicios": {
-            "AdministracionRemota": "SSH",
-            "PuertoSSH": 22
-            }
-        },
-        {
-            "SistemaOperativo": "CentOS 8",
-            "TipoAmbiente": "gnome",
-            "Hostname": "contoso",
+            "SistemaOperativo": "Windows 10",
+            "Hostname": "Contoso",
+            "TipoAmbiente": "Windows 10 Home",
+            "LlaveActivacion": "xxxx-xxxx-xxxx-xxxx-xxxx",
             "DiscosVirtuales": [20],
             "Procesadores": 2,
-            "RutaISO": "E:\\SanboxTest\\CentOS-8.3.2011-x86_64-dvd1.iso",
-            "MemoriaRAM": {
-                "Tipo": "Static",
-                "Memoria": 1.0
-            },
-            "Credenciales": {
-                "Usuario": "usuario",
-                "Contrasena": "hola12345.,"
-            },
-            "Interfaces": [
-                {
-                    "VirtualSwitch": {
-                        "Nombre": "SalidaInternet",
-                        "Tipo": "External",
-                        "AdaptadorRed": "Ethernet"
-                    },
-                    "Tipo": "Static",
-                    "Nombre": "SalidaInternet",
-                    "IP": "192.168.100.210",
-                    "MascaraRed": "24",
-                    "Gateway": "192.168.100.1",
-                    "DNS": "8.8.8.8"
-                }
-            ],
-            "Servicios": {
-                "AdministracionRemota": "SSH",
-                "PuertoSSH": 22,
-                "ManejadorBD": {
-                    "Manejador": "MariaDB",
-                    "NombreBD":"MiBasecita"
-                },
-                "ServidorWeb": {
-                    "Servidor": "httpd",
-                    "Sitios": [
-                        {
-                        "Nombre": "sitio",
-                        "Dominio": "sitio.local",
-                        "Interfaz": "SalidaInternet",
-                        "Puerto": 80,
-                        "Protocolo": "http",
-                        "Drupal": false                },
-                                        {
-                        "Nombre": "sitioDos",
-                        "Dominio": "sitio2.local",
-                        "Interfaz": "SalidaInternet",
-                        "Puerto": 80,
-                        "Protocolo": "http",
-                        "Drupal": true                },
-                                        {
-                        "Nombre": "sitioTres",
-                        "Dominio": "sitio3.local",
-                        "Interfaz": "SalidaInternet",
-                        "Puerto": 443,
-                        "Protocolo": "https",
-                        "Drupal": false                },
-                                        {
-                        "Nombre": "sitioCuatro",
-                        "Dominio": "sitio4.local",
-                        "Interfaz": "SalidaInternet",
-                        "Puerto": 443,
-                        "Protocolo": "https",
-                        "Drupal": true                }
-        
-                    ]
-                },
-                "DNS": { 
-                "Interfaz": "SalidaInternet",
-                "Zonas":
-                [
-                    {
-                        "Tipo": "Forward",
-                        "Nombre": "ZonaUno",
-                        "Registros": [
-                            {
-                                "Tipo": "A",
-                                "Hostname": "misitio.local",
-                                "IP": "10.23.1.2"
-                            },
-                            {
-                                "Tipo": "CNAME",
-                                "Alias": "alias",
-                                "FQDN": "misitio2.local"
-                            },
-                            {
-                                "Tipo": "MX",
-                                "ChildDomain": "misitio2.local",
-                                "FQDN": "prueba.misitio2.local"
-                            }
-                        ]
-                    },
-                        {
-                                "Tipo": "Reverse",
-                                "Nombre": "ZonaDos",
-                                "NetID": "12.11.13.0/24",
-                                "Registros": [
-                                    {
-                                        "Tipo": "PTR",
-                                        "Hostname": "misitioRegi.local",
-                                        "Host": "2"
-                                    },
-                                    {
-                                        "Tipo": "CNAME",
-                                        "Alias": "alias",
-                                        "FQDN": "misitio2.local"
-                                    }
-                                ]
-                            }
-                ]
-            },
-                "DHCP": {
-                    "Interfaz": "SalidaInternet",
-                    "Scopes": [
-                        {
-                            "Rangos": [
-                                {
-                                "Inicio": "192.168.100.40",
-                                "Fin": "192.168.100.50"
-                                }
-                            ],
-                            "MascaraRed": "255.255.255.0",
-                            "Lease": "30000",
-                            "DNS": "8.8.8.8"
-                        }
-                    ]
-                }
-            }
-        },
-        {
-            "SistemaOperativo": "Windows Server 2019",
-            "Hostname": "Barto",
-            "TipoAmbiente": "Windows Server 2019 Standard Evaluation (Desktop Experience)",
-            "LlaveActivacion": "xxxx-xxxx-xxxx-xxxx-xxxx",
-            "DiscosVirtuales": [30],
-            "Procesadores": 2,
-            "RutaISO": "E:\\SanboxTest\\WindowsServer2019_SERVER_EVAL_x64FRE_en-us_1.iso",
+            "RutaISO": "E:\\SanboxTest\\Win10_1909_English_x64.iso",
             "MemoriaRAM": {
                 "Tipo": "Dynamic",
                 "Minima": 1.0,
@@ -186,41 +18,87 @@
                 "Usuario": "Barto",
                 "Contrasena": "hola12345.,"
             },
-            "Interfaces": [
-                {
-                    "VirtualSwitch": {
-                        "Nombre": "SalidaInternet",
-                        "Tipo": "External",
-                        "AdaptadorRed": "Ethernet"
-                    },
-                    "Tipo": "Static",
+            "Interfaces": [{
+                "VirtualSwitch": {
                     "Nombre": "SalidaInternet",
-                    "IP": "192.168.100.230",
-                    "MascaraRed": "24",
-                    "Gateway": "192.168.0.1",
-                    "DNS": "8.8.8.8"
-                }
-            ],
+                    "Tipo": "External",
+                    "AdaptadorRed": "Ethernet"
+                },
+                "Tipo": "Static",
+                "Nombre": "SalidaInternet",
+                "IP": "192.168.100.210",
+                "MascaraRed": "24",
+                "Gateway": "192.168.100.1",
+                "DNS": "8.8.8.8"
+            }],
             "Servicios": {
-                "CertificateServices": true,
-                "WindowsDefender": true,
-                "AdministracionRemota": "RDP",
-                "IIS":  [
-                    {
-                        "Nombre": "MiSitio.local",
-                        "Directorio": "MiSitioUno",
-                        "Bindings": [
-                            {
-                                "Dominio": "misitio.local",
-                                "Interfaz": "SalidaInternet",
-                                "Protocolo": "https",
-                                "Puerto": 443,
-                                "WebDAV": false
-                            }
-                        ]
+                "AdministracionRemota": "RDP"
+            }
+        },
+        {
+            "SistemaOperativo": "Ubuntu 18.04",
+            "Hostname": "oneplus",
+            "TipoAmbiente": "Ubuntu desktop",
+            "DiscosVirtuales": [20],
+            "Procesadores": 2,
+            "RutaISO": "E:\\SanboxTest\\ubuntu-18.04.5-desktop-amd64.iso",
+            "MemoriaRAM": {
+                "Tipo": "Static",
+                "Memoria": 1.0
+            },
+            "Credenciales": {
+                "Usuario": "usuario",
+                "Contrasena": "hola12345.,"
+            },
+            "Interfaces": [{
+                "VirtualSwitch": {
+                    "Nombre": "SalidaInternet",
+                    "Tipo": "External",
+                    "AdaptadorRed": "Ethernet"
+                },
+                "Tipo": "Static",
+                "Nombre": "SalidaInternet",
+                "IP": "192.168.100.220",
+                "MascaraRed": "24",
+                "Gateway": "192.168.100.1",
+                "DNS": "8.8.8.8"
+            }],
+            "Servicios": {
+                "AdministracionRemota": "SSH",
+                "PuertoSSH": 22,
+                "ManejadorBD": {
+                    "Manejador": "MariaDB",
+                    "NombreBD": "testing"
+                },
+                "ServidorWeb": {
+                    "Servidor": "apache2",
+                    "Sitios": {
+                        "Nombre": "sitio",
+                        "Dominio": "sitio.local",
+                        "Interfaz": "SalidaInternet",
+                        "Puerto": 80,
+                        "Protocolo": "http",
+                        "Drupal": false
                     }
-                ]
+                },
+                "DHCP": {
+                    "Interfaz": "SalidaInternet",
+                    "Scopes": [
+                        {
+                            "Rangos": [
+                                {
+                                    "Inicio": "192.168.100.40",
+                                    "Fin": "192.168.100.70"
+                                }
+                            ],
+                            "MascaraRed": "255.255.255.0",
+                            "Gateway": "192.168.100.1",
+                            "Lease": "30000",
+                            "DNS": "8.8.8.8"
+                        }
+                    ]
+                }
             }
         }
-    ]    
+    ]
 }   
