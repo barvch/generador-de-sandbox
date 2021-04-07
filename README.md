@@ -126,7 +126,11 @@ ifup eth0
 
 * Create a valid JSON input file:
 
+    * https://drive.google.com/file/d/1F-kv7awZ0BfdEEHCnjH5ICOtm8Yp7JoA/view?usp=sharing
+
 * Run the tool to test the JSON file created:
+
+    * https://drive.google.com/file/d/1rf91jSrD6FEsrO-s-RIStoBLzxlkfeel/view?usp=sharing
 
 
 
