@@ -16,7 +16,7 @@ function CrearBackup {
     (Get-Content "$directorio\FortiOS.conf").replace('{{username}}', $username) | Set-Content "$directorio\FortiOS.conf"
     (Get-Content "$directorio\FortiOS.conf").replace('{{password}}', $password) | Set-Content "$directorio\FortiOS.conf"
 
-    MoverBackup -backup $seed_file -directorio $directorio -vhdpath $vhdpath -vname $vname
+    MoverBackup -backup "$directorio\$seed_file" -directorio $directorio -vhdpath $vhdpath -vname $vname
 }
 
 function MoverBackup{
