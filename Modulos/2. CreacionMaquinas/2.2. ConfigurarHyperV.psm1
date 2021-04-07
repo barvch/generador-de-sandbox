@@ -38,6 +38,9 @@ function ConfigurarMaquinaHyperV { param ($maquina, $rutaRaiz)
         }
         Connect-VMNetworkAdapter -Name $nombreInterfaz -VMName $vname -SwitchName $nombreVS
     }
+    if($so -eq "FortiOS 6"){
+        Add-VMHardDiskDrive -VMName $vname -Path $maquina.DatosDependientes.VHDRuta | Out-Null
+    }
     $contador = 1
     foreach ($tamanoDisco in $discosVirtuales) {
         $rutaDisco = "$($rutaRaiz)\$($vname)\DiscosVirtuales\$vname-$contador.vhd"

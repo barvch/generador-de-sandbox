@@ -20,7 +20,9 @@ function ConfigurarInstalacionRapida { param ($maquina, $rutaRaiz)
     $hostname = $maquina.Hostname 
     $username = $maquina.Credenciales.Usuario
     $password = $maquina.Credenciales.Contrasena
-    $isoFile = $maquina.RutaISO
+    if($os -ne "FortiOS 6"){
+        $isoFile = $maquina.RutaISO
+    }
     $interfaces = $maquina.Interfaces
     $vname = "$($maquina.Hostname)-$($maquina.SistemaOperativo)"
     switch -regex ($os) {
@@ -77,5 +79,17 @@ function ConfigurarInstalacionRapida { param ($maquina, $rutaRaiz)
             Set-VMFirmware $vname -FirstBootDevice $firstBoot
             break
         }
+        "FortiOS.*"{
+            $directorio = "$rutaRaiz\$vname"
+            #if($maquina.DatosDependientes.Backup -ne "" -or $maquina.DatosDependientes.Backup -ne $null){
+            if($maquina.DatosDependientes.Backup){
+                $seedfile = $maquina.DatosDependientes.Backup
+                MoverBackup -backup $seedfile -directorio $directorio -vhdpath $maquina.DatosDependientes.VHDRuta | Out-Null
+            }
+            else{
+                $seedfile = "FortiOS.conf"
+                CrearBackup -os $os -hostname $hostname -username $username - password $password -directorio $directorio -seed_file $seedfile -interfaces $interfaces -vhdpath $maquina.DatosDependientes.VHDRuta | Out-Null
+            }
+        }   
     }
 }

@@ -1,0 +1,53 @@
+{
+    "Root": "C:\\SanboxTest",
+    "MaquinasVirtuales": [
+        {
+            "SistemaOperativo": "FortiOS 6",
+            "TipoAmbiente": "Xfce",
+            "Hostname": "cromos",
+            "DiscosVirtuales": [20],
+            "Procesadores": 2,
+            "MemoriaRAM": {
+                "Tipo": "Static",
+                "Memoria": 1.0
+            },
+            "Credenciales": {
+                "Usuario": "prueba",
+                "Contrasena": "hola12345.,"
+            },
+            "Interfaces": [
+                {
+                    "VirtualSwitch": {
+                        "Nombre": "Switch-Externo",
+                        "Tipo": "External",
+                        "AdaptadorRed": "Wi-Fi"
+                    },
+                    "Administrativa":true,
+                    "Tipo": "Static",
+                    "Nombre": "SalidaInternet",
+                    "IP": "192.168.0.69",
+                    "MascaraRed": "24",
+                    "Gateway": "192.168.0.1",
+                    "DNS": "8.8.8.8"
+                },
+			{
+                    "VirtualSwitch": {
+                        "Nombre": "PruebaPrivado",
+                        "Tipo": "Internal"        
+            },
+                    "Administrativa":false,
+                    "Tipo": "Static",
+                    "Nombre": "SalidaLAN",
+                    "IP": "192.168.0.80",
+                    "MascaraRed": "24",
+                    "Gateway": "192.168.0.1",
+                    "DNS": "8.8.8.8"
+                }
+            ],
+            "Servicios": {
+			},
+		 "RutaBackup":"C:\\Users\\Administrator\\Downloads\\FortiOS_6-4_1828_202103211655.conf",
+		"RutaVHD":"C:\\Users\\Administrator\\Desktop\\FortiOS\\Virtual Hard Disks\\fortios.vhd"
+        }
+    ]
+}

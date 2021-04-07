@@ -109,7 +109,7 @@ function ValidarCredenciales { param ($credenciales, $os)
         return $credencialesCheck
 }
 
-function ValidarInterfaces { param ($interfaces, $hostname)
+function ValidarInterfaces { param ($interfaces, $hostname, $os)
     if($interfaces){
         $interfacesCheck = $ips = $nombres = @()
         foreach($interfaz in $interfaces){
@@ -142,7 +142,12 @@ function ValidarInterfaces { param ($interfaces, $hostname)
             }
             $interfacesNombreCheck = ValidarCadenas -campo "Interfaces.Nombre" -valor $interfaz.Nombre -validacionCaracter "alfaNum2" -validacionLongitud "longitud1" -obligatorio $true
             $nombres += $interfacesNombreCheck
-            $interfazCheck = [ordered] @{"VirtualSwitch" = [ordered] @{"Nombre" = $VSNombreCheck; "Tipo" = $VSTipoCheck; "AdaptadorRed" = $adaptadorRedCheck}; "Tipo" = $tipoInterfazCheck;"Nombre" = $interfacesNombreCheck; "IP" = $ipCheck; "MascaraRed" = $mascaraCheck;"Gateway" = $gatewayCheck; "DNS" = $dnsCheck}
+            if($so -match "FortiOS 6"){
+                $interfazCheck = [ordered] @{"VirtualSwitch" = [ordered] @{"Nombre" = $VSNombreCheck; "Tipo" = $VSTipoCheck; "AdaptadorRed" = $adaptadorRedCheck}; "Tipo" = $tipoInterfazCheck;"Nombre" = $interfacesNombreCheck; "IP" = $ipCheck; "MascaraRed" = $mascaraCheck;"Gateway" = $gatewayCheck; "DNS" = $dnsCheck; "Administrativa" = $interfaz.Administrativa}
+            }
+            else{
+                $interfazCheck = [ordered] @{"VirtualSwitch" = [ordered] @{"Nombre" = $VSNombreCheck; "Tipo" = $VSTipoCheck; "AdaptadorRed" = $adaptadorRedCheck}; "Tipo" = $tipoInterfazCheck;"Nombre" = $interfacesNombreCheck; "IP" = $ipCheck; "MascaraRed" = $mascaraCheck;"Gateway" = $gatewayCheck; "DNS" = $dnsCheck}
+            }
             $interfacesCheck += $interfazCheck
             
             #$ips += (ValidarRango -ipInicio $ipCheck -mascara $mascaraCheck -campo "$interfacesNombreCheck.IP" -unico $true)

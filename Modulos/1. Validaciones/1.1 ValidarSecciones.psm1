@@ -3,10 +3,12 @@ function ValidarDatosGenerales { param ($maquinaVirtual, $rutaRaiz)
     $hostnameCheck = ValidarHostname -hostname $maquinaVirtual.Hostname -so $SOCheck
     $discosVirtualesCheck = ValidarDiscosVirtuales -discosVirtuales $maquinaVirtual.DiscosVirtuales -rutaRaiz $rutaRaiz
     $procesadoresCheck = ValidarProcesadores -procesadores $maquinaVirtual.Procesadores
-    $rutaISOCheck = ValidarRutaISO -rutaISO $maquinaVirtual.RutaISO -so $SOCheck
+    if($maquinaVirtual.SistemaOperativo -ne "FortiOS 6"){
+        $rutaISOCheck = ValidarRutaISO -rutaISO $maquinaVirtual.RutaISO -so $SOCheck
+    }    
     $memoriaRAMCheck = ValidarMemoriaRAM -memoriaRAM $maquinaVirtual.MemoriaRAM
     $credencialesCheck = ValidarCredenciales -credenciales $maquinaVirtual.Credenciales -os $SOCheck
-    $interfacesCheck = ValidarInterfaces -interfaces $maquinaVirtual.Interfaces -hostname $hostnameCheck
+    $interfacesCheck = ValidarInterfaces -interfaces $maquinaVirtual.Interfaces -hostname $hostnameCheck -os $SOCheck
     $datosdepCheck = ValidarDatosDependientes -sistemaOperativo $SOCheck -llaveActivacion $maquina.LlaveActivacion -rutaMSI $maquinaVirtual.RutaMSI -tipoAmbiente $maquinaVirtual.TipoAmbiente -WinIso $rutaISOCheck
     $serviciosCheck = ValidarServicios -sistemaOperativo $SOCheck -maquinaVirtual $maquinaVirtual -interfaces $interfacesCheck
     $datosValidados = [ordered] @{"SistemaOperativo" = $SOCheck; "Hostname" = $hostnameCheck; "DiscosVirtuales" = $discosVirtualesCheck; `
@@ -23,9 +25,13 @@ function ValidarDatosDependientes { param ($sistemaOperativo, $llaveActivacion, 
             $llaveActivacionCheck = ValidarLlaveActivacion -llave $llaveActivacion
             $rutaXML = ValidarXML -rutaXML "$(Get-Location)\Recursos\Unattend\Windows\unattend.xml"
         }
+    "FortiOS 6"{
+            $backupCheck = ValidarBackup -ruta $maquinaVirtual.RutaBackup
+            $VHDCheck = ValidarRutaVHD -ruta $maquinaVirtual.RutaVHD
+        }
         Default { }
         }
-    $datosDependientes = [ordered] @{"TipoAmbiente" = $tipoAmbienteCheck; "LlaveActivacion" = $llaveActivacionCheck; "RutaMSI" = $rutaMSICheck; "ArchivoXML" = $rutaXML}
+    $datosDependientes = [ordered] @{"TipoAmbiente" = $tipoAmbienteCheck; "LlaveActivacion" = $llaveActivacionCheck; "RutaMSI" = $rutaMSICheck; "ArchivoXML" = $rutaXML; "Backup"=$backupCheck; "VHDRuta" =$VHDCheck}
     return $datosDependientes
 }
 
@@ -53,6 +59,7 @@ function ValidarServicios { param ( $sistemaOperativo, $maquinaVirtual, $interfa
                 }
             }
         }
+        "FortiOS 6"{}
         Default { 
             $servidorWebCheck = ValidarServidorWeb -servidorWeb $maquinaVirtual.Servicios.ServidorWeb -interfaces $interfaces
             $manejadorbdCheck = ValidarManejadorBD -manejadorbd $maquinaVirtual.Servicios.ManejadorBD -so $sistemaOperativo

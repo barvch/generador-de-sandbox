@@ -54,3 +54,17 @@ function ValidarTipoAmbiente { param ($campo = "TipoAmbiente", $tipoAmbiente, $s
         "Debian.*" { return ValidarCatalogos -catalogo $ambientesDebian -campo $campo -valor $tipoAmbiente -obligatorio $true -so $sistemaOperativo}
     }
 }
+
+function ValidarBackup{ param ($campo = "RutaBackup", $rutaBackup)
+    $backupCheck = ValidarArregloDato -campo $campo -valor $rutaBackup -obligatorio $false -tipoDato "String"
+    $backupCheck = ValidarRuta -campo $campo -valor $rutaBackup -obligatorio $false
+
+    return $backupCheck
+}
+
+function ValidarRutaVHD{ param ($campo = "RutaVHD", $rutaVHD)
+    $VHDCheck = ValidarArregloDato -campo $campo -valor $rutaVHD -obligatorio $true -tipoDato "String"
+    $VHDCheck = ValidarRuta -campo $campo -valor $rutaVHD -obligatorio $true
+
+    return $VHDCheck
+}
