@@ -209,4 +209,4 @@ apt-get install dos2unix
 [The input file]: <#the-input-file>
 [here]: <>
 [Post-Installation instructions]: <#post-installation-instructions>
-[input files]: <./Configuracion/Plantillas>
+[input files]: </../../Configuracion/Plantillas>
