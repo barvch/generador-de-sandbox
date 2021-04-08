@@ -12,7 +12,8 @@ Enable the **Windows Subsystem for Linux** before installing any Linux Distribut
 ```Powershell
 dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
 ```
-[Update to the latest Windows version] in the Settings menu.
+**Update to the latest Windows version** in the Settings menu.
+![UpdateWindows](./Images/UpdateWindows.png)
 
 ### Whois
 ### dos2unix
@@ -26,6 +27,3 @@ Tool Download
 ### Demos
 
 ### Blueprints
-
-[Update to the latest Windows version]: <- "#msg=greeting">
-<ms-settings:windowsupdate>
