@@ -20,46 +20,73 @@ This tool is built according to following flow:
 
 * **Data printing and confirmation**. The tool allow to check all data for each or all virtual machines before create them.
 * **Hyper-V machine creation**. Once one or all virtual machines are validated, hardware requirements are set with virtual hard drive exception.
+
+> Hardware that are set:
+> * Amount and size of virtual disks.
+> * Number of processors.
+> * RAM memory:
+>   - Static:
+>       + Total memory.
+>   - Dynamic:
+>       + Minimum memory.
+>       + Maximum memory.
+> * Network interfaces
+>   - Virtual Switches:
+>       + Name.
+>       + Type.
+>       + Network adapter.
+>   - Type.
+>   - Name.
+
 * **Custom ISO creation**. In this step, the ISO file specified by user is mounted in host and unattended files are customized and loaded within. The tool for ISO creation depends of each operating system:
+
     - Windows. DISM.
     - Linux/Unix. mkisofs.
  
 > Data that are set within unattended files:
 > * General data:
->    - Hostname
->    - Desktop Environment (Exceptions: Debian 10 and Kali Linux 2020.04)
+>    - Hostname.
+>    - Desktop Environment (Exceptions: Debian 10 and Kali Linux 2020.04).
 >    - Credentials:
->        + User
->        + Password
->    - Interfaces:
->        + IP
->        + NetMask
->        + Gateway
->        + DNS
-> * Dependent Data
->    - Activation Key (Windows Distributions)
->    - Administrative interface (FortiOS 6)
->    - Backup file (FortiOS 6)
-> * Default Values
->    - Timezone. America/Mexico_City
->    - OS language. English
->    - Keyboard layout. Latin American 
+>        + User.
+>        + Password.
+>    - Network interfaces:
+>        + IP addresses.
+>        + Netmasks.
+>        + Gateways.
+>        + DNS's.
+> * Dependent Data:
+>    - Activation Key (Windows Distributions).
+>    - Administrative interface (FortiOS 6).
+>    - Backup file (FortiOS 6).
+> * Default Values:
+>    - Timezone. America/Mexico_City.
+>    - OS language. English.
+>    - Keyboard layout. Latin American.
 
 * **Operating system installation**. The hard drive with major capacity and ISO file are mounted, then, the virtual machine is started. The following operating systems needs user interaction because desktop environment is selected in this step:
-    - Debian 10 (Buster)
-    - Kali Linux 2020.04
+
+    - Debian 10 (Buster).
+    - Kali Linux 2020.04.
 
 > The interfaces are set in this process with Ubuntu exception.
 
-* **Post-Installation running script**. Finally, 
+* **Post-Installation running script**. This script installs and configures all services required and it is executed automatically after OS installation.
 
-> This flow repeats itself for every single virtual machine to create.
+> Exceptions: 
+> * Debian 10 Buster.
+> * Kali Linux 20.04.
+> * Ubuntu Family.
+> 
+> For those OS check [Post-Installation instructions] section.
 
-Technical specs can be found here.
+**This flow repeats itself for every single virtual machine to create.**
 
 ## The input file
 
 The **generador-de-sandbox/Configuracion/configuracion.json** file is the core of the tool, 
+
+> Technical specs can be found [here].
 
 ```JSON
 {
@@ -159,3 +186,5 @@ apt-get install dos2unix
 [Download the Linux kernel update package]: <https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi>
 [minimun system requirements]: <#minimun-system-requirements>
 [The input file]: <#the-input-file>
+[here]: <>
+[Post-Installation instructions]: <#post-installation-instructions>
