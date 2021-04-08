@@ -92,19 +92,20 @@ The **generador-de-sandbox/Configuracion/configuracion.json** file is the core o
     - **Generic values**. Data related with host machine available resources and file storage. This section contains the following fields:
         
         + SistemaOperativo:
-
-                - Windows 10
-                - Windows Server 2019
-                - Ubuntu 16.04
-                - Ubuntu 18.04
-                - Ubuntu 20.04
-                - Debian 10 (Buster)
-                - Kali Linux 2020.04
-                - CentOS 8
-                - CentOS Stream
-                - RHEL 8 
-                - FortiOS 6
-        + Hostname
+            - Windows 10.
+            - Windows Server 2019.
+            - Ubuntu 16.04.
+            - Ubuntu 18.04.
+            - Ubuntu 20.04.
+            - Debian 10 (Buster).
+            - Kali Linux 2020.04.
+            - CentOS 8.
+            - CentOS Stream.
+            - RHEL 8.
+            - FortiOS 6.
+        + Hostname.
+        + TipoAmbiente:
+            - Windows. The accepted values are obtaining by mounting the ISO file in the host and reading the **install.wim** file. 
         
         **Example:**
 
