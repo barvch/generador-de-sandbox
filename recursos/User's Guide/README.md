@@ -8,30 +8,98 @@ This tool is a sandox generator for Hyper-V that allows you to create, configure
 
 This tool is built according to following flow:
 
-1. **Data validation**. Before virtual machine creation the tool validate every single field according minimun system requirements and services requirements. This section is blabla in three groups:
+* **Hyper-V Rol Check**. The tool validate if tool is running in a Windows Server 2019 environment and Hyper-V Role is installed in host, otherwise, it is installed and the host is rebooted, is necessary run the tool a second time.
 
-* General data. 
-* Dependent data.
-* Services. 
+* **Data validation**. Before virtual machine creation the tool validate every single field according following requirements:
+    
+    - General data. Data related with host machine available resources and file storage.
+    - Dependent data. Specific data for each operating system.
+    - Services. Specific data per service.
 
-2. **Data printing and confirmation**.
-3. **Hyper-V machine creation**.
-4. **Custom ISO creation**.
-5. **Operating system installation**.
-6. **Post-Installation running script**.
+> There are several values that are set over the validation flow, those values and specific information about each field are documented in [The input file] section.
+
+* **Data printing and confirmation**. The tool allow to check all data for each or all virtual machines before create them.
+* **Hyper-V machine creation**. Once one or all virtual machines are validated, hardware requirements are set with virtual hard drive exception.
+* **Custom ISO creation**. In this step, the ISO file specified by user is mounted in host and unattended files are customized and loaded within. The tool for ISO creation depends of each operating system:
+    - Windows. DISM.
+    - Linux/Unix. mkisofs.
+ 
+> Data that are set within unattended files:
+> * General data:
+>    - Hostname
+>    - Desktop Environment (Exceptions: Debian 10 and Kali Linux 2020.04)
+>    - Credentials:
+>        + User
+>        + Password
+>    - Interfaces:
+>        + IP
+>        + NetMask
+>        + Gateway
+>        + DNS
+> * Dependent Data
+>    - Activation Key (Windows Distributions)
+>    - Administrative interface (FortiOS 6)
+>    - Backup file (FortiOS 6)
+> * Default Values
+>    - Timezone. America/Mexico_City
+>    - OS language. English
+>    - Keyboard layout. Latin American 
+
+* **Operating system installation**. The hard drive with major capacity and ISO file are mounted, then, the virtual machine is started. The following operating systems needs user interaction because desktop environment is selected in this step:
+    - Debian 10 (Buster)
+    - Kali Linux 2020.04
+
+> The interfaces are set in this process with Ubuntu exception.
+
+* **Post-Installation running script**. Finally, 
+
+> This flow repeats itself for every single virtual machine to create.
 
 Technical specs can be found here.
 
-### The input file
+## The input file
 
+The **generador-de-sandbox/Configuracion/configuracion.json** file is the core of the tool, 
 
-## Before Start
+```JSON
+{
+    "Root": "E:\\SanboxTest",
+    "MaquinasVirtuales": [
+        {
+            "SistemaOperativo": "Windows 10",
+            "Hostname": "Contoso",
+            "TipoAmbiente": "Windows 10 Home",
+            "LlaveActivacion": "xxxx-xxxx-xxxx-xxxx-xxxx",
+            "DiscosVirtuales": [20],
+            "Procesadores": 2,
+            "RutaISO": "E:\\SanboxTest\\Win10_1909_English_x64.iso",
+            "MemoriaRAM": {
+                "Tipo": "Dynamic",
+                "Minima": 1.0,
+                "Maxima": 2.0
+            },
+            "Credenciales": {
+                "Usuario": "Barto",
+                "Contrasena": "hola12345.,"
+            },
+            "Interfaces": [{
+                "VirtualSwitch": {
+                    "Nombre": "SalidaInternet",
+                    "Tipo": "External",
+                    "AdaptadorRed": "Ethernet"
+                },
+                "Tipo": "Static",
+                "Nombre": "SalidaInternet",
+                "IP": "192.168.100.210",
+                "MascaraRed": "24",
+                "Gateway": "192.168.100.1",
+                "DNS": "8.8.8.8"
+            }
+      ]
+}
+```
 
-There are several considerations before install process:
-
-### Minimun System Requirements
-
-### Pre-Installation Requirements
+## Pre-Installation Requirements
 
 * **Linux Subsystem for Windows**
 
@@ -89,4 +157,5 @@ apt-get install dos2unix
 ### Blueprints
 
 [Download the Linux kernel update package]: <https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi>
-[minimun system requirements]: <https://github.com/barvch/generador-de-sandbox/tree/main/recursos/User's%20Guide#minimun-system-requirements>
+[minimun system requirements]: <#minimun-system-requirements>
+[The input file]: <#the-input-file>
