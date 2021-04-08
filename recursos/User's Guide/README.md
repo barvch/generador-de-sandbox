@@ -12,8 +12,8 @@ This tool is built according to following flow:
 
 * **Data validation**. Before virtual machine creation the tool validate every single field according following requirements:
     
-    - General data. Data related with host machine available resources and file storage.
-    - Dependent data. Specific data for each operating system.
+    - Generic values. Data related with host machine available resources and file storage.
+    - Dependent values. Specific data for each operating system.
     - Services. Specific data per service.
 
 > There are several values that are set over the validation flow, those values and specific information about each field are documented in [The input file] section.
@@ -89,36 +89,37 @@ The **generador-de-sandbox/Configuracion/configuracion.json** file is the core o
 * **Root**. This is the root folder of the project. This is the place in the system where all the files of the virtual machines will reside.
 * **MaquinasVirtuales**. This is the list and specifications of virtual machines that will be created. This field is built by three sections:
 
-    - **General data**. Data related with host machine available resources and file storage. This section contains the following fields:
+    - **Generic Values**. Data related with host machine available resources and file storage. This section contains the following fields:
 
 ```JSON
 {
-    "Root": "E:\\SanboxTest",
-    "MaquinasVirtuales": [
+    "Root": "C:\\Sanbox",
+    "MaquinasVirtuales": [ -> It's possible create more than one virtual machines in the same execution
         {
-            "SistemaOperativo": "Windows 10",
+            "SistemaOperativo": "Windows 10", -> 
             "Hostname": "Contoso",
             "TipoAmbiente": "Windows 10 Home",
-            "DiscosVirtuales": [20],
-            "Procesadores": 2,
-            "RutaISO": "E:\\SanboxTest\\Win10_1909_English_x64.iso",
+            "DiscosVirtuales": [20, 15],
+            "Procesadores": 4,
+            "RutaISO": "C:\\Sanbox\\Win10_1909_English_x64.iso",
             "MemoriaRAM": {
                 "Tipo": "Dynamic",
                 "Minima": 1.0,
                 "Maxima": 2.0
             },
             "Credenciales": {
-                "Usuario": "Barto",
-                "Contrasena": "hola12345.,"
+                "Usuario": "Usertest",
+                "Contrasena": "5uperS3cretP4ssw0rd"
             },
-            "Interfaces": [{
-                "VirtualSwitch": {
-                    "Nombre": "SalidaInternet",
-                    "Tipo": "External",
-                    "AdaptadorRed": "Ethernet"
+            "Interfaces": [
+                {
+                    "VirtualSwitch": {
+                        "Nombre": "InternetSwitch",
+                        "Tipo": "External",
+                        "AdaptadorRed": "Ethernet"
                 },
                 "Tipo": "Static",
-                "Nombre": "SalidaInternet",
+                "Nombre": "Internet",
                 "IP": "192.168.100.210",
                 "MascaraRed": "24",
                 "Gateway": "192.168.100.1",
@@ -128,7 +129,7 @@ The **generador-de-sandbox/Configuracion/configuracion.json** file is the core o
 }
 ```
 
-* Dependent data. Specific data for each operating system.
+* Dependent values. Specific data for each operating system.
 * Services. Specific data per service.
 
 > Technical specs can be found [here].
