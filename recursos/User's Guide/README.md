@@ -94,9 +94,9 @@ The **generador-de-sandbox/Configuracion/configuracion.json** file is the core o
 ```JSON
 {
     "Root": "C:\\Sanbox",
-    "MaquinasVirtuales": [ -> It's possible create more than one virtual machines in the same execution
+    "MaquinasVirtuales": [
         {
-            "SistemaOperativo": "Windows 10", -> 
+            "SistemaOperativo": "Windows 10",
             "Hostname": "Contoso",
             "TipoAmbiente": "Windows 10 Home",
             "DiscosVirtuales": [20, 15],
