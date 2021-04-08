@@ -21,7 +21,7 @@ This tool is built according to following flow:
 * **Data printing and confirmation**. The tool allow to check all data for each or all virtual machines before create them.
 * **Hyper-V machine creation**. Once one or all virtual machines are validated, hardware requirements are set with virtual hard drive exception.
 
-> Hardware that are set:
+> Hardware that is set:
 > * Amount and size of virtual disks.
 > * Number of processors.
 > * RAM memory:
@@ -84,9 +84,12 @@ This tool is built according to following flow:
 
 ## The input file
 
-The **generador-de-sandbox/Configuracion/configuracion.json** file is the core of the tool, 
+The **generador-de-sandbox/Configuracion/configuracion.json** file is the core of the tool and works in JSON format which contains the following data for virtual machines customization:
 
-> Technical specs can be found [here].
+* **Root**. This is the root folder of the project. This is the place in the system where all the files of the virtual machines will reside.
+* **MaquinasVirtuales**. This is the list and specifications of virtual machines that will be created. This field is built by three sections:
+
+    - **General data**. Data related with host machine available resources and file storage. This section contains the following fields:
 
 ```JSON
 {
@@ -96,7 +99,6 @@ The **generador-de-sandbox/Configuracion/configuracion.json** file is the core o
             "SistemaOperativo": "Windows 10",
             "Hostname": "Contoso",
             "TipoAmbiente": "Windows 10 Home",
-            "LlaveActivacion": "xxxx-xxxx-xxxx-xxxx-xxxx",
             "DiscosVirtuales": [20],
             "Procesadores": 2,
             "RutaISO": "E:\\SanboxTest\\Win10_1909_English_x64.iso",
@@ -125,6 +127,11 @@ The **generador-de-sandbox/Configuracion/configuracion.json** file is the core o
       ]
 }
 ```
+
+* Dependent data. Specific data for each operating system.
+* Services. Specific data per service.
+
+> Technical specs can be found [here].
 
 ## Pre-Installation Requirements
 
