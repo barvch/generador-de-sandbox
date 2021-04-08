@@ -26,7 +26,11 @@ function MoverBackup{
     New-Item "$directorio\cloudinit\openstack\content" -itemtype directory
     New-Item "$directorio\cloudinit\openstack\latest" -itemtype directory
 
-    Move-Item -Path $backup -Destination "$directorio\cloudinit\openstack\latest\user_data"
+    Add-Content -Path "$directorio\cloudinit\openstack\latest\user_data" -Value "config system admin"
+    Add-Content -Path "$directorio\cloudinit\openstack\latest\user_data" -Value "`trename admin to admin_old"
+    Add-Content -Path "$directorio\cloudinit\openstack\latest\user_data" -Value "`tdelete admin_old"
+    Add-Content -Path "$directorio\cloudinit\openstack\latest\user_data" -Value "end"  
+    (Get-Content $backup) | Add-Content -Path "$directorio\cloudinit\openstack\latest\user_data"
 
     $repo = (Get-Location).Path
     Set-Location "$directorio"
