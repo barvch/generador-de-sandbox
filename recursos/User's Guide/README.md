@@ -2,11 +2,16 @@
 
 This documentation guides sandbox generator tool's users through several topics in the system.
 
-## Requirements
+## About tool
 
-The tool needs the following packages to run properly.
+### Tool structure
+### The input file
 
-### Linux Subsystem for Windows 
+## Instalation and Configuration
+
+### Requirements installation
+
+* **Linux Subsystem for Windows**
 
 Enable the **Windows Subsystem for Linux** before installing any Linux Distribution for Windows. Open Powershell and running the following command:
 
@@ -25,17 +30,33 @@ Open PowerShell and run this command to set Windows Subsystem for Linux 2 as the
 ```Powershell
 wsl --set-default-version 2
 ```
-Open the Microsoft Store and select Ubuntu Distribution.
+Open the Microsoft Store and get the Ubuntu Distribution.
 
 <p align="center"><img src=./Images/Ubuntu.png height="60%" width="60%"></p>
 
+Open an Ubuntu console and create a new user. 
 
-### Whois
-### dos2unix
+<p align="center"><img src=./Images/UbuntuShell.png height="60%" width="60%"></p>
 
-## Instalation and Configuration
-Tool Download
+Once configured Windows Subsystem for Linux it's necesary install the following packages:
 
+* **whois**
+
+The **whois command** lists the information about the domain owner of the given domain, it's needed for **mkpasswd** package installation.
+
+```Bash
+apt-get install whois
+```
+
+* **dos2unix**
+
+The **dos2unix command** converts plain text files in Windows to Linux format.
+
+```Bash
+apt-get install dos2unix
+```
+
+### Post-Installation instructions
 
 ## Tutorials and examples
 
