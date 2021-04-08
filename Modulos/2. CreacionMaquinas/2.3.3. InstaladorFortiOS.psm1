@@ -30,6 +30,11 @@ function MoverBackup{
     Add-Content -Path "$directorio\cloudinit\openstack\latest\user_data" -Value "`trename admin to admin_old"
     Add-Content -Path "$directorio\cloudinit\openstack\latest\user_data" -Value "`tdelete admin_old"
     Add-Content -Path "$directorio\cloudinit\openstack\latest\user_data" -Value "end"  
+    
+    Add-Content -Path "$directorio\cloudinit\openstack\latest\user_data" -Value "config system interface"
+    Add-Content -Path "$directorio\cloudinit\openstack\latest\user_data" -Value "`tedit `"port1`""
+    Add-Content -Path "$directorio\cloudinit\openstack\latest\user_data" -Value "`tclear allowaccess"
+    Add-Content -Path "$directorio\cloudinit\openstack\latest\user_data" -Value "end"  
     (Get-Content $backup) | Add-Content -Path "$directorio\cloudinit\openstack\latest\user_data"
 
     $repo = (Get-Location).Path
