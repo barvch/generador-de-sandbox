@@ -4,12 +4,34 @@ This documentation guides sandbox generator tool's users through several topics 
 
 ## About tool
 
-### Tool structure
+This tool is a sandox generator for Hyper-V that allows you to create, configure and replicate a wide range of VMs in an unattended manner. The goal behind this project is to automate the process of creating and configuring both virtual machines and services using an input file that provides data for each VM indicated indicated within it. This way, mouting an infraestructure to create test enviroments for malware analisys or any other task, becomes really easy.
+
+This tool is built according to following flow:
+
+1. **Data validation**. Before virtual machine creation the tool validate every single field according minimun system requirements and services requirements. This section is blabla in three groups:
+
+* General data. 
+* Dependent data.
+* Services. 
+
+2. **Data printing and confirmation**.
+3. **Hyper-V machine creation**.
+4. **Custom ISO creation**.
+5. **Operating system installation**.
+6. **Post-Installation running script**.
+
+Technical specs can be found here.
+
 ### The input file
 
-## Instalation and Configuration
 
-### Requirements installation
+## Before Start
+
+There are several considerations before install process:
+
+### Minimun System Requirements
+
+### Pre-Installation Requirements
 
 * **Linux Subsystem for Windows**
 
@@ -38,7 +60,7 @@ Open an Ubuntu console and create a new user.
 
 <p align="center"><img src=./Images/UbuntuShell.png height="60%" width="60%"></p>
 
-Once configured Windows Subsystem for Linux it's necesary install the following packages:
+Once configured Windows Subsystem for Linux it's necessary install the following packages:
 
 * **whois**
 
@@ -56,6 +78,8 @@ The **dos2unix command** converts plain text files in Windows to Linux format.
 apt-get install dos2unix
 ```
 
+## Instalation and Configuration
+
 ### Post-Installation instructions
 
 ## Tutorials and examples
@@ -65,3 +89,4 @@ apt-get install dos2unix
 ### Blueprints
 
 [Download the Linux kernel update package]: <https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi>
+[minimun system requirements]: <#Minimun-System-Requirements>
