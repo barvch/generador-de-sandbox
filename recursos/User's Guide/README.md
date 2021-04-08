@@ -27,5 +27,5 @@ Tool Download
 
 ### Blueprints
 
-[Update to the latest Windows version]: <- "ms-settings:windowsupdate">
+[Update to the latest Windows version]: <- "#msg=greeting">
 <ms-settings:windowsupdate>
