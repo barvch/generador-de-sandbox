@@ -91,7 +91,20 @@ The **generador-de-sandbox/Configuracion/configuracion.json** file is the core o
 
     - **Generic values**. Data related with host machine available resources and file storage. This section contains the following fields:
         
-        + ssdsd
+        + SistemaOperativo:
+
+                - Windows 10
+                - Windows Server 2019
+                - Ubuntu 16.04
+                - Ubuntu 18.04
+                - Ubuntu 20.04
+                - Debian 10 (Buster)
+                - Kali Linux 2020.04
+                - CentOS 8
+                - CentOS Stream
+                - RHEL 8 
+                - FortiOS 6
+        + Hostname
         
         **Example:**
 
@@ -145,9 +158,9 @@ The **generador-de-sandbox/Configuracion/configuracion.json** file is the core o
         
         **Example:**
 
-> Technical specs can be found [here].
-
 This tool provides some examples of valid [input files], which can serve as a reference and can be loaded directly into the tool by making the corresponding modifications for the environment you want to create. You can find templates to create VMs specifically of each supported operating system, as well as other templates creating a whole infrastructure of VMs.
+
+> Technical specs about every single value can be found [here].
 
 ## Pre-Installation Requirements
 
