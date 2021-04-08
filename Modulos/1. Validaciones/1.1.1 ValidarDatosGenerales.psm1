@@ -142,7 +142,7 @@ function ValidarInterfaces { param ($interfaces, $hostname, $os)
             }
             $interfacesNombreCheck = ValidarCadenas -campo "Interfaces.Nombre" -valor $interfaz.Nombre -validacionCaracter "alfaNum2" -validacionLongitud "longitud1" -obligatorio $true
             $nombres += $interfacesNombreCheck
-            if($so -match "FortiOS 6"){
+            if($os -eq "FortiOS 6"){
                 $interfazCheck = [ordered] @{"VirtualSwitch" = [ordered] @{"Nombre" = $VSNombreCheck; "Tipo" = $VSTipoCheck; "AdaptadorRed" = $adaptadorRedCheck}; "Tipo" = $tipoInterfazCheck;"Nombre" = $interfacesNombreCheck; "IP" = $ipCheck; "MascaraRed" = $mascaraCheck;"Gateway" = $gatewayCheck; "DNS" = $dnsCheck; "Administrativa" = $interfaz.Administrativa}
             }
             else{
