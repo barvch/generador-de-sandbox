@@ -89,50 +89,65 @@ The **generador-de-sandbox/Configuracion/configuracion.json** file is the core o
 * **Root**. This is the root folder of the project. This is the place in the system where all the files of the virtual machines will reside.
 * **MaquinasVirtuales**. This is the list and specifications of virtual machines that will be created. This field is built by three sections:
 
-    - **Generic Values**. Data related with host machine available resources and file storage. This section contains the following fields:
+    - **Generic values**. Data related with host machine available resources and file storage. This section contains the following fields:
+        
+        + ssdsd
+        
+        **Example:**
 
-```JSON
-{
-    "Root": "C:\\Sanbox",
-    "MaquinasVirtuales": [
+        ```JSON
         {
-            "SistemaOperativo": "Windows 10",
-            "Hostname": "Contoso",
-            "TipoAmbiente": "Windows 10 Home",
-            "DiscosVirtuales": [20, 15],
-            "Procesadores": 4,
-            "RutaISO": "C:\\Sanbox\\Win10_1909_English_x64.iso",
-            "MemoriaRAM": {
-                "Tipo": "Dynamic",
-                "Minima": 1.0,
-                "Maxima": 2.0
-            },
-            "Credenciales": {
-                "Usuario": "Usertest",
-                "Contrasena": "5uperS3cretP4ssw0rd"
-            },
-            "Interfaces": [
+            "Root": "C:\\Sanbox",
+            "MaquinasVirtuales": [
                 {
-                    "VirtualSwitch": {
-                        "Nombre": "InternetSwitch",
-                        "Tipo": "External",
-                        "AdaptadorRed": "Ethernet"
-                },
-                "Tipo": "Static",
-                "Nombre": "Internet",
-                "IP": "192.168.100.210",
-                "MascaraRed": "24",
-                "Gateway": "192.168.100.1",
-                "DNS": "8.8.8.8"
-            }
-      ]
-}
-```
+                    "SistemaOperativo": "Windows 10",
+                    "Hostname": "Contoso",
+                    "TipoAmbiente": "Windows 10 Home",
+                    "DiscosVirtuales": [20, 15],
+                    "Procesadores": 4,
+                    "RutaISO": "C:\\Sanbox\\Win10_1909_English_x64.iso",
+                    "MemoriaRAM": {
+                        "Tipo": "Dynamic",
+                        "Minima": 1.0,
+                        "Maxima": 2.0
+                    },
+                    "Credenciales": {
+                        "Usuario": "Usertest",
+                        "Contrasena": "5uperS3cretP4ssw0rd"
+                    },
+                    "Interfaces": [
+                        {
+                            "VirtualSwitch": {
+                                "Nombre": "InternetSwitch",
+                                "Tipo": "External",
+                                "AdaptadorRed": "Ethernet"
+                        },
+                        "Tipo": "Static",
+                        "Nombre": "Internet",
+                        "IP": "192.168.100.210",
+                        "MascaraRed": "24",
+                        "Gateway": "192.168.100.1",
+                        "DNS": "8.8.8.8"
+                    }
+              ]
+        }
+        ```
+    
+    - **Dependent values**. Specific data for each operating system.
+        
+        + ssdsd
+        
+        **Example:**
+    
+    - **Services**. Specific data per service.
 
-* Dependent values. Specific data for each operating system.
-* Services. Specific data per service.
+        + ssdsd
+        
+        **Example:**
 
 > Technical specs can be found [here].
+
+This tool provides some examples of valid [input files], which can serve as a reference and can be loaded directly into the tool by making the corresponding modifications for the environment you want to create. You can find templates to create VMs specifically of each supported operating system, as well as other templates creating a whole infrastructure of VMs.
 
 ## Pre-Installation Requirements
 
@@ -189,10 +204,9 @@ apt-get install dos2unix
 
 ### Demos
 
-### Blueprints
-
 [Download the Linux kernel update package]: <https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi>
 [minimun system requirements]: <#minimun-system-requirements>
 [The input file]: <#the-input-file>
 [here]: <>
 [Post-Installation instructions]: <#post-installation-instructions>
+[input files]: <./Configuracion/Plantillas>
