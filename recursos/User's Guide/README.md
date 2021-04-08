@@ -89,4 +89,4 @@ apt-get install dos2unix
 ### Blueprints
 
 [Download the Linux kernel update package]: <https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi>
-[minimun system requirements]: <#Minimun-System-Requirements>
+[minimun system requirements]: <https://github.com/barvch/generador-de-sandbox/tree/main/recursos/User's%20Guide#minimun-system-requirements>
