@@ -206,52 +206,150 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
         {
             "Root": "C:\\Sanbox",
             "MaquinasVirtuales": [
+            {
+                "SistemaOperativo": "Windows 10",
+                "Hostname": "Contoso",
+                "TipoAmbiente": "Windows 10 Home",
+                "DiscosVirtuales": [20, 15],
+                "Procesadores": 4,
+                "RutaISO": "C:\\Sanbox\\Win10_1909_English_x64.iso",
+                "MemoriaRAM": {
+                    "Tipo": "Dynamic",
+                    "Minima": 1.0,
+                    "Maxima": 2.0
+                },
+                "Credenciales": {
+                    "Usuario": "Usertest",
+                    "Contrasena": "5uperS3cretP4ssw0rd"
+                },
+                "Interfaces": [
                 {
-                    "SistemaOperativo": "Windows 10",
-                    "Hostname": "Contoso",
-                    "TipoAmbiente": "Windows 10 Home",
-                    "DiscosVirtuales": [20, 15],
-                    "Procesadores": 4,
-                    "RutaISO": "C:\\Sanbox\\Win10_1909_English_x64.iso",
-                    "MemoriaRAM": {
-                        "Tipo": "Dynamic",
-                        "Minima": 1.0,
-                        "Maxima": 2.0
+                    "VirtualSwitch": {
+                        "Nombre": "InternetSwitch",
+                        "Tipo": "External",
+                        "AdaptadorRed": "Ethernet"
                     },
-                    "Credenciales": {
-                        "Usuario": "Usertest",
-                        "Contrasena": "5uperS3cretP4ssw0rd"
-                    },
-                    "Interfaces": [
-                        {
-                            "VirtualSwitch": {
-                                "Nombre": "InternetSwitch",
-                                "Tipo": "External",
-                                "AdaptadorRed": "Ethernet"
-                        },
-                        "Tipo": "Static",
-                        "Nombre": "Internet",
-                        "IP": "192.168.100.210",
-                        "MascaraRed": "24",
-                        "Gateway": "192.168.100.1",
-                        "DNS": "8.8.8.8"
-                    }
-              ]
+                    "Tipo": "Static",
+                    "Nombre": "Internet",
+                    "IP": "192.168.100.210",
+                    "MascaraRed": "24",
+                    "Gateway": "192.168.100.1",
+                    "DNS": "8.8.8.8"
+                }
+            ]
         }
         ```
-    
-    - **Dependent values**. Specific data for each operating system.
-        
-        + ssdsd
-        
-        **Example:**
-    
-    - ####**Services**. Specific data per service.
+    </details>
 
-        + ssdsd
+    - <details>
+        <summary>Dependent values. Specific data for each operating system.</summary>
         
-        **Example:**
-</details>
+        ###
+        + <details>
+            <summary>Windows 10.</summary>
+            
+            ###
+            **Example:**
+
+            ```JSON
+            {
+                "Root": "C:\\Sanbox",
+                "MaquinasVirtuales": [
+                    {
+                        "Generic Values": "Data",
+                        "LlaveActivacion": "xxxx-xxxx-xxxx-xxxx-xxxx",
+                        "RutaMSI": ["C:\\Sanbox\\firefox.msi", "C:\\Sanbox\\chrome.msi"]
+                    }
+                ]
+            }
+            ```
+            
+        + <details>
+            <summary>Windows Server 2019.</summary>
+            
+            ###
+            **Example:**
+
+            ```JSON
+            {
+                "Root": "C:\\Sanbox",
+                "MaquinasVirtuales": [
+                    {
+                        "Generic Values": "Data",
+                        "LlaveActivacion": "xxxx-xxxx-xxxx-xxxx-xxxx"
+                    }
+                ]
+            }
+            ```
+        
+        + <details>
+            <summary>FortiOS 6.</summary>
+            
+            ###
+            **Example:**
+
+            ```JSON
+            {
+                "Root": "C:\\Sanbox",
+                "MaquinasVirtuales": [
+                    {
+                        "Generic Values": "Data",
+                        "InterfazAdministrativa": "Internet",
+                        "ArchivoBackup": "C:\\Sanbox\\fortios.qcow2"
+                    }
+                ]
+             }
+             ```
+        
+    </details>
+
+    - <details>
+        <summary>Services. Specific data per service.</summary>
+    
+        ###
+        + <details>
+            <summary>Windows Server 2019.</summary>
+    
+            ###
+            **Example:**
+
+            ```JSON
+            {
+                "Root": "C:\\Sanbox",
+                "MaquinasVirtuales": [
+                    {
+                        "Generic Values": "Data",
+                        "Dependent Values": "Data",
+                        "Services": [
+                            
+                        ]
+                    }
+                ]
+            }
+            ```
+
+        + <details>
+            <summary>Linux/Unix.</summary>
+    
+            ###
+            **Example:**
+
+            ```JSON
+            {
+                "Root": "C:\\Sanbox",
+                "MaquinasVirtuales": [
+                    {
+                        "Generic Values": "Data",
+                        "Dependent Values": "Data",
+                        "Services": [
+                            
+                        ]
+                    }
+                ]
+            }   
+            ```
+
+    </details>
 
 This tool provides some examples of valid [input files], which can serve as a reference and can be loaded directly into the tool by making the corresponding modifications for the environment you want to create. You can find templates to create VMs specifically of each supported operating system, as well as other templates creating a whole infrastructure of VMs.
 
