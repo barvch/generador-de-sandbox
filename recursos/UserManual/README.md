@@ -84,7 +84,7 @@ This tool is built according to following flow:
 
 ## The input file
 
-The **generador-de-sandbox/Configuracion/configuracion.json** file is the core of the tool and works in JSON format which contains the following data for virtual machines customization:
+The **/Configuracion/configuracion.json** file is the core of the tool and works in JSON format which contains the following data for virtual machines customization:
 
 * **Root**. This is the root folder of the project. This is the place in the system where all the files of the virtual machines will reside.
 * **MaquinasVirtuales**. This is the list and specifications of virtual machines that will be created. This field is built by three sections:

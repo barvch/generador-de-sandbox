@@ -4,6 +4,8 @@
 
 * This tool is a sandox generator for Hyper-V that allows you to create, configure and replicate a wide range of VMs in an unattended manner. The goal behind this project is to automate the process of creating and configuring both virtual machines and services using an input file that provides data for each VM indicated indicated within it. This way, mouting an infraestructure to create test enviroments for malware analisys or any other task, becomes really easy.
 
+* In the **[User Guide]** You can find a much longer and detailed documentation about how this tool works. Please read the guide in order to understand the requirements and workflow of the tool, as well of more relevant information of what you can do with this tool.
+
 ### OS Pool
 
 This is the list of current OS supported by the tool:
@@ -33,24 +35,25 @@ This is the list of current OS supported by the tool:
 
 ### Default Values in the tool
 
-* The timezone used for all the kickstart files used in Linux, the XML used in Windows and services configuration, is **America/Mexico_City**
+* The **timezone** used for all the kickstart files used in Linux, the XML used in Windows and services configuration, is **America/Mexico_City**
 
-* The default OS language for all the VMs is **English**
+* The default **OS language** for all the VMs is **English**
 
-* The default keyboard layout for all the VMs is **Latin American**
+* The default **keyboard layout** for all the VMs is **Latin American**
 
 
 
 ## The input file
 
-This tool works from an input file in JSON format, which contains the following data:
+Briefly, this tool works reading a JSON file located at **/Configuracion/configuracion.json**, which contains the following data:
 
-* **Root** - This is the root folder of the project. This is the place in the system where all the files of the virtual machines will reside.
-* **VMs** - This is the list and specifications of VMs that will be created.
+* **Root** - The root folder of the project. This is the place in the Hyper-V host where all the files of the virtual machines and files needed by this tool will reside.
+* **VMs** - The list and specifications foreach VM that will be created.
 
-This tool provides some [examples of valid input files], which can serve as a reference and can be loaded directly into the tool by making the corresponding modifications for the environment you want to create. You can find templates to create VMs specifically of each supported operating system, as well as other templates creating a whole infrastructure of VMs.
+> You can find some [examples of valid input files], which can serve as a reference and can be loaded directly into the tool by making the corresponding modifications for the environment you want to create. 
+> You'll find templates to create VMs specifically of each supported operating system, as well as other templates creating a whole infrastructure of VMs.
 
-In the VMs section, there are a number of values required by the tool to work, which are detailed below:
+In the VMs section, there are a number of values required by the tool to work, you need/can supply **Generic Values**, **Invidiual Values** and **Services details**. All this values which are briefly detailed below:
 
 ### Generic Values
 
@@ -122,19 +125,9 @@ After the system reboots, by default all interfaces are down; to enable an inter
 ifup eth0
 ```
 
-## Videos
-
-* Create a valid JSON input file:
-
-    * https://drive.google.com/file/d/1F-kv7awZ0BfdEEHCnjH5ICOtm8Yp7JoA/view?usp=sharing
-
-* Run the tool to test the JSON file created:
-
-    * https://drive.google.com/file/d/1rf91jSrD6FEsrO-s-RIStoBLzxlkfeel/view?usp=sharing
-
-
 
 [here]: <https://docs.google.com/spreadsheets/d/13qQsPp08ocH_j-whSafJKate7DskU9h4aBCn-lr3qTU/edit#gid=0s>
 [Linux Subsystem for Windows]: <https://docs.microsoft.com/en-us/windows/wsl/install-win10> 
 [examples of valid input files]: <https://github.com/barvch/generador-de-sandbox/tree/main/Configuracion/Plantillas>
 [servicios]: <https://docs.google.com/spreadsheets/d/13qQsPp08ocH_j-whSafJKate7DskU9h4aBCn-lr3qTU/edit#gid=492063908>
+[User Guide]: </Recursos/UserManual>
