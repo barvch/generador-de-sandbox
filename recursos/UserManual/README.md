@@ -138,33 +138,57 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
                 + Static.
                     - Memoria.
                 + Dynamic.
+                
                     - Minima.
+                    
                     - Maxima.
+                    
         + Credenciales.
             - Usuario.
             - Contrasena.
-        + Interfaces. Multiple interfaces are allowed.
+        + <details>
+            <summary>Interfaces. Multiple interfaces are allowed.</summary>
+        
+            ###
             - VirtualSwitch. Each interface have a virtual switch, it can be unique or shared.
+
                 + Nombre.
+
                 + Tipo:
+
                     - External. Bridges the virtual switch to physic network adapter.
+
                     - Internal. Create a virtual LAN.
+
                     - Private. Isolates the virtual switch from network.
+
                 + ApadaptadorRed. Name of physical network adapter.
+
                 > To know the physical network adapters available open Powershell and run the following command:
                 > ```Powershell
                 > Get-NetAdapter -Physical
                 > ```
                 > The physical network adapter must be in *Up* state.
+
             - Nombre.
+
             - Tipo. A value must be set which has its own dependent fields:
+
                 + Static:
+
                     - IP.
+
                     - MascaraRed.
+
                     - Gateway. Optional.
+
                     - DNS. Optional.
+
                 > If a service is required at least one interface must be set as static, please check [Services] in this very section for more information about this requirement.
+
                 + DHCP
+
+        </details>           
         
         **Example:**
 
