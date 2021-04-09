@@ -99,6 +99,21 @@ The workflow of the tool is the following:
 
 The **/Configuracion/configuracion.json** file is the core of the tool and works in JSON format which contains the following data for virtual machines customization:
 
+```JSON
+{
+    "Root": "C:\\Sandbox",
+    "MaquinasVirtuales": [
+        {
+            "Generic Values": "Data",
+            "Dependent Values": "Data",
+            "Services": {
+                "Service": "Data"
+            }
+        }
+    ]
+}
+```
+        
 * **Root**. This is the root folder of the project. This is the place in the system where all the files of the virtual machines will reside.
 * **MaquinasVirtuales**. This is the list and specifications of virtual machines that will be created. This field is built by three sections:
 
@@ -297,48 +312,38 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
     - <details>
         <summary>Services. Specific data per service.</summary>
     
-        ###
+        ###              
+
         + <details>
-            <summary>Windows Server 2019.</summary>
-    
+            <summary>Remote Administration.</summary>
+            
+            ###
+            * Windows. RDP.
+            
             **Example:**
 
             ```JSON
-            {
-                "Root": "C:\\Sandbox",
-                "MaquinasVirtuales": [
-                    {
-                        "Generic Values": "Data",
-                        "Dependent Values": "Data",
-                        "Services": [
-                            
-                        ]
-                    }
-                ]
+            "Servicios": {
+                "AdministracionRemota": "RDP",
             }
             ```
-
-        + <details>
-            <summary>Linux/Unix.</summary>
-    
-            ###
+            
+            * Linux/Unix. 
+            
+                > - AdministracionRemota. SSH.
+                > - Puerto. It doesn´t allow well known ports.
+            
             **Example:**
 
             ```JSON
-            {
-                "Root": "C:\\Sandbox",
-                "MaquinasVirtuales": [
-                    {
-                        "Generic Values": "Data",
-                        "Dependent Values": "Data",
-                        "Services": [
-                            
-                        ]
-                    }
-                ]
-            }   
+            "Servicios": {
+                "AdministracionRemota": "SSH",
+                "Puerto": "1234"
+            }
             ```
-
+            
+            > If not data is provide for remote administration, this is automatically configured for each SO.
+        
     </details>
 
 This tool provides some examples of valid [input files], which can serve as a reference and can be loaded directly into the tool by making the corresponding modifications for the environment you want to create. You can find templates to create VMs specifically of each supported operating system, as well as other templates creating a whole infrastructure of VMs.
