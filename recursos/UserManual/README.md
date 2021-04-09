@@ -126,13 +126,13 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
             <summary>TipoAmbiente. Desktop environment,the accepted values depends of each OS.</summary>
             
             ###
-            - Windows. Reading of **install.wim** file by mounting the ISO file in the host.
-            - Ubuntu family. Ubuntu Desktop. 
-            - Debian 10 (Buster) and Kali Linux 2020.04. This value is provided until SO installation process.
-            - CentOS 8/Stream and RHEL 8:
-                + Core
-                + Gnome
-                + KDE
+            > - Windows. Reading of **install.wim** file by mounting the ISO file in the host.
+            > - Ubuntu family. Ubuntu Desktop. 
+            > - Debian 10 (Buster) and Kali Linux 2020.04. This value is provided until SO installation process.
+            > - CentOS 8/Stream and RHEL 8:
+            >   + Core
+            >   + Gnome
+            >   + KDE
         </details>
         
         + DiscorVirtuales. Total amount and size, the values are set into an array.
@@ -141,17 +141,25 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
         
         + RutaISO. ISO file location.
         
-        + MemoriaRAM.
-            - Tipo. A value must be set which has its own dependent fields:
-                + Static.
-                    - Memoria.
-                + Dynamic.
-                    - Minima.
-                    - Maxima.
+        + <details>
+            <summary>MemoriaRAM.</summary>
+            
+            ###
+            > - Tipo. A value must be set which has its own dependent fields:
+            >    + Static.
+            >       - Memoria.
+            >   + Dynamic.
+            >       - Minima.
+            >       - Maxima.
+        </details>
+    
+        + <details>
+            <summary>Credenciales.</summary>
 
-        + Credenciales.
-            - Usuario.
-            - Contrasena.
+            ###
+            > - Usuario.
+            > - Contrasena.
+        </details>
         
         + <details>
             <summary>Interfaces. Multiple interfaces are allowed.</summary>
@@ -177,8 +185,7 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
                 > ```
                 > The physical network adapter must be in *Up* state.
 
-            </details>
-
+            
             - Nombre.
 
             - Tipo. A value must be set which has its own dependent fields:
