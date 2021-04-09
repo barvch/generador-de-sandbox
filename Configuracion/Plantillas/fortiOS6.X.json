@@ -3,10 +3,9 @@
     "MaquinasVirtuales": [
         {
             "SistemaOperativo": "FortiOS 6",
-            "TipoAmbiente": "Xfce",
             "Hostname": "cromos",
             "DiscosVirtuales": [20],
-            "Procesadores": 2,
+            "Procesadores": 1,
             "MemoriaRAM": {
                 "Tipo": "Static",
                 "Memoria": 1.0
@@ -29,25 +28,23 @@
                     "MascaraRed": "24",
                     "Gateway": "192.168.0.1",
                     "DNS": "8.8.8.8"
-                },
-			{
+                }, {
                     "VirtualSwitch": {
                         "Nombre": "PruebaPrivado",
-                        "Tipo": "Internal"        
-            },
+                        "Tipo": "Internal"
+                    },
                     "Administrativa":false,
                     "Tipo": "Static",
-                    "Nombre": "SalidaLAN",
-                    "IP": "192.168.0.80",
+                    "Nombre": "Static",
+                    "IP": "192.168.1.80",
                     "MascaraRed": "24",
-                    "Gateway": "192.168.0.1",
+                    "Gateway": "192.168.1.1",
                     "DNS": "8.8.8.8"
-                }
-            ],
+                }           ],
             "Servicios": {
 			},
-		 "RutaBackup":"C:\\Users\\Administrator\\Downloads\\FortiOS_6-4_1828_202103211655.conf",
-		"RutaVHD":"C:\\Users\\Administrator\\Desktop\\FortiOS\\Virtual Hard Disks\\fortios.vhd"
+		 "RutaBackup":"",
+		"RutaVHD":"C:\\Users\\Administrator\\Desktop\\VMPrueba\\fortios.vhd"
         }
     ]
 }
