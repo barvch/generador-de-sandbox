@@ -26,6 +26,7 @@ The workflow of the tool is the following:
     <details>
         <summary>Hardware that is set</summary>
 
+    ###
     >   * Amount and size of virtual disks.
     >   * Number of processors.
     >   * RAM memory:
@@ -52,7 +53,7 @@ The workflow of the tool is the following:
     <details>
         <summary>Data that are set within unattended files</summary>
     
-
+    ###
     > * General data:
     >    - Hostname.
     >    - Desktop Environment (Exceptions: Debian 10 and Kali Linux 2020.04).
@@ -77,17 +78,18 @@ The workflow of the tool is the following:
 * **Operating system installation**.The higher capacity hard disk and ISO file are mounted inside the virtual machine, and then the machine is initialized and booted. The following operating systems need user interaction to enter the type of environment you want within the machine:
 
     - Debian 10 (Buster).
+
     - Kali Linux 2020.04.
 
-> **NOTE**: At this point, the interface config is also set within the VM, but in the particular case of any VM running an Ubuntu flavor, the config is set during the post-install section. For more information, please read [Post-Installation instructions].
+    > **NOTE**: At this point, the interface config is also set within the VM, but in the particular case of any VM running an Ubuntu flavor, the config is set during the post-install section. For more information, please read [Post-Installation instructions].
 
 * **Post-Installation running script**: A series of scripts and other files are created depending of the configuration of serivices and so on that has been entered within the input file. These scripts run automatically after the installation is complete and install and take care of installing and configuring all the services that have been specified for the machine.
 
-> Exceptions: 
-> * Debian 10 Buster.
-> * Kali Linux 20.04.
-> 
-> Please check [Post-Installation instructions] for more information.
+    > Exceptions: 
+    > * Debian 10 Buster.
+    > * Kali Linux 20.04.
+    > 
+    > Please check [Post-Installation instructions] for more information.
 
 **This flow repeats itself for every single virtual machine to create.**
 
@@ -99,21 +101,23 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
 * **MaquinasVirtuales**. This is the list and specifications of virtual machines that will be created. This field is built by three sections:
 
     - **Generic values**. Data related with host machine available resources and file storage. This section contains the following fields:
-        + <details>
+
+         <details>
             <summary>SistemaOperativo.</summary>
-    
-                - Windows 10.
-                - Windows Server 2019.
-                - Ubuntu 16.04.
-                - Ubuntu 18.04.
-                - Ubuntu 20.04.
-                - Debian 10 (Buster).
-                - Kali Linux 2020.04.
-                - CentOS 8.
-                - CentOS Stream.
-                - RHEL 8.
-                - FortiOS 6.
-        </details>
+   
+         ###
+            - Windows 10.
+            - Windows Server 2019.
+            - Ubuntu 16.04.
+            - Ubuntu 18.04.
+            - Ubuntu 20.04.
+            - Debian 10 (Buster).
+            - Kali Linux 2020.04.
+            - CentOS 8.
+            - CentOS Stream.
+            - RHEL 8.
+            - FortiOS 6.
+         </details>
     
         + Hostname.
         + TipoAmbiente. Desktop environment,the accepted values depends of each OS:
