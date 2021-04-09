@@ -211,7 +211,7 @@ apt-get install dos2unix
 
 ## Instalation and Configuration
 
-### Post-Installation instructions
+## Post-Installation instructions
 
 ## Tutorials and examples
 
