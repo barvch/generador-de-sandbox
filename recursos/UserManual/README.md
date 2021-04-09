@@ -103,11 +103,10 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
 * **MaquinasVirtuales**. This is the list and specifications of virtual machines that will be created. This field is built by three sections:
 
     - **Generic values**. Data related with host machine available resources and file storage. This section contains the following fields:
-
-         <details>
+        + <details>
             <summary>SistemaOperativo.</summary>
-   
-         ###
+  
+            ###
             - Windows 10.
             - Windows Server 2019.
             - Ubuntu 16.04.
@@ -119,7 +118,7 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
             - CentOS Stream.
             - RHEL 8.
             - FortiOS 6.
-         </details>
+        </details>
     
         + Hostname.
         + TipoAmbiente. Desktop environment,the accepted values depends of each OS:
