@@ -399,6 +399,33 @@ apt-get install dos2unix
 
 ## Instalation and Configuration
 
+Once all the requirements mentioned in the previous section are satisfied, we can start using the tool following the next steps:
+
+1. Download the tool repository in the Hyper-V Host.
+2. Open a Powershell session where the root of the tool is located.
+3. Create or load into the input file (located at /Configuracion/configuracion.json) the configuration corresponding to the infrastructure to be mounted and save the file.
+4. Execute the following command in order to start the validation of the input file:
+    ```Powershell
+    .\main.ps1
+    ```
+5. If the entered input file passes validation of all entered fields, the following menu will be presented:
+    
+    <p align="center"><img src=./Images/menu1.png height="60%" width="60%"></p>
+    
+    > If the tools finds an error in the input file, it will stop the execution and print the error found in the file. You must fix the error and then, repeat step 3.
+
+    In the first option in the menu presented, you can list all the VMs passed in the input file and select one to see details of it and install that VM in particular:
+
+    <p align="center"><img src=./Images/menu2.png height="60%" width="60%"></p>
+
+    <p align="center"><img src=./Images/menu3.png height="60%" width="60%"></p>
+
+    If the second option is selected, details from all the VMs are displayed and after the confirmation, the installation of all the VMs will start:
+
+    <p align="center"><img src=./Images/menu4.png height="60%" width="60%"></p>
+
+    <p align="center"><img src=./Images/menu5.png height="60%" width="60%"></p>
+
 ## Post-Installation instructions
 
 ## Tutorials and examples
