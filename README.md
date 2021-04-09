@@ -130,4 +130,4 @@ ifup eth0
 [Linux Subsystem for Windows]: <https://docs.microsoft.com/en-us/windows/wsl/install-win10> 
 [examples of valid input files]: <https://github.com/barvch/generador-de-sandbox/tree/main/Configuracion/Plantillas>
 [servicios]: <https://docs.google.com/spreadsheets/d/13qQsPp08ocH_j-whSafJKate7DskU9h4aBCn-lr3qTU/edit#gid=492063908>
-[User Guide]: </Recursos/UserManual>
+[User Guide]: </Recursos/UserManual/README.md>
