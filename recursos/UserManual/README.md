@@ -58,7 +58,7 @@ The workflow of the tool is the following:
     >    - Hostname.
     >    - Desktop Environment (Exceptions: Debian 10 and Kali Linux 2020.04).
     >    - Credentials:
-        >        + User.
+    >        + User.
     >        + Password.
     >    - Network interfaces:
     >        + IP addresses.
@@ -204,7 +204,7 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
 
         ```JSON
         {
-            "Root": "C:\\Sanbox",
+            "Root": "C:\\Sandbox",
             "MaquinasVirtuales": [
             {
                 "SistemaOperativo": "Windows 10",
@@ -212,7 +212,7 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
                 "TipoAmbiente": "Windows 10 Home",
                 "DiscosVirtuales": [20, 15],
                 "Procesadores": 4,
-                "RutaISO": "C:\\Sanbox\\Win10_1909_English_x64.iso",
+                "RutaISO": "C:\\Sandbox\\Win10_1909_English_x64.iso",
                 "MemoriaRAM": {
                     "Tipo": "Dynamic",
                     "Minima": 1.0,
@@ -246,37 +246,25 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
         
         ###
         + <details>
-            <summary>Windows 10.</summary>
+            <summary>Windows.</summary>
+            
+            - LlaveActivacion. Windows Activation Key.
+            
+            - RutaMSI. MSI file location, the values are set into an array.
+
+                > This field only is required by Windows 10.
             
             ###
             **Example:**
 
             ```JSON
             {
-                "Root": "C:\\Sanbox",
+                "Root": "C:\\Sandbox",
                 "MaquinasVirtuales": [
                     {
                         "Generic Values": "Data",
                         "LlaveActivacion": "xxxx-xxxx-xxxx-xxxx-xxxx",
-                        "RutaMSI": ["C:\\Sanbox\\firefox.msi", "C:\\Sanbox\\chrome.msi"]
-                    }
-                ]
-            }
-            ```
-            
-        + <details>
-            <summary>Windows Server 2019.</summary>
-            
-            ###
-            **Example:**
-
-            ```JSON
-            {
-                "Root": "C:\\Sanbox",
-                "MaquinasVirtuales": [
-                    {
-                        "Generic Values": "Data",
-                        "LlaveActivacion": "xxxx-xxxx-xxxx-xxxx-xxxx"
+                        "RutaMSI": ["C:\\Sandbox\\firefox.msi", "C:\\Sandbox\\chrome.msi"]
                     }
                 ]
             }
@@ -290,12 +278,12 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
 
             ```JSON
             {
-                "Root": "C:\\Sanbox",
+                "Root": "C:\\Sandbox",
                 "MaquinasVirtuales": [
                     {
                         "Generic Values": "Data",
                         "InterfazAdministrativa": "Internet",
-                        "ArchivoBackup": "C:\\Sanbox\\fortios.qcow2"
+                        "ArchivoBackup": "C:\\Sandbox\\fortios.qcow2"
                     }
                 ]
              }
@@ -315,7 +303,7 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
 
             ```JSON
             {
-                "Root": "C:\\Sanbox",
+                "Root": "C:\\Sandbox",
                 "MaquinasVirtuales": [
                     {
                         "Generic Values": "Data",
@@ -336,7 +324,7 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
 
             ```JSON
             {
-                "Root": "C:\\Sanbox",
+                "Root": "C:\\Sandbox",
                 "MaquinasVirtuales": [
                     {
                         "Generic Values": "Data",
