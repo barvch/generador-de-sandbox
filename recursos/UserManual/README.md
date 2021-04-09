@@ -46,29 +46,29 @@ The workflow of the tool is the following:
     - *Windows*: DISM.
     - *Linux/Unix and FortiOS*: mkisofs.
     
-<details>
-    <summary>Data that are set within unattended files</summary>
+    <details>
+        <summary>Data that are set within unattended files</summary>
 
-> * General data:
->    - Hostname.
->    - Desktop Environment (Exceptions: Debian 10 and Kali Linux 2020.04).
->    - Credentials:
-    >        + User.
->        + Password.
->    - Network interfaces:
->        + IP addresses.
->        + Netmasks.
->        + Gateways.
->        + DNS's.
-> * Dependent Data:
->    - Activation Key (Windows Distributions).
->    - Administrative interface (FortiOS 6).
->    - Backup file (FortiOS 6).
-> * Default Values:
->    - Timezone. America/Mexico_City.
->    - OS language. English.
->    - Keyboard layout. Latin American.
-</details>
+    > * General data:
+    >    - Hostname.
+    >    - Desktop Environment (Exceptions: Debian 10 and Kali Linux 2020.04).
+    >    - Credentials:
+        >        + User.
+    >        + Password.
+    >    - Network interfaces:
+    >        + IP addresses.
+    >        + Netmasks.
+    >        + Gateways.
+    >        + DNS's.
+    > * Dependent Data:
+    >    - Activation Key (Windows Distributions).
+    >    - Administrative interface (FortiOS 6).
+    >    - Backup file (FortiOS 6).
+    > * Default Values:
+    >    - Timezone. America/Mexico_City.
+    >    - OS language. English.
+    >    - Keyboard layout. Latin American.
+    </details>
 
 * **Operating system installation**.The higher capacity hard disk and ISO file are mounted inside the virtual machine, and then the machine is initialized and booted. The following operating systems need user interaction to enter the type of environment you want within the machine:
 
@@ -96,7 +96,7 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
 
     - **Generic values**. Data related with host machine available resources and file storage. This section contains the following fields:
         + <details>
-            <summary>SistemaOperativo</summary>
+            <summary>SistemaOperativo.</summary>
     
                 - Windows 10.
                 - Windows Server 2019.
