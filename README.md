@@ -25,7 +25,7 @@ This is the list of current OS supported by the tool:
 
 * Any flavor of the [Linux Subsystem for Windows] installed and running on the Hyper-V host with the following packages installed:
 
-    - **whois** - To create valid hashed password values for Unix
+    - **whois** - To download *mkpasswd* package which allows create valid hashed password values for Unix
     - **dos2unix** - To remove EOL issues with Windows/Unix
 
 * In order to be an Hyper-V Host, first you need to **install the Hyper-V role** in order to run this tool; if the tool detects that the role is not present in the Server, it will install it for you and reboot the server in order to apply changes.
