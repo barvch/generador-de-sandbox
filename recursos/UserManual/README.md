@@ -8,18 +8,18 @@ This tool is a sandox generator for Hyper-V that allows you to create, configure
 
 The workflow of the tool is the following:
 
-* **Hyper-V Rol Check**. The tool validate if tool is running in a Windows Server 2019 environment and checks that the Hyper-V Role is installed in host, if not, it will be installed in the host and a reboot is necessary in order to apply changes. Once it boots, you must run the tool a second time.
+* **Hyper-V Rol Check**: The tool validate if tool is running in a Windows Server 2019 environment and checks that the Hyper-V Role is installed in host, if not, it will be installed in the host and a reboot is necessary in order to apply changes. Once it boots, you must run the tool a second time.
 
-* **Data validation**. Before any VM is created, the tool validates every single field according following requirements:
+* **Data validation**: Before any VM is created, the tool validates every single field according following requirements:
     
-    - **Generic values** -> Data related with host machine available resources and file storage.
-    - **Dependent values** -> Specific data for each operating system.
-    - **Services** -> Specific data per service.
+    - **Generic values**: Data related with host machine available resources and file storage.
+    - **Dependent values**: Specific data for each operating system.
+    - **Services**: Specific data per service.
 
-> There are several values that are set over the validation flow, those values and specific information about each field are documented in [The input file] section.
+    > There are several values that are set over the validation flow, those values and specific information about each field are documented in [The input file] section.
 
 * **Data printing and confirmation**. The tool allow to check all data for each or all virtual machines before create them.
-* **Hyper-V machine creation**. Once one or all virtual machines are validated, hardware requirements are set with virtual hard drive exception.
+* **Hyper-V machine creation**. Once one or all virtual machines are validated, hardware requirements are set. The only exception is the hard drive, which is attached later during creation of the VM.
 
 > Hardware that is set:
 > * Amount and size of virtual disks.
@@ -38,10 +38,10 @@ The workflow of the tool is the following:
 >   - Type.
 >   - Name.
 
-* **Custom ISO creation**. In this step, the ISO file specified by user is mounted in host and unattended files are customized and loaded within. The tool for ISO creation depends of each operating system:
+* **Custom ISO creation**. In this step, the ISO file specified by user is mounted in host and unattended files are customized and loaded within. The tool for the ISO creation depends of each operating system:
 
-    - Windows. DISM.
-    - Linux/Unix. mkisofs.
+    - *Windows*: DISM.
+    - *Linux/Unix and FortiOS*: mkisofs.
  
 > Data that are set within unattended files:
 > * General data:
@@ -64,21 +64,20 @@ The workflow of the tool is the following:
 >    - OS language. English.
 >    - Keyboard layout. Latin American.
 
-* **Operating system installation**. The hard drive with major capacity and ISO file are mounted, then, the virtual machine is started. The following operating systems needs user interaction because desktop environment is selected in this step:
+* **Operating system installation**.The higher capacity hard disk and ISO file are mounted inside the virtual machine, and then the machine is initialized and booted. The following operating systems need user interaction to enter the type of environment you want within the machine:
 
     - Debian 10 (Buster).
     - Kali Linux 2020.04.
 
-> The interfaces are set in this process with Ubuntu exception.
+> **NOTE**: At this point, the interface config is also set within the VM, but in the particular case of any VM running an Ubuntu flavor, the config is set during the post-install section. For more information, please read [Post-Installation instructions].
 
-* **Post-Installation running script**. This script installs and configures all services required and it is executed automatically after OS installation.
+* **Post-Installation running script**: A series of scripts and other files are created depending of the configuration of serivices and so on that has been entered within the input file. These scripts run automatically after the installation is complete and install and take care of installing and configuring all the services that have been specified for the machine.
 
 > Exceptions: 
 > * Debian 10 Buster.
 > * Kali Linux 20.04.
-> * Ubuntu Family.
 > 
-> For those OS check [Post-Installation instructions] section.
+> Please check [Post-Installation instructions] for more information.
 
 **This flow repeats itself for every single virtual machine to create.**
 
