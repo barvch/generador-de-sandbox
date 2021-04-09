@@ -21,34 +21,39 @@ The workflow of the tool is the following:
 * **Data printing and confirmation**. The tool allow to check all data for each or all virtual machines before create them.
 * **Hyper-V machine creation**. Once one or all virtual machines are validated, hardware requirements are set. The only exception is the hard drive, which is attached later during creation of the VM.
 
-> Hardware that is set:
-> * Amount and size of virtual disks.
-> * Number of processors.
-> * RAM memory:
->   - Static:
->       + Total memory.
->   - Dynamic:
->       + Minimum memory.
->       + Maximum memory.
-> * Network interfaces
->   - Virtual Switches:
->       + Name.
->       + Type.
->       + Network adapter.
->   - Type.
->   - Name.
+    <details>
+        <summary>Hardware that is set</summary>
+
+    >   * Amount and size of virtual disks.
+    >   * Number of processors.
+    >   * RAM memory:
+    >       - Static:
+    >           + Total memory.
+    >       - Dynamic:
+    >          + Minimum memory.
+    >           + Maximum memory.
+    >   * Network interfaces
+    >       - Virtual Switches:
+    >           + Name.
+    >           + Type.
+    >           + Network adapter.
+    >       - Type.
+    >       - Name.
+    </details>
 
 * **Custom ISO creation**. In this step, the ISO file specified by user is mounted in host and unattended files are customized and loaded within. The tool for the ISO creation depends of each operating system:
 
     - *Windows*: DISM.
     - *Linux/Unix and FortiOS*: mkisofs.
- 
-> Data that are set within unattended files:
+    
+<details>
+    <summary>Data that are set within unattended files</summary>
+
 > * General data:
 >    - Hostname.
 >    - Desktop Environment (Exceptions: Debian 10 and Kali Linux 2020.04).
 >    - Credentials:
->        + User.
+    >        + User.
 >        + Password.
 >    - Network interfaces:
 >        + IP addresses.
@@ -63,6 +68,7 @@ The workflow of the tool is the following:
 >    - Timezone. America/Mexico_City.
 >    - OS language. English.
 >    - Keyboard layout. Latin American.
+</details>
 
 * **Operating system installation**.The higher capacity hard disk and ISO file are mounted inside the virtual machine, and then the machine is initialized and booted. The following operating systems need user interaction to enter the type of environment you want within the machine:
 
@@ -89,22 +95,66 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
 * **MaquinasVirtuales**. This is the list and specifications of virtual machines that will be created. This field is built by three sections:
 
     - **Generic values**. Data related with host machine available resources and file storage. This section contains the following fields:
-        
-        + SistemaOperativo:
-            - Windows 10.
-            - Windows Server 2019.
-            - Ubuntu 16.04.
-            - Ubuntu 18.04.
-            - Ubuntu 20.04.
-            - Debian 10 (Buster).
-            - Kali Linux 2020.04.
-            - CentOS 8.
-            - CentOS Stream.
-            - RHEL 8.
-            - FortiOS 6.
+        + <details>
+            <summary>SistemaOperativo</summary>
+    
+                - Windows 10.
+                - Windows Server 2019.
+                - Ubuntu 16.04.
+                - Ubuntu 18.04.
+                - Ubuntu 20.04.
+                - Debian 10 (Buster).
+                - Kali Linux 2020.04.
+                - CentOS 8.
+                - CentOS Stream.
+                - RHEL 8.
+                - FortiOS 6.
+        </details>
+    
         + Hostname.
-        + TipoAmbiente:
-            - Windows. The accepted values are obtaining by mounting the ISO file in the host and reading the **install.wim** file. 
+        + TipoAmbiente. Desktop environment,the accepted values depends of each OS:
+            - Windows. Reading of **install.wim** file by mounting the ISO file in the host.
+            - Ubuntu family. Ubuntu Desktop. 
+            - Debian 10 (Buster) and Kali Linux 2020.04. This value is provided until SO installation process.
+            - CentOS 8/Stream and RHEL 8:
+                + Core
+                + Gnome
+                + KDE
+        + DiscorVirtuales. Total amount and size, the values are set into an array.
+        + Procesadores. Total amount of virtual processors, it depends by virtual processors available in host.
+        + RutaISO. ISO file location.
+        + MemoriaRAM.
+            - Tipo. A value must be set which has its own dependent fields:
+                + Static.
+                    - Memoria.
+                + Dynamic.
+                    - Minima.
+                    - Maxima.
+        + Credenciales.
+            - Usuario.
+            - Contrasena.
+        + Interfaces. Multiple interfaces are allowed.
+            - VirtualSwitch. Each interface have a virtual switch, it can be unique or shared.
+                + Nombre.
+                + Tipo:
+                    - External. Bridges the virtual switch to physic network adapter.
+                    - Internal. Create a virtual LAN.
+                    - Private. Isolates the virtual switch from network.
+                + ApadaptadorRed. Name of physical network adapter.
+                > To know the physical network adapters available open Powershell and run the following command:
+                > ```Powershell
+                > Get-NetAdapter -Physical
+                > ```
+                > The physical network adapter must be in *Up* state.
+            - Nombre.
+            - Tipo. A value must be set which has its own dependent fields:
+                + Static:
+                    - IP.
+                    - MascaraRed.
+                    - Gateway. Optional.
+                    - DNS. Optional.
+                > If a service is required at least one interface must be set as static, please check [Services] in this very section for more information about this requirement.
+                + DHCP
         
         **Example:**
 
@@ -152,7 +202,7 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
         
         **Example:**
     
-    - **Services**. Specific data per service.
+    - ####**Services**. Specific data per service.
 
         + ssdsd
         
@@ -223,3 +273,4 @@ apt-get install dos2unix
 [here]: <>
 [Post-Installation instructions]: <#post-installation-instructions>
 [input files]: </Configuracion/Plantillas>
+[Services]: <#Services>
