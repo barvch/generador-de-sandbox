@@ -54,7 +54,7 @@ The workflow of the tool is the following:
         <summary>Data that are set within unattended files</summary>
     
     ###
-    > * General data:
+    > * Generic values:
     >    - Hostname.
     >    - Desktop Environment (Exceptions: Debian 10 and Kali Linux 2020.04).
     >    - Credentials:
@@ -102,7 +102,10 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
 * **Root**. This is the root folder of the project. This is the place in the system where all the files of the virtual machines will reside.
 * **MaquinasVirtuales**. This is the list and specifications of virtual machines that will be created. This field is built by three sections:
 
-    - **Generic values**. Data related with host machine available resources and file storage. This section contains the following fields:
+    - <details>
+        <summary>Generic values. Data related with host machine available resources and file storage.</summary>
+
+        ###
         + <details>
             <summary>SistemaOperativo.</summary>
             
@@ -118,7 +121,6 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
             > - CentOS Stream.
             > - RHEL 8.
             > - FortiOS 6.
-        </details>
     
         + Hostname.
         
@@ -133,7 +135,6 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
             >   + Core
             >   + Gnome
             >   + KDE
-        </details>
         
         + DiscorVirtuales. Total amount and size, the values are set into an array.
         
@@ -151,7 +152,6 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
             >   + Dynamic.
             >       - Minima.
             >       - Maxima.
-        </details>
     
         + <details>
             <summary>Credenciales.</summary>
@@ -159,7 +159,6 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
             ###
             > - Usuario.
             > - Contrasena.
-        </details>
         
         + <details>
             <summary>Interfaces. Multiple interfaces are allowed.</summary>
@@ -196,11 +195,10 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
                     - MascaraRed.
                     - Gateway. Optional.
                     - DNS. Optional.
-
+                
+                + DHCP.
+                
                 > If a service is required at least one interface must be set as static, please check [Services] in this very section for more information about this requirement.
-
-                + DHCP
-        </details>           
         
         **Example:**
 
@@ -253,6 +251,7 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
         + ssdsd
         
         **Example:**
+</details>
 
 This tool provides some examples of valid [input files], which can serve as a reference and can be loaded directly into the tool by making the corresponding modifications for the environment you want to create. You can find templates to create VMs specifically of each supported operating system, as well as other templates creating a whole infrastructure of VMs.
 
