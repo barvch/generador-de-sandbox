@@ -246,15 +246,14 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
         
         ###
         + <details>
-            <summary>Windows.</summary>
+            <summary>Windows 10 and Windows Server 2019.</summary>
             
-            - LlaveActivacion. Windows Activation Key.
+            - LlaveActivacion. Windows activation key.
             
             - RutaMSI. MSI file location, the values are set into an array.
 
                 > This field only is required by Windows 10.
             
-            ###
             **Example:**
 
             ```JSON
@@ -273,7 +272,12 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
         + <details>
             <summary>FortiOS 6.</summary>
             
-            ###
+            - InterfazAdministrativa. Static interface name. 
+                
+                > The interface must be set into *Generic Values* section. Data such IP address, netmask, etc are taken from this field. 
+
+            - ArchivoBackup. FortiOS backup file location.
+
             **Example:**
 
             ```JSON
@@ -298,7 +302,6 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
         + <details>
             <summary>Windows Server 2019.</summary>
     
-            ###
             **Example:**
 
             ```JSON
