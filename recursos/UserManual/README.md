@@ -1,20 +1,20 @@
-# User's Guide
+# User Guide
 
-This documentation guides sandbox generator tool's users through several topics in the system.
+**Welcome to the user guide of this tool!**. The intention of this guide is guide users through several topics related to the tool, such as  workflow, validations, templates, examples, videos and more.
 
 ## About tool
 
 This tool is a sandox generator for Hyper-V that allows you to create, configure and replicate a wide range of VMs in an unattended manner. The goal behind this project is to automate the process of creating and configuring both virtual machines and services using an input file that provides data for each VM indicated indicated within it. This way, mouting an infraestructure to create test enviroments for malware analisys or any other task, becomes really easy.
 
-This tool is built according to following flow:
+The workflow of the tool is the following:
 
-* **Hyper-V Rol Check**. The tool validate if tool is running in a Windows Server 2019 environment and Hyper-V Role is installed in host, otherwise, it is installed and the host is rebooted, is necessary run the tool a second time.
+* **Hyper-V Rol Check**. The tool validate if tool is running in a Windows Server 2019 environment and checks that the Hyper-V Role is installed in host, if not, it will be installed in the host and a reboot is necessary in order to apply changes. Once it boots, you must run the tool a second time.
 
-* **Data validation**. Before virtual machine creation the tool validate every single field according following requirements:
+* **Data validation**. Before any VM is created, the tool validates every single field according following requirements:
     
-    - Generic values. Data related with host machine available resources and file storage.
-    - Dependent values. Specific data for each operating system.
-    - Services. Specific data per service.
+    - **Generic values** -> Data related with host machine available resources and file storage.
+    - **Dependent values** -> Specific data for each operating system.
+    - **Services** -> Specific data per service.
 
 > There are several values that are set over the validation flow, those values and specific information about each field are documented in [The input file] section.
 
