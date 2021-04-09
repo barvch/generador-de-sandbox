@@ -172,12 +172,13 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
 
                 + Tipo:
 
-                    - External. Bridges the virtual switch to physic network adapter.
-                    - Internal. Create a virtual LAN.
-                    - Private. Isolates the virtual switch from network.
+                    > - External. Bridges the virtual switch to physic network adapter.
+                    > - Internal. Create a virtual LAN.
+                    > - Private. Isolates the virtual switch from network.
 
                 + ApadaptadorRed. Name of physical network adapter.
 
+                > This field only is requiered if Tipo is set as External.
                 > To know the physical network adapters available open Powershell and run the following command:
                 > ```Powershell
                 > Get-NetAdapter -Physical
@@ -189,15 +190,13 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
 
             - Tipo. A value must be set which has its own dependent fields:
 
-                + Static:
-
-                    - IP.
-                    - MascaraRed.
-                    - Gateway. Optional.
-                    - DNS. Optional.
-                
-                + DHCP.
-                
+                >   + Static:
+                >       - IP.
+                >       - MascaraRed.
+                >       - Gateway. Optional.
+                >       - DNS. Optional.
+                >   + DHCP.
+                >
                 > If a service is required at least one interface must be set as static, please check [Services] in this very section for more information about this requirement.
         
         **Example:**
@@ -274,7 +273,7 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
             
             - InterfazAdministrativa. Static interface name. 
                 
-                > The interface must be set into *Generic Values* section. Data such IP address, netmask, etc are taken from this field. 
+                > The interface must be set into *Generic Values* section. Data such as IP address, netmask, DNS and gateway are consulted from the interface's name. 
 
             - ArchivoBackup. FortiOS backup file location.
 
