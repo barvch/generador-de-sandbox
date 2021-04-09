@@ -107,17 +107,17 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
             <summary>SistemaOperativo.</summary>
   
             ###
-            - Windows 10.
-            - Windows Server 2019.
-            - Ubuntu 16.04.
-            - Ubuntu 18.04.
-            - Ubuntu 20.04.
-            - Debian 10 (Buster).
-            - Kali Linux 2020.04.
-            - CentOS 8.
-            - CentOS Stream.
-            - RHEL 8.
-            - FortiOS 6.
+            > - Windows 10.
+            > - Windows Server 2019.
+            > - Ubuntu 16.04.
+            > - Ubuntu 18.04.
+            > - Ubuntu 20.04.
+            > - Debian 10 (Buster).
+            > - Kali Linux 2020.04.
+            > - CentOS 8.
+            > - CentOS Stream.
+            > - RHEL 8.
+            > - FortiOS 6.
         </details>
     
         + Hostname.
