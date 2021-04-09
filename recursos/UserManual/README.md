@@ -105,7 +105,7 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
     - **Generic values**. Data related with host machine available resources and file storage. This section contains the following fields:
         + <details>
             <summary>SistemaOperativo.</summary>
-  
+            
             ###
             > - Windows 10.
             > - Windows Server 2019.
@@ -121,6 +121,7 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
         </details>
     
         + Hostname.
+        
         + TipoAmbiente. Desktop environment,the accepted values depends of each OS:
             - Windows. Reading of **install.wim** file by mounting the ISO file in the host.
             - Ubuntu family. Ubuntu Desktop. 
