@@ -122,7 +122,10 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
     
         + Hostname.
         
-        + TipoAmbiente. Desktop environment,the accepted values depends of each OS:
+        + <details>
+            <summary>TipoAmbiente. Desktop environment,the accepted values depends of each OS.</summary>
+            
+            ###
             - Windows. Reading of **install.wim** file by mounting the ISO file in the host.
             - Ubuntu family. Ubuntu Desktop. 
             - Debian 10 (Buster) and Kali Linux 2020.04. This value is provided until SO installation process.
@@ -130,36 +133,40 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
                 + Core
                 + Gnome
                 + KDE
+        </details>
+        
         + DiscorVirtuales. Total amount and size, the values are set into an array.
+        
         + Procesadores. Total amount of virtual processors, it depends by virtual processors available in host.
+        
         + RutaISO. ISO file location.
+        
         + MemoriaRAM.
             - Tipo. A value must be set which has its own dependent fields:
                 + Static.
                     - Memoria.
                 + Dynamic.
-                
                     - Minima.
-                    
                     - Maxima.
-                    
+
         + Credenciales.
             - Usuario.
             - Contrasena.
+        
         + <details>
             <summary>Interfaces. Multiple interfaces are allowed.</summary>
-        
-            ###
-            - VirtualSwitch. Each interface have a virtual switch, it can be unique or shared.
 
+            ###
+            - <details>
+                <summary>VirtualSwitch. Each interface have a virtual switch, it can be unique or shared.</summary>
+                
+                ###
                 + Nombre.
 
                 + Tipo:
 
                     - External. Bridges the virtual switch to physic network adapter.
-
                     - Internal. Create a virtual LAN.
-
                     - Private. Isolates the virtual switch from network.
 
                 + ApadaptadorRed. Name of physical network adapter.
@@ -170,6 +177,8 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
                 > ```
                 > The physical network adapter must be in *Up* state.
 
+            </details>
+
             - Nombre.
 
             - Tipo. A value must be set which has its own dependent fields:
@@ -177,17 +186,13 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
                 + Static:
 
                     - IP.
-
                     - MascaraRed.
-
                     - Gateway. Optional.
-
                     - DNS. Optional.
 
                 > If a service is required at least one interface must be set as static, please check [Services] in this very section for more information about this requirement.
 
                 + DHCP
-
         </details>           
         
         **Example:**
