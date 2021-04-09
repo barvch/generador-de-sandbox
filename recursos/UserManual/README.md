@@ -13,9 +13,7 @@ The workflow of the tool is the following:
 * **Data validation**: Before any VM is created, the tool validates every single field according following requirements:
     
     - **Generic values**: Data related with host machine available resources and file storage.
- 
     - **Dependent values**: Specific data for each operating system.
-
     - **Services**: Specific data per service.
 
     > There are several values that are set over the validation flow, those values and specific information about each field are documented in [The input file] section.
