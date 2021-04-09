@@ -86,7 +86,9 @@ The workflow of the tool is the following:
 * **Post-Installation running script**: A series of scripts and other files are created depending of the configuration of serivices and so on that has been entered within the input file. These scripts run automatically after the installation is complete and install and take care of installing and configuring all the services that have been specified for the machine.
 
     > Exceptions: 
+    > 
     > * Debian 10 Buster.
+    > 
     > * Kali Linux 20.04.
     > 
     > Please check [Post-Installation instructions] for more information.
