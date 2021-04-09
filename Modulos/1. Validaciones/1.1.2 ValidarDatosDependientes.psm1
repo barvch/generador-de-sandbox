@@ -68,3 +68,10 @@ function ValidarRutaVHD{ param ($campo = "RutaVHD", $rutaVHD)
 
     return $VHDCheck
 }
+
+function ValidarLicencia{ param ($campo = "RutaLicencia", $rutaLic)
+    $LicCheck = ValidarArregloDato -campo $campo -valor $rutaLic -obligatorio $false -tipoDato "String"
+    $LicCheck = ValidarRuta -campo $campo -valor $rutaLic -obligatorio $false
+
+    return $LicCheck
+}

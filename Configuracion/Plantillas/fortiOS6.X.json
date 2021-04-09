@@ -44,6 +44,7 @@
             "Servicios": {
 			},
 		 "RutaBackup":"",
+		"LicenciaRuta":"C:\\Users\\Administrator\\Desktop\\Licencia.txt",
 		"RutaVHD":"C:\\Users\\Administrator\\Desktop\\VMPrueba\\fortios.vhd"
         }
     ]

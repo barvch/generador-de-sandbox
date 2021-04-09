@@ -81,14 +81,13 @@ function ConfigurarInstalacionRapida { param ($maquina, $rutaRaiz)
         }
         "FortiOS.*"{
             $directorio = "$rutaRaiz\$vname"
-            #if($maquina.DatosDependientes.Backup -ne "" -or $maquina.DatosDependientes.Backup -ne $null){
             if($maquina.DatosDependientes.Backup){
                 $seedfile = $maquina.DatosDependientes.Backup
-                MoverBackup -backup $seedfile -directorio $directorio -vhdpath $maquina.DatosDependientes.VHDRuta -vname $vname | Out-Null
+                MoverBackup -backup $seedfile -directorio $directorio -vhdpath $maquina.DatosDependientes.VHDRuta -vname $vname -licpath $maquina.DatosDependientes.RutaLicencia | Out-Null
             }
             else{
                 $seedfile = "FortiOS.conf"
-                CrearBackup -os $os -hostname $hostname -username $username -password $password -directorio $directorio -seed_file $seedfile -interfaces $interfaces -vhdpath $maquina.DatosDependientes.VHDRuta -vname $vname | Out-Null
+                CrearBackup -os $os -hostname $hostname -username $username -password $password -directorio $directorio -seed_file $seedfile -interfaces $interfaces -vhdpath $maquina.DatosDependientes.VHDRuta -vname $vname -licpath $maquina.DatosDependientes.RutaLicencia | Out-Null
             }
         }   
     }

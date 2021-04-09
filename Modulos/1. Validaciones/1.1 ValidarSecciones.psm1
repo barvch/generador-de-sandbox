@@ -28,10 +28,11 @@ function ValidarDatosDependientes { param ($sistemaOperativo, $llaveActivacion, 
     "FortiOS 6"{
             $backupCheck = ValidarBackup -ruta $maquinaVirtual.RutaBackup
             $VHDCheck = ValidarRutaVHD -ruta $maquinaVirtual.RutaVHD
+            $LicCheck = ValidarLicencia -ruta $maquinaVirtual.LicenciaRuta
         }
         Default { }
         }
-    $datosDependientes = [ordered] @{"TipoAmbiente" = $tipoAmbienteCheck; "LlaveActivacion" = $llaveActivacionCheck; "RutaMSI" = $rutaMSICheck; "ArchivoXML" = $rutaXML; "Backup"=$backupCheck; "VHDRuta" =$VHDCheck}
+    $datosDependientes = [ordered] @{"TipoAmbiente" = $tipoAmbienteCheck; "LlaveActivacion" = $llaveActivacionCheck; "RutaMSI" = $rutaMSICheck; "ArchivoXML" = $rutaXML; "Backup"=$backupCheck; "VHDRuta" =$VHDCheck; "RutaLicencia" =$LicCheck}
     return $datosDependientes
 }
 
