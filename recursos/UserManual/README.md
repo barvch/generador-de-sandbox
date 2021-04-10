@@ -384,7 +384,7 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
                 }
                 ```
                 
-                > More information about *ManejadorDB* service check **Database management system  > Linux/Unix** section.
+                > More information about *ManejadorDB* service check **Relational Database Management System  > Linux/Unix** section.
             
         + <details>
             <summary>Active Directory.</summary>
@@ -422,7 +422,37 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
                 }
              }
              ```
+
+        + <details>
+            <summary>Relational Database Management System.</summary>
         
+            ###
+            This service is only avaible for Linux/Unix distributions.
+            * ManejadorBD. Only is allowed one RDBMS to avoid compatibility issues. 
+            
+                - Manejador.
+                    
+                    > + PostgresQL
+                    > + MySQL
+                    > + MariaDB
+                    > + SQL Server. Only available for installation in Ubuntu family.
+                
+                - NombreBD.
+                
+                - Script. Optional. Database script location.
+
+             **Example:**
+             
+            ```JSON
+            Servicios": {
+                "ManejadorBD": {
+                    "Manejador": "PostgresQL",
+                    "NombreBD":"mydatabase",
+                    "Script": "C:\\SandBox\\script.sql"
+                }
+            }
+            ```
+
         + <details>
             <summary>Web Server.</summary>
         
@@ -601,7 +631,7 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
                 
                 ###
                 + Interfaz. Static interface name. 
-                
+
                     > **NOTE**: The interface must be set into *Generic Values* section. Data such as IP address, netmask, DNS and gateway are consulted from the interface's name. This field is only used to configure the DHCP server.
                 
                 + Scopes. Multiple scopes are allowed, the values are set into an array.
@@ -635,8 +665,32 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
                     }
                 }
                 ```
+        + <details>
+            <summary>DNS.</summary>
+    
+            ###
+            + Interfaz. Static interface name. 
 
-    </details>
+                > **NOTE**: The interface must be set into *Generic Values* section. Data such as IP address, netmask, DNS and gateway are consulted from the interface's name. This field is only used to configure the DNS server.
+                > 
+                > This field only is required by Linux/Unix distributions.    
+
+        + <details>
+            <summary>IPTables.</summary>
+    
+            ###
+            This service is only avaible for Linux/Unix distributions.
+           
+            * IPTables. IPTables backup file location.
+            
+            **Example:**
+            
+            ```JSON
+            "Servicios": {
+                "IPTables": "C:\\Sandbox\\iptables.txt"
+            }
+            ```
+</details>
 
 This tool provides some examples of valid [input files], which can serve as a reference and can be loaded directly into the tool by making the corresponding modifications for the environment you want to create. You can find templates to create VMs specifically of each supported operating system, as well as other templates creating a whole infrastructure of VMs.
 
