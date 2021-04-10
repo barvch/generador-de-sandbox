@@ -153,6 +153,8 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
         
         + DiscorVirtuales. Total amount and size, the values are set into an array.
         
+            > **NOTE**: The minimum value is 15.
+        
         + Procesadores. Total amount of virtual processors, it depends by virtual processors available in host.
         
         + RutaISO. ISO file location.
@@ -167,6 +169,8 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
             >   + Dynamic.
             >       - Minima.
             >       - Maxima.
+            >       
+            > **NOTE**: The minimum value is 0.5.
     
         + <details>
             <summary>Credenciales.</summary>
@@ -207,7 +211,7 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
 
                 >   + Static:
                 >       - IP.
-                >       - MascaraRed.
+                >       - MascaraRed. Allow an IP format (255.255.255.255) or prefix value (24).
                 >       - Gateway. Optional.
                 >       - DNS. Optional.
                 >   + DHCP.
@@ -288,7 +292,7 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
             
             - InterfazAdministrativa. Static interface name. 
                 
-                > The interface must be set into *Generic Values* section. Data such as IP address, netmask, DNS and gateway are consulted from the interface's name. 
+                > **NOTE**: The interface must be set into *Generic Values* section. Data such as IP address, netmask, DNS and gateway are consulted from the interface's name. 
 
             - ArchivoBackup. FortiOS backup file location.
 
@@ -441,11 +445,11 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
                         
                         - Interfaz. Static interface name. 
                 
-                        > The interface must be set into *Generic Values* section. Data such as IP address, netmask, DNS and gateway are consulted from the interface's name. 
+                        > **NOTE**: The interface must be set into *Generic Values* section. Data such as IP address, netmask, DNS and gateway are consulted from the interface's name. This field is used to configure IIS's bindings.
                     
                         - Puerto. Optional.
                             
-                            > The default value is set by *Protocolo* field (80 for http and 443 for https) and it's allowed to set explicity that value. If different port is set, the tool doesn´t allow use well-know ports.
+                            > **NOTE**: The default value is set by *Protocolo* field (80 for http and 443 for https) and it's allowed to set explicity that value. If different port is set, the tool doesn´t allow use well-know ports.
 
                         - Protocolo.
                             > - http.
@@ -461,12 +465,12 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
                 "Servicios:" {
                     "IIS":  [
                         {
-                            "Nombre": "MiSitio.local",
-                            "Directorio": "MiSitioUno",
+                            "Nombre": "exampleSite.local",
+                            "Directorio": "exampleSite",
                             "Bindings": [
                                 {
-                                    "Dominio": "misitio.local",
-                                    "Interfaz": "SalidaInternet",
+                                    "Dominio": "example.local",
+                                    "Interfaz": "Iternet",
                                     "Protocolo": "https",
                                     "Puerto": 443,
                                     "WebDAV": false
@@ -496,11 +500,11 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
 
                         - Interfaz. Static interface name. 
 
-                        > The interface must be set into *Generic Values* section. Data such as IP address, netmask, DNS and gateway are consulted from the interface's name. 
+                        > **NOTE**: The interface must be set into *Generic Values* section. Data such as IP address, netmask, DNS and gateway are consulted from the interface's name. This field is used to configure Web Server's sites.
 
                         - Puerto. Optional.
 
-                            > The default value is set by *Protocolo* field (80 for http and 443 for https) and it's allowed to set explicity that value. If different port is set, the tool doesn´t allow use well-know ports.
+                            > **NOTE**: The default value is set by *Protocolo* field (80 for http and 443 for https) and it's allowed to set explicity that value. If different port is set, the tool doesn´t allow use well-know ports.
 
                         - Protocolo.
                             > - http.
@@ -529,6 +533,108 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
                         }
                     }
                     ```
+        + <details>
+            <summary>DHCP.</summary>
+            
+            ###
+            - <details>
+                <summary>Windows Server 2019.</summary>
+        
+                ###
+                Multiple scopes are allowed, the values are set into an array.
+
+                - Nombre.
+                    
+                - Rango.
+                        
+                    > + Inicio.
+                    > + Fin.
+                    > + MascaraRed. Scope netmask. Allow an IP format (255.255.255.255) or prefix value (24).
+                     
+                - Exclusiones. Optional.
+                        
+                    + Tipo. A value must be set which has its own dependent fields:
+                     
+                        > + Rango.
+                        >   - Inicio.
+                        >   - Fin.
+                        > + Unica. IP.
+                     
+                  - Lease.
+                        
+                    > + Dias.
+                    > + Horas.
+                    > + Minutos.
+                        
+                    > **NOTE**: The input format and minimum value is **000.01:00**.
+
+                 - Gateway. Optional.
+                    
+                 - DNS. Optional.
+                    
+                 **Example:**
+                    
+                 ```JSON
+                 "Servicios": {
+                    "DHCP": [
+                        {
+                            "Nombre": "ScopeOne",
+                            "Rango": {
+                                "Inicio": "192.168.0.150",
+                                 "Fin": "192.168.0.170",
+                                 "MascaraRed": "24"
+                             },
+                             "Exclusiones": {
+                                "Tipo": "Unica",
+                                "IP": "192.168.0.167"
+                            },
+                            "Lease": "000.01:00",
+                            "Gateway": "192.168.0.255",
+                            "DNS": "8.8.8.8"
+                        }
+                    ]
+                 }
+                 ```
+                    
+            - <details>
+                <summary>Linux/Unix.</summary>
+                
+                ###
+                + Interfaz. Static interface name. 
+                
+                    > **NOTE**: The interface must be set into *Generic Values* section. Data such as IP address, netmask, DNS and gateway are consulted from the interface's name. This field is only used to configure the DHCP server.
+                
+                + Scopes. Multiple scopes are allowed, the values are set into an array.
+                    
+                    > - Rangos. Multiple ranges are allowed, the values are set into an array.
+                    >   + Inicio.
+                    >   + Fin.
+                    > - MascaraRed. Scope netmask. Allow an IP format (255.255.255.255) or prefix value (24).
+                    > - Gateway. Optional.
+                    > - DNS. Optional.
+                
+                **Example:**
+                
+                ```JSON
+                "Servicios": {
+                    "DHCP": {
+                        "Interfaz": "Internet",
+                        "Scopes": [
+                            {
+                                "Rangos": [
+                                    {
+                                    "Inicio": "192.168.0.100",
+                                    "Fin": "192.168.0.120"
+                                    }
+                                ],
+                                "MascaraRed": "255.255.255.0",
+                                "Gateway": "192.168.0.255",
+                                "DNS": "8.8.8.8"
+                            }
+                        ]
+                    }
+                }
+                ```
 
     </details>
 
@@ -613,7 +719,7 @@ Once all the requirements mentioned in the previous section are satisfied, we ca
 ### Demos
 
 [Download the Linux kernel update package]: <https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi>
-[minimun system requirements]: <#minimun-system-requirements>
+[minimum system requirements]: <#minimum-system-requirements>
 [The input file]: <#the-input-file>
 [here]: <>
 [Post-Installation instructions]: <#post-installation-instructions>
