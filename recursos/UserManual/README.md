@@ -891,6 +891,38 @@ Once all the requirements mentioned in the previous section are satisfied, we ca
 
 ## Post-Installation instructions
 
+In some cases, in order to get the full configuration ready in the VMs, human interaction is needed. The list is the following:
+
+* Debian 10 Buster
+* Kali Linux 20.04
+* Ubuntu Family
+
+Specifications foreach system can be found bellow:
+
+### Buster & Kali
+
+*  In order to install and configure the services stablished in the input file for this systems, you need to execute this as root:
+
+```sh
+/bin/bash /servicios/ConfigurarServiciosLinux.sh
+```
+
+### Ubuntu X.04
+
+* You'll need to press **"Enter"** after the install completes in order to boot to the system.
+
+* In order to set the network configuration stablished in the input file in the VM, you need to execute this as root:
+
+```sh
+/bin/bash /servicios/ConfigurarInterfaces.sh
+```
+
+After the system reboots, by default all interfaces are down; to enable an interface, just execute the following command:
+
+```sh
+ifup eth0
+```
+
 ## Tutorials and examples
 
 ### Demos
