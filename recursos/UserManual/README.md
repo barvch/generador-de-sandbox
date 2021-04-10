@@ -669,12 +669,133 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
             <summary>DNS.</summary>
     
             ###
-            + Interfaz. Static interface name. 
+            
+            * Interfaz. Static interface name. 
 
                 > **NOTE**: The interface must be set into *Generic Values* section. Data such as IP address, netmask, DNS and gateway are consulted from the interface's name. This field is only used to configure the DNS server.
                 > 
                 > This field only is required by Linux/Unix distributions.    
+            
+            * Zonas. Multiple zones are allowed, the values are set into an array.
+                
+                - Tipo. Sets *Primary zones*. Every DNS zone has its own dependent fields.
+                
+                    + Forward.
+ 
+                        - Nombre.
+                        
+                        - Registros. Multiple registers are allowed, the values are set into an array.
 
+                        - Tipo. Every DNS record has its own dependent fields.
+                          
+                            >   + A.
+                            >       - Hostname.
+                            >       - IP.
+                            >   + CNAME
+                            >       - Alias.
+                            >       - FQDN.
+                            >   + MX
+                            >       -ChildDomain.
+                            >       - FQDN.
+                    
+                    + Reverse.
+                    
+                        - NetID.
+                        
+                        - Registros. Multiple registers are allowed, the values are set into an array.
+                           
+                        - Tipo. Every DNS record has its own dependent fields.
+                              
+                            >   + PTR.
+                            >       - IP.
+                            >       - Hostname.
+                            >   + CNAME.
+                            >       - Alias.
+                            >       - FQDN.
+                
+                - Backup. Optional.
+
+                    > This field only is required by Windows Server 2019. If value is provided, the tools ignores *Nombre* field.
+            
+            Windows Server 2019
+            **Example:**
+            
+            ```JSON
+            "DNS": [
+                {
+                    "Tipo": "Forward",
+                    "Nombre": "MyForwardZone",
+                    "Backup": "",
+                    "Registros": [
+                        {
+                            "Tipo": "A",
+                            "Hostname": "example.local",
+                            "IP": "10.23.1.2"
+                        },
+                        {
+                            "Tipo": "CNAME",
+                            "Alias": "alias",
+                            "FQDN": "example2.local"
+                        },
+                        {
+                            "Tipo": "MX",
+                            "ChildDomain": "example2.local",
+                            "FQDN": "test.example2.local"
+                        }
+                    ]
+                }
+            ]
+            ```
+            
+            Linux/Unix Distributions
+            **Example:**
+            
+            ```JSON
+            "DNS": { 
+                "Interfaz": "Internet",
+                "Zonas": [
+                    {
+                        "Tipo": "Forward",
+                        "Nombre": "MyForwardZone",
+                        "Registros": [
+                            {
+                                "Tipo": "A",
+                                "Hostname": "example.local",
+                                "IP": "10.23.1.2"
+                            },
+                            {
+                                "Tipo": "CNAME",
+                                "Alias": "siteOne",
+                                "FQDN": "test.example.local"
+                            },
+                            {
+                                "Tipo": "MX",
+                                "ChildDomain": "example2.local",
+                                "FQDN": "test.example2.local"
+                            }
+                        ]
+                    },
+                    {
+                        "Tipo": "Reverse",
+                        "Nombre": "MyReverseZone",
+                        "NetID": "12.11.13.0/24",
+                        "Registros": [
+                            {
+                                "Tipo": "PTR",
+                                "Hostname": "example3.local",
+                                "Host": "2"
+                            },
+                            {
+                                "Tipo": "CNAME",
+                                "Alias": "siteOne",
+                                "FQDN": "test.example.local"
+                            }
+                        ]
+                    }
+                ]
+            }
+            ```
+                
         + <details>
             <summary>IPTables.</summary>
     
