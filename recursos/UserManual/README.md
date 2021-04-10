@@ -700,7 +700,7 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
                     
                     + Reverse.
                     
-                        - NetID.
+                        - NetID. It must be with the following format IP/Prefix (192.168.1.12/24).
                         
                         - Registros. Multiple registers are allowed, the values are set into an array.
                            
@@ -715,9 +715,10 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
                 
                 - Backup. Optional.
 
-                    > This field only is required by Windows Server 2019. If value is provided, the tools ignores *Nombre* field.
+                    > This field only is required by Windows Server 2019. If value is provided, the tool ignores *Nombre* field.
             
             Windows Server 2019
+            
             **Example:**
             
             ```JSON
@@ -748,6 +749,7 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
             ```
             
             Linux/Unix Distributions
+            
             **Example:**
             
             ```JSON
