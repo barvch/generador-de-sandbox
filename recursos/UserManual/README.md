@@ -700,7 +700,7 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
                     
                     + Reverse.
                     
-                        - NetID. It must be with the following format IP/Prefix (192.168.1.12/24).
+                        - NetID. It must be with the following format NetworkID/Prefix (192.168.1.**0/24**).
                         
                         - Registros. Multiple registers are allowed, the values are set into an array.
                            
