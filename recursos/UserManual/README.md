@@ -381,20 +381,14 @@ Open an Ubuntu console and create a new user.
 
 Once configured Windows Subsystem for Linux it's necessary install the following packages:
 
-* **whois**
+* **whois**. Lists the information about the domain owner of the given domain, it's needed for *mkpasswd* package installation.
 
-The **whois command** lists the information about the domain owner of the given domain, it's needed for **mkpasswd** package installation.
+* **dos2unix**. Converts plain text files in Windows to Linux format.
 
-```Bash
-apt-get install whois
-```
-
-* **dos2unix**
-
-The **dos2unix command** converts plain text files in Windows to Linux format.
+* **mkisofs**. Create an hybrid ISO9660/JOLIET/HFS filesystem.
 
 ```Bash
-apt-get install dos2unix
+apt-get install -y whois dos2unix mkisofs
 ```
 
 ## Instalation and Configuration
