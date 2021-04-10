@@ -893,9 +893,9 @@ Once all the requirements mentioned in the previous section are satisfied, we ca
 
 In some cases, in order to get the full configuration ready in the VMs, human interaction is needed. The list is the following:
 
-* Debian 10 Buster
-* Kali Linux 20.04
-* Ubuntu Family
+* Debian 10 Buster.
+* Kali Linux 20.04.
+* Ubuntu Family.
 
 Specifications foreach system can be found bellow:
 
@@ -923,9 +923,7 @@ After the system reboots, by default all interfaces are down; to enable an inter
 ifup eth0
 ```
 
-## Tutorials and examples
-
-### Demos
+### Tutorials and examples
 
 [Download the Linux kernel update package]: <https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi>
 [minimum system requirements]: <#minimum-system-requirements>
