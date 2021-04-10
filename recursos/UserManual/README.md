@@ -319,7 +319,7 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
             
             ###
             * Windows. RDP.
-            
+            ####
             **Example:**
 
             ```JSON
@@ -344,6 +344,192 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
             
             > If not data is provide for remote administration, this is automatically configured for each SO.
         
+        + <details>
+            <summary>Only-Installation Services.</summary>
+        
+            ###
+            This services only are installed in host with non configuration.
+            
+            * **Windows Server 2019**.
+             
+                - Windows Defender.
+
+                - Active Directory Certificate Services.
+                
+                > Both services only allow a true or false value.
+            
+                **Example:**
+                
+                ```JSON
+                "Servicios": {
+                    "WindowsDefender": true,
+                    "CertificateServices": true
+                }
+                ```
+             
+            * **Ubuntu family**.
+             
+                - SQL Server.
+                
+                **Example:**
+                
+                ```JSON
+                "Servicios": {
+                    "ManejadorDB": {
+                        "Manejador": "SQLServer"
+                }
+                ```
+                
+                > More information about *ManejadorDB* service check **Database management system  > Linux/Unix** section.
+            
+        + <details>
+            <summary>Active Directory.</summary>
+            
+            ###
+            This service is only available for Windows Server 2019.
+            
+            - Domain.
+            
+            - NetBIOS. Optional.
+            
+                > The default value is set by prefix of *Domain* field.
+            
+            - DomainMode. The functional level cannot be less than *ForestMode* field.
+                
+                > + Win2008.
+                > + Win2008R2.
+                > + Win2012.
+                > + Win2012R2.
+                > + Win2016.
+
+            - ForestMode. Optional.
+                
+                > The default value is set by *DomainMode* field.
+
+            **Example:**
+            
+            ```JSON
+            "Servicios:" {
+                "ActiveDirectory": {
+                    "Domain": "example.local",
+                    "NetBIOS": "EXAMPLE",
+                    "DomainMode": "Win2016",
+                    "ForestMode": "Win2012"
+                }
+             }
+             ```
+        
+        + <details>
+            <summary>Web Server.</summary>
+        
+            ###
+            - <details>
+                <summary>Windows Server 2019.</summary>
+                
+                ###
+                - IIS. Multiple sites are allowed, the values are set into an array.
+                    
+                    + Nombre.
+                    
+                    + Directorio. Optional. Name of root folder.
+
+                    > The default value is set by *Nombre* field.
+                    
+                    + Bindings. Multiple bindings are allowed, the values are set into an array.
+                        
+                        - Dominio.
+                        
+                        - Interfaz. Static interface name. 
+                
+                        > The interface must be set into *Generic Values* section. Data such as IP address, netmask, DNS and gateway are consulted from the interface's name. 
+                    
+                        - Puerto. Optional.
+                            
+                            > The default value is set by *Protocolo* field (80 for http and 443 for https) and it's allowed to set explicity that value. If different port is set, the tool doesn´t allow use well-know ports.
+
+                        - Protocolo.
+                            > - http.
+                            > - https.
+                        
+                        - WebDAV. Optional.
+                            > - true.
+                            > - false.
+
+                **Example:**
+                
+                ```JSON
+                "Servicios:" {
+                    "IIS":  [
+                        {
+                            "Nombre": "MiSitio.local",
+                            "Directorio": "MiSitioUno",
+                            "Bindings": [
+                                {
+                                    "Dominio": "misitio.local",
+                                    "Interfaz": "SalidaInternet",
+                                    "Protocolo": "https",
+                                    "Puerto": 443,
+                                    "WebDAV": false
+                                }
+                            ]
+                        }
+                    ]
+                }
+                ```
+
+            - <details>
+                <summary>Linux/Unix.</summary>
+                
+                ###
+                * ServidorWeb. Only is allowed one web server to avoid compatibility issues. 
+                    
+                    + Servidor.
+
+                        > - apache2.
+                        > - nginx.
+
+                    + Sitios. Multiple sites are allowed, the values are set into an array.
+
+                        - Nombre.
+
+                        - Dominio.
+
+                        - Interfaz. Static interface name. 
+
+                        > The interface must be set into *Generic Values* section. Data such as IP address, netmask, DNS and gateway are consulted from the interface's name. 
+
+                        - Puerto. Optional.
+
+                            > The default value is set by *Protocolo* field (80 for http and 443 for https) and it's allowed to set explicity that value. If different port is set, the tool doesn´t allow use well-know ports.
+
+                        - Protocolo.
+                            > - http.
+                            > - https.
+
+                        - Drupal. Optional. Only sets the web installer, the content manager is not configured. 
+                            > - true.
+                            > - false.
+
+                    **Example:**
+
+                     ```JSON
+                     "Servicios": {
+                        "ServidorWeb": {
+                            "Servidor": "apache2",
+                            "Sitios": [
+                                {
+                                    "Nombre": "exampleSite",
+                                    "Dominio": "example.local",
+                                    "Interfaz": "Internet",
+                                    "Protocolo": "https",
+                                    "Puerto": "443",
+                                    "Drupal": true
+                                }
+                            ]
+                        }
+                    }
+                    ```
+
     </details>
 
 This tool provides some examples of valid [input files], which can serve as a reference and can be loaded directly into the tool by making the corresponding modifications for the environment you want to create. You can find templates to create VMs specifically of each supported operating system, as well as other templates creating a whole infrastructure of VMs.
