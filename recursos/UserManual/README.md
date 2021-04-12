@@ -83,7 +83,7 @@ The workflow of the tool is the following:
 
     > **NOTE**: At this point, the interface config is also set within the VM, but in the particular case of any VM running an Ubuntu flavor, the config is set during the post-install section. For more information, please read [Post-Installation instructions].
 
-* **Post-Installation running script**: A series of scripts and other files are created depending of the configuration of serivices and so on that has been entered within the input file. These scripts run automatically after the installation is complete and install and take care of installing and configuring all the services that have been specified for the machine.
+* **Post-Installation running script**. A series of scripts and other files are created depending of the configuration of serivices and so on that has been entered within the input file. These scripts run automatically after the installation is complete and install and take care of installing and configuring all the services that have been specified for the machine.
 
     > Exceptions: 
     > 
@@ -94,6 +94,8 @@ The workflow of the tool is the following:
     > Please check [Post-Installation instructions] for more information.
 
 **This flow repeats itself for every single virtual machine to create.**
+
+> For technical specifications about workflow functions please check [Workflow] section.
 
 ## The input file
 
@@ -928,6 +930,7 @@ ifup eth0
 [Download the Linux kernel update package]: <https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi>
 [minimum system requirements]: <#minimum-system-requirements>
 [The input file]: <#the-input-file>
-[here]: <../TechnicalManual>
+[Input Values]: <../TechnicalManual>
+[Workflow] <../TechnicalManual #workflow>
 [Post-Installation instructions]: <#post-installation-instructions>
 [input files]: </Configuracion/Plantillas>
