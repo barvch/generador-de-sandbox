@@ -931,6 +931,6 @@ ifup eth0
 [minimum system requirements]: <#minimum-system-requirements>
 [The input file]: <#the-input-file>
 [Input Values]: <../TechnicalManual>
-[Workflow] <../TechnicalManual#workflow>
+[Workflow] <#Workflow>
 [Post-Installation instructions]: <#post-installation-instructions>
 [input files]: </Configuracion/Plantillas>
