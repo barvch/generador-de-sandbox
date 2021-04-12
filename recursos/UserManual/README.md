@@ -930,7 +930,7 @@ ifup eth0
 [Download the Linux kernel update package]: <https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi>
 [minimum system requirements]: <#minimum-system-requirements>
 [The input file]: <#the-input-file>
-[Input Values]: <../TechnicalManual>
-[Workflow] <../TechnicalManual/README.md#Workflow>
+[Input Values]: <https://github.com/barvch/generador-de-sandbox/blob/main/recursos/TechnicalManual/README.md#input-values>
+[Workflow] <https://github.com/barvch/generador-de-sandbox/tree/main/recursos/TechnicalManual#workflow>
 [Post-Installation instructions]: <#post-installation-instructions>
 [input files]: </Configuracion/Plantillas>
