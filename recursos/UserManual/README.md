@@ -819,7 +819,7 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
 
 This tool provides some examples of valid [input files], which can serve as a reference and can be loaded directly into the tool by making the corresponding modifications for the environment you want to create. You can find templates to create VMs specifically of each supported operating system, as well as other templates creating a whole infrastructure of VMs.
 
-> Technical specifications about every single value can be found in [Input Values] section.
+> For technical specifications about every single value please check [Input Values] section.
 
 ## Pre-Installation Requirements
 
