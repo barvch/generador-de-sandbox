@@ -6,7 +6,7 @@
 
 * In the **[User Guide]** you can find a much longer and detailed documentation about how this tool works. Please read the guide in order to understand the requirements and workflow of the tool, as well of more relevant information of what you can do with this tool.
 
-* In the **[technical guide]** you can find detailed documentation about how this tool is structured and it's recommended to all people with technical knowledge about PowerShell and bash scripting as well as the [services] and [operating systems] implemented.
+* In the **[Technical Guide]** you can find detailed documentation about how this tool is structured and it's recommended to all people with technical knowledge about PowerShell and bash scripting as well as the [services] and [operating systems] implemented.
 
 ### OS Pool
 
@@ -134,3 +134,4 @@ ifup eth0
 [User Guide > The input file > Services]: <./recursos/UserManual#the-input-file>
 [User Guide]: <./recursos/UserManual>
 [services]: <#services>
+[Technical Guide]: <./recursos/TechnicalGuide>
