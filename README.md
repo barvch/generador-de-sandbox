@@ -6,6 +6,8 @@
 
 * In the **[User Guide]** you can find a much longer and detailed documentation about how this tool works. Please read the guide in order to understand the requirements and workflow of the tool, as well of more relevant information of what you can do with this tool.
 
+* In the **[technical guide]** you can find detailed documentation about how this tool is structured and it's recommended to all people with technical knowledge about PowerShell and bash scripting as well as the [services] and [operating systems] implemented.
+
 ### OS Pool
 
 This is the list of current OS supported by the tool:
@@ -84,7 +86,7 @@ The list of services available per SO is the following:
 | Windows Server 2019 |  <ul><li>Windows Defender</li><li>AD</li><li>Certificate Services</li><li>IIS</li><li>DHCP</li><li>DNS</li><li>Bind DNS</li></ul> |
 | Linux/Unix | <ul><li>Web Server (apache/nginx)</li><li>RDBMS (SQL Server, MariaDB, MySQL, PostgreSQL)</li><li>DHCP</li><li>Bind DNS</li><li>iptables</li></ul> |
 
-Extensive documentation on the values expected by the tool for proper installation and configuration foreach service can be found [here][servicios].
+Extensive documentation on the values expected by the tool for proper installation and configuration foreach service can be found in [User Guide > The input file > Services] section.
 
 * **NOTE**: The RDP or SSH service is installed by default within all windows and Linux machines, respectively.
 
@@ -129,5 +131,6 @@ ifup eth0
 [here]: <https://docs.google.com/spreadsheets/d/13qQsPp08ocH_j-whSafJKate7DskU9h4aBCn-lr3qTU/edit#gid=0s>
 [Linux Subsystem for Windows]: <https://docs.microsoft.com/en-us/windows/wsl/install-win10> 
 [examples of valid input files]: <https://github.com/barvch/generador-de-sandbox/tree/main/Configuracion/Plantillas>
-[servicios]: <https://docs.google.com/spreadsheets/d/13qQsPp08ocH_j-whSafJKate7DskU9h4aBCn-lr3qTU/edit#gid=492063908>
-[User Guide]: <https://github.com/barvch/generador-de-sandbox/tree/main/recursos/UserManual>
+[User Guide > The input file > Services]: <./recursos/UserManual#the-input-file>
+[User Guide]: <./recursos/UserManual>
+[services]: <#services>
