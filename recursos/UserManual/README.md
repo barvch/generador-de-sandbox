@@ -106,7 +106,7 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
         {
             "Generic Values": "Data",
             "Dependent Values": "Data",
-            "Services": {
+            "Servicios": {
                 "Service": "Data"
             }
         }
@@ -928,7 +928,6 @@ ifup eth0
 [Download the Linux kernel update package]: <https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi>
 [minimum system requirements]: <#minimum-system-requirements>
 [The input file]: <#the-input-file>
-[here]: <>
+[here]: <./TechnicalManual>
 [Post-Installation instructions]: <#post-installation-instructions>
 [input files]: </Configuracion/Plantillas>
-[Services]: <#Services>
