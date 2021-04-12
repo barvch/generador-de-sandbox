@@ -17,4 +17,4 @@ Hyper-V machine creation.
 Custom ISO creation.
 Operating system installation.
 Post-Installation running script.
-# The input file
+# Input values
