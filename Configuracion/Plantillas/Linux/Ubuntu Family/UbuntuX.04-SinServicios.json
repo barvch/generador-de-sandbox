@@ -1,0 +1,40 @@
+{
+    "Root": "E:\\SanboxTest",
+    "MaquinasVirtuales": [
+        {
+            "SistemaOperativo": "Ubuntu 16.04",
+            "TipoAmbiente": "Ubuntu desktop",
+            "Hostname": "ubuntuserver",
+            "DiscosVirtuales": [20],
+            "Procesadores": 2,
+            "RutaISO": "E:\\SanboxTest\\ubuntu-16.04.7-desktop-amd64.iso",
+            "MemoriaRAM": {
+                "Tipo": "Static",
+                "Memoria": 1.0
+            },
+            "Credenciales": {
+                "Usuario": "prueba",
+                "Contrasena": "hola12345.,"
+            },
+            "Interfaces": [
+                {
+                    "VirtualSwitch": {
+                        "Nombre": "SalidaInternet",
+                        "Tipo": "External",
+                        "AdaptadorRed": "Ethernet"
+                    },
+                    "Tipo": "Static",
+                    "Nombre": "SalidaInternet",
+                    "IP": "192.168.0.69",
+                    "MascaraRed": "24",
+                    "Gateway": "192.168.0.1",
+                    "DNS": "8.8.8.8"
+                }
+            ],
+            "Servicios": {
+                "AdministracionRemota": "SSH",
+                "PuertoSSH": 22
+            }
+        }
+    ]
+}

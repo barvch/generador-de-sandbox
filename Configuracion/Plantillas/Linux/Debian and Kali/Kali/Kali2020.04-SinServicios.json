@@ -1,0 +1,40 @@
+{
+    "Root": "E:\\SanboxTest",
+    "MaquinasVirtuales": [
+        {
+            "SistemaOperativo": "Kali Linux 2020.04",
+            "Hostname": "Contoso",
+            "DiscosVirtuales": [15],
+            "Procesadores": 2,
+            "RutaISO": "E:\\SanboxTest\\kali-linux-2020.4-installer-amd64.iso",
+            "MemoriaRAM": {
+                "Tipo": "Dynamic",
+                "Minima": 1.0,
+                "Maxima": 2.0
+            },
+            "Credenciales": {
+                "Usuario": "usuario",
+                "Contrasena": "hola12345.,"
+            },
+            "Interfaces": [
+                {
+                    "VirtualSwitch": {
+                        "Nombre": "SalidaInternet",
+                        "Tipo": "External",
+                        "AdaptadorRed": "Ethernet"
+                    },
+                    "Tipo": "Static",
+                    "Nombre": "SalidaInternet",
+                    "IP": "192.168.0.69",
+                    "MascaraRed": "24",
+                    "Gateway": "192.168.0.1",
+                    "DNS": "8.8.8.8"
+                }
+            ],
+            "Servicios": {
+                "AdministracionRemota": "SSH",
+                "PuertoSSH": 22
+            }
+        }
+    ]    
+}   

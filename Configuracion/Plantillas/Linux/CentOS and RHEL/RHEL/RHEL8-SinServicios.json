@@ -1,0 +1,40 @@
+{
+    "Root": "E:\\SanboxTest",
+    "MaquinasVirtuales": [
+        {
+            "SistemaOperativo": "RHEL 8",
+            "TipoAmbiente": "gnome",
+            "Hostname": "contoso",
+            "DiscosVirtuales": [20],
+            "Procesadores": 2,
+            "RutaISO": "E:\\SanboxTest\\CentOS-8.3.2011-x86_64-dvd1.iso",
+            "MemoriaRAM": {
+                "Tipo": "Static",
+                "Memoria": 1.0
+            },
+            "Credenciales": {
+                "Usuario": "usuario",
+                "Contrasena": "hola12345.,"
+            },
+            "Interfaces": [
+                {
+                    "VirtualSwitch": {
+                        "Nombre": "SalidaInternet",
+                        "Tipo": "External",
+                        "AdaptadorRed": "Ethernet"
+                    },
+                    "Tipo": "Static",
+                    "Nombre": "SalidaInternet",
+                    "IP": "192.168.0.69",
+                    "MascaraRed": "24",
+                    "Gateway": "192.168.0.1",
+                    "DNS": "8.8.8.8"
+                }
+            ],
+            "Servicios": {
+                "AdministracionRemota": "SSH",
+                "PuertoSSH": 22
+            }
+        }
+    ]
+}

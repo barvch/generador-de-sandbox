@@ -1,0 +1,41 @@
+{
+    "Root": "E:\\SanboxTest",
+    "MaquinasVirtuales": [
+        {
+            "SistemaOperativo": "Windows 10",
+            "Hostname": "Contoso",
+            "TipoAmbiente": "Windows 10 Home",
+            "LlaveActivacion": "xxxx-xxxx-xxxx-xxxx-xxxx",
+            "DiscosVirtuales": [30],
+            "Procesadores": 2,
+            "RutaISO": "E:\\SanboxTest\\Win10_1909_English_x64.iso",
+            "MemoriaRAM": {
+                "Tipo": "Static",
+                "Memoria": 1.0
+            },
+            "Credenciales": {
+                "Usuario": "Barto",
+                "Contrasena": "hola12345.,"
+            },
+            "Interfaces": [
+                {
+                    "VirtualSwitch": {
+                        "Nombre": "SalidaInternet",
+                        "Tipo": "External",
+                        "AdaptadorRed": "Ethernet"
+                    },
+                    "Tipo": "Static",
+                    "Nombre": "SalidaInternet",
+                    "IP": "192.168.0.69",
+                    "MascaraRed": "24",
+                    "Gateway": "192.168.0.1",
+                    "DNS": "8.8.8.8"
+                }
+            ],
+            "RutaMSI": ["RUTA-MSI", "RUTA-MSI"],
+            "Servicios": {
+                "AdministracionRemota": "RDP"
+            }
+        }
+    ]
+}

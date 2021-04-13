@@ -2,7 +2,7 @@
     "Root": "E:\\SanboxTest",
     "MaquinasVirtuales": [
         {
-            "SistemaOperativo": "CentOS 8",
+            "SistemaOperativo": "RHEL 8",
             "TipoAmbiente": "gnome",
             "Hostname": "contoso",
             "DiscosVirtuales": [20],
@@ -73,30 +73,30 @@
                     ]
                 },
                 "DNS": { 
-                "Interfaz": "SalidaInternet",
-                "Zonas":
-                [
-                    {
-                        "Tipo": "Forward",
-                        "Nombre": "ZonaUno",
-                        "Registros": [
-                            {
-                                "Tipo": "A",
-                                "Hostname": "misitio.local",
-                                "IP": "10.23.1.2"
-                            },
-                            {
-                                "Tipo": "CNAME",
-                                "Alias": "alias",
-                                "FQDN": "misitio2.local"
-                            },
-                            {
-                                "Tipo": "MX",
-                                "ChildDomain": "misitio2.local",
-                                "FQDN": "prueba.misitio2.local"
-                            }
-                        ]
-                    },
+                    "Interfaz": "SalidaInternet",
+                    "Zonas":
+                    [
+                        {
+                            "Tipo": "Forward",
+                            "Nombre": "ZonaUno",
+                            "Registros": [
+                                {
+                                    "Tipo": "A",
+                                    "Hostname": "misitio.local",
+                                    "IP": "10.23.1.2"
+                                },
+                                {
+                                    "Tipo": "CNAME",
+                                    "Alias": "alias",
+                                    "FQDN": "misitio2.local"
+                                },
+                                {
+                                    "Tipo": "MX",
+                                    "ChildDomain": "misitio2.local",
+                                    "FQDN": "prueba.misitio2.local"
+                                }
+                            ]
+                        },
                         {
                                 "Tipo": "Reverse",
                                 "Nombre": "ZonaDos",
@@ -114,8 +114,8 @@
                                     }
                                 ]
                             }
-                ]
-            },
+                    ]
+                },
                 "DHCP": {
                     "Interfaz": "SalidaInternet",
                     "Scopes": [

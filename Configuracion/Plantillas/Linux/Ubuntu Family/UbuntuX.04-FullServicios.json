@@ -57,50 +57,50 @@
                         "Drupal": true                }
                     ]
                 },
-                "DNS": { 
-                "Interfaz": "SalidaInternet",
-                "Zonas":
-                [
-                    {
-                        "Tipo": "Forward",
-                        "Nombre": "ZonaUno",
-                        "Registros": [
-                            {
-                                "Tipo": "A",
-                                "Hostname": "misitio.local",
-                                "IP": "10.23.1.2"
-                            },
-                            {
-                                "Tipo": "CNAME",
-                                "Alias": "alias",
-                                "FQDN": "misitio2.local"
-                            },
-                            {
-                                "Tipo": "MX",
-                                "ChildDomain": "misitio2.local",
-                                "FQDN": "prueba.misitio2.local"
-                            }
-                        ]
-                    },
+                "DNS": {
+                    "Interfaz": "SalidaInternet",
+                    "Zonas":
+                    [
                         {
-                                "Tipo": "Reverse",
-                                "Nombre": "ZonaDos",
-                                "NetID": "12.11.13.0/24",
-                                "Registros": [
-                                    {
-                                        "Tipo": "PTR",
-                                        "Hostname": "misitioRegi.local",
-                                        "Host": "2"
-                                    },
-                                    {
-                                        "Tipo": "CNAME",
-                                        "Alias": "alias",
-                                        "FQDN": "misitio2.local"
-                                    }
-                                ]
-                            }
-                ]
-            },
+                            "Tipo": "Forward",
+                            "Nombre": "ZonaUno",
+                            "Registros": [
+                                {
+                                    "Tipo": "A",
+                                    "Hostname": "misitio.local",
+                                    "IP": "10.23.1.2"
+                                },
+                                {
+                                    "Tipo": "CNAME",
+                                    "Alias": "alias",
+                                    "FQDN": "misitio2.local"
+                                },
+                                {
+                                    "Tipo": "MX",
+                                    "ChildDomain": "misitio2.local",
+                                    "FQDN": "prueba.misitio2.local"
+                                }
+                            ]
+                        },
+                        {
+                            "Tipo": "Reverse",
+                            "Nombre": "ZonaDos",
+                            "NetID": "12.11.13.0/24",
+                            "Registros": [
+                                {
+                                    "Tipo": "PTR",
+                                    "Hostname": "misitioRegi.local",
+                                    "Host": "2"
+                                },
+                                {
+                                    "Tipo": "CNAME",
+                                    "Alias": "alias",
+                                    "FQDN": "misitio2.local"
+                                }
+                            ]
+                        }
+                    ]
+                },
                 "DHCP": {
                     "Interfaz": "SalidaInternet",
                     "Scopes": [
