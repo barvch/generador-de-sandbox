@@ -443,6 +443,8 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
                 
                 - Script. Optional. Database script location.
 
+                > The service configure the user and password from *Crendenciales* field, if a script is provided, the owner user is set by the same field.
+
              **Example:**
              
             ```JSON
