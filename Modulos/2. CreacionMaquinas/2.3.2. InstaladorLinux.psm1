@@ -71,7 +71,6 @@ function CrearISODebianFlavor {
             Copy-Item ".\Recursos\unattend\Debian\preseed.cfg" "$directorio" -Force
         } else {
             Copy-Item ".\Recursos\unattend\Debian\preseed.cfg" "$directorio" -Force
-            #Copy-Item ".\Recursos\unattend\Kali\preseed.cfg" "$directorio" -Force
         }
         if ($ambiente -match "Core") { $insert = "tasksel tasksel/first multiselect standard`n" } else { $insert = "tasksel tasksel/desktop multiselect xfce" } 
         $configInterfaces = ""
@@ -91,7 +90,6 @@ function CrearISODebianFlavor {
             }
             $contador++
         }
-        #if ($ambiente -eq "Core") { $insert = "tasksel tasksel/first multiselect standard`n" } else { $insert = "tasksel tasksel/first multiselect desktop, standard`nd-i tasksel/first multiselect Debian desktop environment, Standard system utilities`ntasksel tasksel/desktop string xfce" } 
         (Get-Content "$directorio\preseed.cfg").replace('{{paquetes}}', "") | Set-Content "$directorio\$seed_file"
         (Get-Content "$directorio\preseed.cfg").replace('{{interfaces}}', $configInterfaces) | Set-Content "$directorio\$seed_file"
         (Get-Content "$directorio\preseed.cfg").replace('{{ambiente}}', $insert) | Set-Content "$directorio\$seed_file"

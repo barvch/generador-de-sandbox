@@ -1,12 +1,13 @@
 {
-    "SistemaOperativo":  "Ubuntu 18.04",
-    "Hostname":  "oneplus",
-    "DiscosVirtuales":  20,
+    "SistemaOperativo":  "Kali Linux 2020.04",
+    "Hostname":  "kaliserver",
+    "DiscosVirtuales":  30,
     "Procesadores":  2,
-    "RutaISO":  "E:\\SanboxTest\\ubuntu-18.04.5-desktop-amd64.iso",
+    "RutaISO":  "E:\\SanboxTest\\kali-linux-2020.4-installer-amd64.iso",
     "MemoriaRAM":  {
-                       "Tipo":  "Static",
-                       "Memoria":  1.0
+                       "Tipo":  "Dynamic",
+                       "Minima":  1.0,
+                       "Maxima":  2.0
                    },
     "Credenciales":  {
                          "Usuario":  "usuario",
@@ -21,7 +22,7 @@
                                              },
                            "Tipo":  "Static",
                            "Nombre":  "SalidaInternet",
-                           "IP":  "192.168.100.220",
+                           "IP":  "192.168.100.201",
                            "MascaraRed":  "255.255.255.0",
                            "Gateway":  "192.168.100.1",
                            "DNS":  "8.8.8.8"
@@ -31,7 +32,10 @@
                               "TipoAmbiente":  null,
                               "LlaveActivacion":  null,
                               "RutaMSI":  null,
-                              "ArchivoXML":  null
+                              "ArchivoXML":  null,
+                              "Backup":  null,
+                              "VHDRuta":  null,
+                              "RutaLicencia":  null
                           },
     "Servicios":  {
                       "AdministracionRemota":  "SSH",
@@ -41,42 +45,16 @@
                       "ActiveDirectory":  null,
                       "IIS":  null,
                       "DHCP":  {
-                                   "Interfaz":  "192.168.100.220",
-                                   "MascaraRed":  "255.255.255.0",
-                                   "Scopes":  [
-                                                  {
-                                                      "Rangos":  [
-                                                                     {
-                                                                         "Inicio":  "192.168.100.40",
-                                                                         "Fin":  "192.168.100.70"
-                                                                     }
-                                                                 ],
-                                                      "MascaraRed":  "255.255.255.0",
-                                                      "DNS":  "8.8.8.8",
-                                                      "Gateway":  "192.168.100.1"
-                                                  }
-                                              ]
+
                                },
                       "DNS":  {
 
                               },
                       "ServidorWeb":  {
-                                          "Servidor":  "apache2",
-                                          "Sitios":  [
-                                                         {
-                                                             "Nombre":  "sitio",
-                                                             "Dominio":  "sitio.local",
-                                                             "Interfaz":  "192.168.100.220",
-                                                             "Puerto":  80,
-                                                             "Protocolo":  "http",
-                                                             "Drupal":  ""
-                                                         }
-                                                     ]
+
                                       },
                       "ManejadorBD":  {
-                                          "Manejador":  "MariaDB",
-                                          "NombreBD":  "testing",
-                                          "Script":  ""
+
                                       },
                       "Iptables":  null
                   }
