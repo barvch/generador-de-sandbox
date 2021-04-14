@@ -1,0 +1,239 @@
+{
+    "Root": "E:\\SanboxTest",
+    "MaquinasVirtuales": [
+        {
+            "SistemaOperativo": "CentOS 8",
+            "TipoAmbiente": "gnome",
+            "Hostname": "centosserver",
+            "DiscosVirtuales": [20],
+            "Procesadores": 2,
+            "RutaISO": "E:\\SanboxTest\\CentOS-8.3.2011-x86_64-dvd1.iso",
+            "MemoriaRAM": {
+                "Tipo": "Static",
+                "Memoria": 2.0
+            },
+            "Credenciales": {
+                "Usuario": "usuario",
+                "Contrasena": "hola12345.,"
+            },
+            "Interfaces": [
+                {
+                    "VirtualSwitch": {
+                        "Nombre": "SalidaInternet",
+                        "Tipo": "External",
+                        "AdaptadorRed": "Ethernet"
+                    },
+                    "Tipo": "Static",
+                    "Nombre": "SalidaInternet",
+                    "IP": "192.168.0.200",
+                    "MascaraRed": "24",
+                    "Gateway": "192.168.0.1",
+                    "DNS": "8.8.8.8"
+                }
+            ],
+            "Servicios": {
+                "AdministracionRemota": "SSH",
+                "PuertoSSH": 22,
+                "ManejadorBD": {
+                    "Manejador": "MariaDB",
+                    "NombreBD":"MiBasecita"
+                },
+                "ServidorWeb": {
+                    "Servidor": "httpd",
+                    "Sitios": [
+                        {
+                        "Nombre": "sitio",
+                        "Dominio": "sitio.local",
+                        "Interfaz": "SalidaInternet",
+                        "Puerto": 80,
+                        "Protocolo": "http",
+                        "Drupal": false                
+                    },
+                    {
+                        "Nombre": "sitioDos",
+                        "Dominio": "sitio2.local",
+                        "Interfaz": "SalidaInternet",
+                        "Puerto": 80,
+                        "Protocolo": "http",
+                        "Drupal": true                
+                    }
+                    ]
+                }
+            }
+        },
+        {
+            "SistemaOperativo": "Kali Linux 2020.04",
+            "Hostname": "kaliserver",
+            "DiscosVirtuales": [30],
+            "Procesadores": 2,
+            "RutaISO": "E:\\SanboxTest\\kali-linux-2020.4-installer-amd64.iso",
+            "MemoriaRAM": {
+                "Tipo": "Dynamic",
+                "Minima": 1.0,
+                "Maxima": 2.0
+            },
+            "Credenciales": {
+                "Usuario": "usuario",
+                "Contrasena": "hola12345.,"
+            },
+            "Interfaces": [
+                {
+                    "VirtualSwitch": {
+                        "Nombre": "SalidaInternet",
+                        "Tipo": "External",
+                        "AdaptadorRed": "Ethernet"
+                    },
+                    "Tipo": "Static",
+                    "Nombre": "SalidaInternet",
+                    "IP": "192.168.100.201",
+                    "MascaraRed": "24",
+                    "Gateway": "192.168.100.1",
+                    "DNS": "8.8.8.8"
+                }
+            ],
+            "Servicios": {
+                "AdministracionRemota": "SSH",
+                "PuertoSSH": 22
+            }
+        },
+        {
+            "SistemaOperativo": "FortiOS 6",
+            "Hostname": "fortiserver",
+            "DiscosVirtuales": [20],
+            "Procesadores": 1,
+            "MemoriaRAM": {
+                "Tipo": "Static",
+                "Memoria": 1.0
+            },
+            "Credenciales": {
+                "Usuario": "usuario",
+                "Contrasena": "hola12345.,"
+            },
+            "Interfaces": [
+                {
+                    "VirtualSwitch": {
+                        "Nombre": "SalidaInternet",
+                        "Tipo": "External",
+                        "AdaptadorRed": "Ethernet"
+                    },
+                    "Administrativa": true,
+                    "Tipo": "Static",
+                    "Nombre": "SalidaInternet",
+                    "IP": "192.168.100.202",
+                    "MascaraRed": "24"
+                },
+                {
+                    "VirtualSwitch": {
+                        "Nombre": "Interno",
+                        "Tipo": "Internal"
+                    },
+                    "Administrativa": false,
+                    "Tipo": "Static",
+                    "Nombre": "Interno",
+                    "IP": "192.168.117.14",
+                    "MascaraRed": "24"
+                },
+                {
+                    "VirtualSwitch": {
+                        "Nombre": "InternoDos",
+                        "Tipo": "Internal"
+                    },
+                    "Administrativa": false,
+                    "Tipo": "Static",
+                    "Nombre": "InternoDos",
+                    "IP": "192.168.1.15",
+                    "MascaraRed": "24"
+                },
+                {
+                    "VirtualSwitch": {
+                        "Nombre": "Privado",
+                        "Tipo": "Private"
+                    },
+                    "Administrativa": false,
+                    "Tipo": "Static",
+                    "Nombre": "Privado",
+                    "IP": "192.168.11.17",
+                    "MascaraRed": "24"
+                },
+                {
+                    "VirtualSwitch": {
+                        "Nombre": "PrivadoDos",
+                        "Tipo": "Private"
+                    },
+                    "Administrativa": false,
+                    "Tipo": "Static",
+                    "Nombre": "PrivadoDos",
+                    "IP": "192.168.12.18",
+                    "MascaraRed": "24"
+                },
+                {
+                    "VirtualSwitch": {
+                        "Nombre": "PrivadoTres",
+                        "Tipo": "Private"
+                    },
+                    "Administrativa": false,
+                    "Tipo": "Static",
+                    "Nombre": "PrivadoTres",
+                    "IP": "192.168.13.19",
+                    "MascaraRed": "24"
+                }
+            ],
+		    "RutaBackup":"",
+		    "LicenciaRuta":"",
+		    "RutaVHD":"E:\\SanboxTest\\fortios.vhd"
+        },
+        {
+            "SistemaOperativo": "Windows Server 2019",
+            "Hostname": "Contoso",
+            "TipoAmbiente": "Windows Server 2019 Standard Evaluation (Desktop Experience)",
+            "LlaveActivacion": "xxxx-xxxx-xxxx-xxxx-xxxx",
+            "DiscosVirtuales": [30],
+            "Procesadores": 2,
+            "RutaISO": "E:\\SanboxTest\\WindowsServer2019_SERVER_EVAL_x64FRE_en-us_1.iso",
+            "MemoriaRAM": {
+                "Tipo": "Dynamic",
+                "Minima": 1.0,
+                "Maxima": 2.0
+            },
+            "Credenciales": {
+                "Usuario": "Barto",
+                "Contrasena": "hola12345.,"
+            },
+            "Interfaces": [
+                {
+                    "VirtualSwitch": {
+                        "Nombre": "SalidaInternet",
+                        "Tipo": "External",
+                        "AdaptadorRed": "Ethernet"
+                    },
+                    "Tipo": "Static",
+                    "Nombre": "SalidaInternet",
+                    "IP": "192.168.0.203",
+                    "MascaraRed": "24",
+                    "Gateway": "192.168.0.1",
+                    "DNS": "8.8.8.8"
+                }
+            ],
+            "Servicios": {
+                "CertificateServices": true,
+                "WindowsDefender": true,
+                "AdministracionRemota": "RDP",
+                "IIS":  [
+                    {
+                        "Nombre": "MiSitio.local",
+                        "Directorio": "MiSitioUno",
+                        "Bindings": [
+                            {
+                                "Dominio": "misitio.local",
+                                "Interfaz": "SalidaInternet",
+                                "Protocolo": "https",
+                                "Puerto": 443,
+                                "WebDAV": false
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    ]
+}   

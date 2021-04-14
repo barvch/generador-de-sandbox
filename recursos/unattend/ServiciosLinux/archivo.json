@@ -1,13 +1,12 @@
 {
-    "SistemaOperativo":  "Kali Linux 2020.04",
-    "Hostname":  "kaliserver",
-    "DiscosVirtuales":  30,
-    "Procesadores":  2,
-    "RutaISO":  "E:\\SanboxTest\\kali-linux-2020.4-installer-amd64.iso",
+    "SistemaOperativo":  "FortiOS 6",
+    "Hostname":  "fortiserver",
+    "DiscosVirtuales":  20,
+    "Procesadores":  1,
+    "RutaISO":  null,
     "MemoriaRAM":  {
-                       "Tipo":  "Dynamic",
-                       "Minima":  1.0,
-                       "Maxima":  2.0
+                       "Tipo":  "Static",
+                       "Memoria":  1.0
                    },
     "Credenciales":  {
                          "Usuario":  "usuario",
@@ -22,10 +21,81 @@
                                              },
                            "Tipo":  "Static",
                            "Nombre":  "SalidaInternet",
-                           "IP":  "192.168.100.201",
+                           "IP":  "192.168.100.202",
                            "MascaraRed":  "255.255.255.0",
-                           "Gateway":  "192.168.100.1",
-                           "DNS":  "8.8.8.8"
+                           "Gateway":  "",
+                           "DNS":  "",
+                           "Administrativa":  true
+                       },
+                       {
+                           "VirtualSwitch":  {
+                                                 "Nombre":  "Interno",
+                                                 "Tipo":  "Internal",
+                                                 "AdaptadorRed":  "Ethernet"
+                                             },
+                           "Tipo":  "Static",
+                           "Nombre":  "Interno",
+                           "IP":  "192.168.117.14",
+                           "MascaraRed":  "255.255.255.0",
+                           "Gateway":  "",
+                           "DNS":  "",
+                           "Administrativa":  false
+                       },
+                       {
+                           "VirtualSwitch":  {
+                                                 "Nombre":  "InternoDos",
+                                                 "Tipo":  "Internal",
+                                                 "AdaptadorRed":  "Ethernet"
+                                             },
+                           "Tipo":  "Static",
+                           "Nombre":  "InternoDos",
+                           "IP":  "192.168.1.15",
+                           "MascaraRed":  "255.255.255.0",
+                           "Gateway":  "",
+                           "DNS":  "",
+                           "Administrativa":  false
+                       },
+                       {
+                           "VirtualSwitch":  {
+                                                 "Nombre":  "Privado",
+                                                 "Tipo":  "Private",
+                                                 "AdaptadorRed":  "Ethernet"
+                                             },
+                           "Tipo":  "Static",
+                           "Nombre":  "Privado",
+                           "IP":  "192.168.11.17",
+                           "MascaraRed":  "255.255.255.0",
+                           "Gateway":  "",
+                           "DNS":  "",
+                           "Administrativa":  false
+                       },
+                       {
+                           "VirtualSwitch":  {
+                                                 "Nombre":  "PrivadoDos",
+                                                 "Tipo":  "Private",
+                                                 "AdaptadorRed":  "Ethernet"
+                                             },
+                           "Tipo":  "Static",
+                           "Nombre":  "PrivadoDos",
+                           "IP":  "192.168.12.18",
+                           "MascaraRed":  "255.255.255.0",
+                           "Gateway":  "",
+                           "DNS":  "",
+                           "Administrativa":  false
+                       },
+                       {
+                           "VirtualSwitch":  {
+                                                 "Nombre":  "PrivadoTres",
+                                                 "Tipo":  "Private",
+                                                 "AdaptadorRed":  "Ethernet"
+                                             },
+                           "Tipo":  "Static",
+                           "Nombre":  "PrivadoTres",
+                           "IP":  "192.168.13.19",
+                           "MascaraRed":  "255.255.255.0",
+                           "Gateway":  "",
+                           "DNS":  "",
+                           "Administrativa":  false
                        }
                    ],
     "DatosDependientes":  {
@@ -33,29 +103,21 @@
                               "LlaveActivacion":  null,
                               "RutaMSI":  null,
                               "ArchivoXML":  null,
-                              "Backup":  null,
-                              "VHDRuta":  null,
-                              "RutaLicencia":  null
+                              "Backup":  "",
+                              "VHDRuta":  "E:\\SanboxTest\\fortios.vhd",
+                              "RutaLicencia":  ""
                           },
     "Servicios":  {
                       "AdministracionRemota":  "SSH",
-                      "PuertoSSH":  22,
+                      "PuertoSSH":  null,
                       "CertificateServices":  null,
                       "WindowsDefender":  null,
                       "ActiveDirectory":  null,
                       "IIS":  null,
-                      "DHCP":  {
-
-                               },
-                      "DNS":  {
-
-                              },
-                      "ServidorWeb":  {
-
-                                      },
-                      "ManejadorBD":  {
-
-                                      },
+                      "DHCP":  null,
+                      "DNS":  null,
+                      "ServidorWeb":  null,
+                      "ManejadorBD":  null,
                       "Iptables":  null
                   }
 }
