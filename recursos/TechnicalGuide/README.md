@@ -5,9 +5,9 @@ Welcome to the technical guide of this tool!. The intention of this guide is gui
 ## Main Structure
 
 ```Bash
-├───main.ps1
+    main.ps1
 ├───Configuracion
-|   ├───configuracion.json
+|       configuracion.json
 │   └───Plantillas
 ├───Modulos
 │   ├───1. Validaciones
@@ -24,18 +24,12 @@ Welcome to the technical guide of this tool!. The intention of this guide is gui
     │   ├───Ubuntu
     │   └───Windows
     └───Validaciones
-```
-
-* **main.ps1**. Main function, it calls 
-* **configuracion.json**.
-* ****.
-For detailed information please check the section below. 
+``` 
 
 ## Workflow 
 
 Every step will describe its own functions, for information about step's behavior please check [About Tool] section.
 
-<embed src="./Files/ejemplo.pdf" type="application/pdf">
 
 
 [About Tool]: <../UserGuide#about-tool>
