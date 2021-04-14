@@ -1,0 +1,122 @@
+Datos,,,,,,Obligatoriedad,Tipo de dato,Longitud,Validación,Criterios de aceptación ,Notas
+Servicios,,,,,,,,,,,
+Generales,,,,,,,,,,,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                         ,RDP,,,,,Opcional,String,-,-,Solamente se permite para sistemas operativos tipo Windows,"En caso de no ingresar el dato, el sistema debe proporcionarlo automáticamente"
+,SSH,Puerto,,,,,,,,"Solamente se permite para sistemas operativos tipo Linux/Unix
+No se puede hacer uso de puertos bien conocidos",
+Windows Server 2019,,,,,,,,,,,
+WindowsDefender,,,,,,Opcional,Boolean,-,-,Instalación,
+ActiveDirectory,Domain,,,,,Sí,String,-,dominio,,
+,NetBIOS,,,,,Opcional,String,longitud6,alfaNum1,"En caso de no ser ingresado, este se obtiene a partir del primer prefijo del campo Domain y se aplica un cambio a mayúsculas",
+,DomainMode,Win2008,,,,Sí,String,-,-,El nivel funcional del campo DomainMode no puede menor al nivel funcional del campo ForestMode,
+,,Win2008R2,,,,,,,,,
+,,Win2012,,,,,,,,,
+,,Win2012R2,,,,,,,,,
+,,Win2016,,,,,,,,,
+,ForestMode,DomainMode,,,,Opcional,String,-,-,"En caso de no ser ingresado, este toma el valor del campo DomainMode",
+CertificateServices,,,,,,Opcional,Boolean,-,-,Instalación,
+IIS,Sitios,Nombre,,,,Sí,String,longitud6,alfaNum4,"Se debe agregar el registro en el archivo hosts
+El nombre debe ser único","Se permite el ingreso de múltiples bloques Sites y Bindings
+
+Los campos IIS.Sitios.Nombre y IIS.Sitios.Bindings.Dominio no se deben repetir"
+,,Directorio,,,,Opcional,,longitud6,alfaNum1,"Se deben otorgar los siguientes permisos al grupo davGroup
+- Read & execute
+- List folder contents
+- Read
+Se crea el directorio en la ruta c:\Inetpub\
+La ruta debe contener el archivo index.htm
+El directorio debe ser único
+En caso de no ingresarlo, este toma el valor del campo IIS.Sitios.Nombre",
+,,Bindings,Dominio,,,Sí,String,-,dominio,El dominio debe ser único,
+,,,Interfaz,,,,,-,-,Se utiliza para obtener la dirección IP asociada al nombre de interfaz ingresada en la sección de datos generales,
+,,,Protocolo,http,,,,-,-,-,
+,,,,https,,,,-,-,"Si se seleccionó el protocolo https, se crea un certificado autofirmado",
+,,,Puerto,,,Opcional,,-,puertos,"En caso de no ingresar el campo, este se define por default a partir del protocolo seleccionado (http.80, https:443)
+No se puede hacer uso del puerto 443 para http y 80 para https
+No se puede hacer uso de los puertos bien conocidos",
+,,,WebDAV,,,Opcional,Boolean,-,-,"Se debe crear la carpeta WebDAV en la ruta especificada como root del sitio
+Por defecto se asignan los permisos al grupo DavGroup:
+- Read
+- Source
+- Write",
+DHCP,Scopes,Nombre,,,,Obligatorio,String,alfaNum1,longitud1,El nombre debe ser único,"Se permite el ingreso de múltiples bloques Scope
+
+El nombre de los bloques Scope debe ser único
+
+Cada bloque Scope unicamente tiene asociado un segmento de red
+
+Se permite el ingreso de múltiples bloques Exclusiones
+
+Solamente se considera IPv4"
+,,Rango,Inicio,,,,,-,ip,"La IP Inicio debe ser menor a la IP Fin
+El rango del scope debe ser único
+El campo MascaraRed también acepta los valores 24, 16 y 8",
+,,,Fin,,,,,,,,
+,,,MascaraRed,,,,,,,,
+,,Exclusiones,Rango,Inicio,,Opcional,,,,"El rango del bloque o la IP de debe estar entre el rango establecido en el campo Scope.Rango
+Se debe ingresar un rango o una dirección IP",
+,,,,Fin,,,,,,,
+,,,Unica,IP,,,,,,,
+,,Lease,Dias,,,,Int,"1,3",-,"Valor mínimo 0, máximo 999",
+,,,Horas,,,Obligatorio,,"1,2",,"Valor mínimo 1, máximo 23",
+,,,Minutos,,,Opcional,,"1,2",,"Valor mínimo 0, máximo 59",
+,,Gateway,,,,,String,-,ip,,
+,,DNS,,,,,,,,,
+DNS / Bind DNS,Zonas,Forward,Nombre,,,Obligatorio,String,longitud1,alfaNum1,"El nombre debe ser único
+Se agrega el sufijo .dns para Windows Server 2019
+Se crea la zona en la ruta /etc/bind/master/zones/$nombre.db para Bind DNS","No se integra con Active Directory
+
+Se permite el ingreso de múltiples bloques ""Zonas""
+
+Las secciones ""Registros"" son opcionales pero si se ingresa algún tipo, depende de este que los datos cambien su obligatoriedad"
+,,,Backup,,,Opcional,,-,-,"La ruta del archivo en la máquina base debe ser válida y debe tener el sufijo .dns
+Este archivo se copia en la ruta %SystemRoot%\system32\dns de la máquina virtual
+Para Bind DNS este campo no es requerido",
+,,,Registros,A,Hostname,Obligatorio,String,-,dominio,,
+,,,,,IP,,,-,ip,,
+,,,,CNAME,Alias,Obligatorio,String,alfaNum1,longitud1,,
+,,,,,FQDN,,,-,dominio,,
+,,,,MX,ChildDomain,Obligatorio,,-,dominio,,
+,,,,,FQDN,,,-,dominio,,
+,,Reverse,NetID,,,Obligatorio,String,-,ip,"El netID debe ser único
+Sebe aceptar valores con el siguiente formato:
+-xxx.0.0.0
+-xxx.xxx.0.0
+-xxx.xxx.xxx.0
+Se crea la zona en la ruta /etc/bind/master/zones/$nombre.db para Bind DNS de acuerdo al formato del servicio",
+,,,Backup,,,,,-,-,"La ruta del archivo en la máquina base debe ser válida y debe tener el sufijo .in-addr.arpa.dns
+Este archivo se copia en la ruta %SystemRoot%\system32\dns de la máquina virtual
+Para Bind DNS este campo no es requerido",
+,,,Registros,PTR,IP,,,-,ip,,
+,,,,,Hostname,,,,dominio,,
+,,,,CNAME,Alias,,,longitud1,alfaNum1,,
+,,,,,FQDN,,,-,dominio,,
+Linux/Unix,,,,,,,,,,,
+ServidorWeb,apache2,Sitios,Nombre,,,Obligatorio,String,alfaNum4,longitud5,"El campo debe ser único
+La carpeta root del sitio web se debe crear en el directorio /var/ww/
+Los archivos de configuración se nombran de acuerdo al campo $Nombre.conf en la ruta /etc/$servidorWeb/sites-available/","Se permite el ingreso de múltiples bloques Sitios pero solamente de un tipo de ServidorWeb (apache2 o nginx)
+
+No se cuenta con soporte para PostgreSQL para Drupal"
+,,,Dominio,,,Obligatorio,String,-,dominio,El campo debe ser único,
+,,,Interfaz,,,Obligatorio,String,-,-,Se utiliza para obtener la dirección IP asociada al nombre de interfaz ingresada en la sección de datos generales,
+,,,Puerto,,,Opcional,Int,-,-,"Si se seleccionó el protocolo https, se crea un certificado autofirmado",
+,nginx,,Protocolo,http,,Obligatorio,String,-,-,"En caso de no ingresar el campo, este se define por default a partir del protocolo seleccionado (http.80, https:443) No se puede hacer uso del puerto 443 para http y 80 para https No se puede hacer uso de los puertos bien conocidos",
+,,,,https,,,,,,,
+,,,Drupal,,,Opcional,Boolean,-,-,Se debe configurar el instalador web en el sitio creado dependiendo del protocolo y servidor seleccionado,
+ManejadorBD,SQLServer,NombreBD,,,,Obligatorio,String,longitud5,alfanum4,Se realiza una conversión a minúsculas,Únicamente instalación de SQL Server para Ubuntu x.04
+,MariaDB,,,,,,,,,,
+,MySQL,Script,,,,Opcional,String,-,-,,
+,PostgreSQL,,,,,,,,,,
+ISC-DHCP-Server,Interfaz,,,,,Obligatorio,String,-,-,Se utiliza para obtener la dirección IP asociada al nombre de interfaz ingresada en la sección de datos generales.,
+,MascaraRed,,,,,-,-,-,-,El dato se obtiene a partir de la interfaz seleccionada,
+,Scopes,Rangos,Inicio,,,Obligatorio,String,-,ip,"La IP Inicio debe ser menor a la IP Fin
+El rango del scope debe ser único
+El rango del bloque o la IP de debe estar entre el rango establecido en el campo Scope.Rango
+Se debe ingresar un rango o una dirección IP",Se permite el ingreso de múltiples bloques Rangos
+,,,Fin,,,Obligatorio,,,,,
+,,MascaraRed,,,,Obligatorio,String,-,ip,"El campo MascaraRed también acepta los valores 24, 16 y 8",
+,,DNS,,,,Opcional,,,,,
+,,Gateway,,,,Opcional,,,,,
+Bind DNS,Interfaz,,,,,Obligatorio,String,-,-,Se utiliza para obtener la dirección IP asociada al nombre de interfaz ingresada en la sección de datos generales,
+,Validaciones especificadas en el servicio DNS / Bind DNS de la sección de Windows Server 2019,,,,,-,-,-,-,,
+IPTables,,,,,,Opcional,String,-,-,Ruta válida del archivo que contiene las reglas,
