@@ -181,7 +181,7 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
             > - Usuario.
 
             > - Contrasena.
-> 
+
             > **NOTE**: For RHEL distribution it's IMPORTANT provide a valid account credentials.
         
         + <details>
