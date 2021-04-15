@@ -43,6 +43,8 @@ Welcome to the technical guide of this tool!. The intention of this guide is gui
 
 Every step will describe its own functions, for information about step's behavior please check [About Tool] section.
 
+* [Workflow].
+
 ## Input Data
 
 * [Generic and Dependent Values].
@@ -51,3 +53,4 @@ Every step will describe its own functions, for information about step's behavio
 [About Tool]: <../UserGuide#about-tool>
 [Generic and Dependent Values]: <./Files/InputValues.pdf>
 [Services]: <./Files/Services.pdf>
+[Workflow]: <./Files/Workflow.pdf>
