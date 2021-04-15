@@ -24,7 +24,20 @@ Welcome to the technical guide of this tool!. The intention of this guide is gui
     │   ├───Ubuntu
     │   └───Windows
     └───Validaciones
+           catalogos.ps1
+           obtenerValidaciones.psm1
 ``` 
+
+* **Configuracion**. Contains configuration file (*configuracion.json*) and virtual machines's templates. 
+* **Modulos**. Powershell modules.
+    - *1. Validaciones*. Data validation.  
+    - *2. CreacionMaquinas*. Hyper-V's machine creation and custom ISO file creation.
+* **recursos**. Files used for data validation and virtual machines creation.
+    - **unattend**. Templates used for each OS ISO file creation.
+        + *ServiciosLinux*. Services installation and configuration script and templates used for Linux/Unix services.
+    - **Validaciones**. Files used for data validation.
+        + *catalogos.ps1*. System catalogs.
+        + *obtenerValidaciones.psm1*. Data type validations.
 
 ## Workflow 
 
