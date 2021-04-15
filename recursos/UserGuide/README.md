@@ -905,6 +905,7 @@ In some cases, in order to get the full configuration ready in the VMs, human in
 * Debian 10 Buster.
 * Kali Linux 20.04.
 * Ubuntu Family.
+* Windows Server 2019 if IIS Service is configured.
 
 Specifications foreach system can be found bellow:
 
@@ -934,7 +935,7 @@ ifup eth0
 
 ### Windows Server 2019
 
-For IIS Service, if a site it's not configured properly, it's neccesary run the configuration script manually. Open Powershell with administrative permissions and run the following command:
+If a site it's not configured properly, it's neccesary run the configuration script manually. Open Powershell with administrative permissions and run the following command:
 
 ```Powershell
 .\C:\sources\$OEM$\$1\ConfigurarServiciosWindows.ps1
