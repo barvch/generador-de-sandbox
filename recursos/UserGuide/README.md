@@ -47,6 +47,8 @@ The workflow of the tool is the following:
 * **Custom ISO creation**. In this step, the ISO file specified by user is mounted in host and unattended files are customized and loaded within. The tool for the ISO creation depends of each operating system:
 
     - *Windows*: DISM.
+        
+        >**NOTE**: In windows distributions, the tool mounts the ISO and gets its drive letter, immediately, assigns the next letter to its VHD. It may cause an error if the host has only one subsecuent available drive.    
     
     - *Linux/Unix and FortiOS*: mkisofs.
     
