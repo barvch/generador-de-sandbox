@@ -28,7 +28,7 @@ Welcome to the technical guide of this tool!. The intention of this guide is gui
            obtenerValidaciones.psm1
 ``` 
 
-* **Configuracion**. the Contains configuration file (*configuracion.json*) and virtual machines's templates. 
+* **Configuracion**. Contains the configuration file (*configuracion.json*) and virtual machines's templates. 
 * **Modulos**. Powershell modules.
     - *1. Validaciones*. Data validation.  
     - *2. CreacionMaquinas*. Hyper-V's machine creation and custom ISO file creation.
