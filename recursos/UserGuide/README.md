@@ -824,7 +824,7 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
 
 This tool provides some examples of valid [input files], which can serve as a reference and can be loaded directly into the tool by making the corresponding modifications for the environment you want to create. You can find templates to create VMs specifically of each supported operating system, as well as other templates creating a whole infrastructure of VMs.
 
-> For technical specifications about every single value please check [Input Values] section.
+> For technical specifications about every single value please check [Input Data] section.
 
 ## Pre-Installation Requirements
 
@@ -935,7 +935,7 @@ ifup eth0
 [Download the Linux kernel update package]: <https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi>
 [minimum system requirements]: <#minimum-system-requirements>
 [The input file]: <#the-input-file>
-[Input Values]: <../TechnicalGuide#input-values>
+[Input Values]: <../TechnicalGuide#input-data>
 [Workflow]: <../TechnicalGuide#workflow>
 [Post-Installation instructions]: <#post-installation-instructions>
 [input files]: </Configuracion/Plantillas>
