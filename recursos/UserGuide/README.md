@@ -932,6 +932,14 @@ After the system reboots, by default all interfaces are down; to enable an inter
 ifup eth0
 ```
 
+### Windows Server 2019
+
+For IIS Service, if a site it's not configured properly, it's neccesary run the configuration script manually. Open Powershell with administrative permissions and run the following command:
+
+```Powershell
+.\C:\sources\$OEM$\$1\ConfigurarServiciosWindows.ps1
+```
+
 ### Tutorials and examples
 
 [Download the Linux kernel update package]: <https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi>
