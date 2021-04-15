@@ -7,7 +7,7 @@ Welcome to the technical guide of this tool!. The intention of this guide is gui
 ```Bash
     main.ps1
 ├───Configuracion
-|       configuracion.json
+│       configuracion.json
 │   └───Plantillas
 ├───Modulos
 │   ├───1. Validaciones
