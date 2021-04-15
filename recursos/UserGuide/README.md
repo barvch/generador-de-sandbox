@@ -873,9 +873,9 @@ Once all the requirements mentioned in the previous section are satisfied, we ca
 
 1. Download the tool repository in the Hyper-V Host.
 
-```Bash
-git clone https://github.com/barvch/generador-de-sandbox.git
-```
+    ```Bash
+    git clone https://github.com/barvch/generador-de-sandbox.git
+    ```
 
 3. Open a Powershell session where the root of the tool is located.
 4. Create or load into the input file (located at /Configuracion/configuracion.json) the configuration corresponding to the infrastructure to be mounted and save the file.
