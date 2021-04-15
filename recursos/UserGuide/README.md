@@ -872,9 +872,14 @@ apt-get install -y whois dos2unix mkisofs
 Once all the requirements mentioned in the previous section are satisfied, we can start using the tool following the next steps:
 
 1. Download the tool repository in the Hyper-V Host.
-2. Open a Powershell session where the root of the tool is located.
-3. Create or load into the input file (located at /Configuracion/configuracion.json) the configuration corresponding to the infrastructure to be mounted and save the file.
-4. Execute the following command in order to start the validation of the input file:
+
+```Bash
+git clone https://github.com/barvch/generador-de-sandbox.git
+```
+
+3. Open a Powershell session where the root of the tool is located.
+4. Create or load into the input file (located at /Configuracion/configuracion.json) the configuration corresponding to the infrastructure to be mounted and save the file.
+5. Execute the following command in order to start the validation of the input file:
     ```Powershell
     .\main.ps1
     ```
