@@ -397,7 +397,7 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
             <summary>Active Directory.</summary>
             
             ###
-            This service is only available for Windows Server 2019.
+            This service is only available for Windows Server 2019 and if is set, the tool doesn't allow configure other service.
             
             - Domain.
             
