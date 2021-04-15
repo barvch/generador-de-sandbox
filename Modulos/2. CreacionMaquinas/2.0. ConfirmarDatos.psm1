@@ -59,7 +59,7 @@ function ConfirmarDatos { param ($maquinas = $maquinas)
                 SeleccionaMaquina
             }
     }
-    $opcion = Read-Host -Prompt "1) Mostrar datos por maquina`n2) Mostrar todos los datos`n3) Terminar`nSelecciona una opcion"
+    $opcion = Read-Host -Prompt "1) Crear solo una maquina virtual`n2) Crear todas las maquinas virtuales`n3) Terminar`nSelecciona una opcion"
     switch ($opcion) {
         1 { SeleccionaMaquina ; break}
         2 { IteraArreglo -arreglo @($maquinas); ConfirmarCreacion -flag $true; break }

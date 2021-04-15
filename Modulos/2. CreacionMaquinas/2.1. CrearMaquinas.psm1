@@ -19,7 +19,11 @@ function CrearMaquinas { param ($maquinas, $rutaRaiz)
         Write-ProgressHelper -currentOperation "Creando Disco De Instalacion Rapida" -StepNumber ($stepCounter++)
         ConfigurarInstalacionRapida -maquina $maquina -rutaRaiz $rutaRaiz
         Write-ProgressHelper -currentOperation "Iniciando Maquina" -StepNumber ($stepCounter++)
-        Start-VM -Name $vname
+        try{
+            Start-VM -Name $vname
+        }Catch{
+            Write-Host "No se ha podido iniciar automaticamente la maquina $vname por lo que se debera iniciar manualmente en Hyper-V"
+        }
     }
     Write-Progress -Activity "Creando Maquinas Virtuales" -Completed
     #ConfirmarDatos -maquinas $maquinas

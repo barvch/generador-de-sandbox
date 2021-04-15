@@ -18,7 +18,7 @@ function ValidarDatosGenerales { param ($maquinaVirtual, $rutaRaiz)
 }
 
 function ValidarDatosDependientes { param ($sistemaOperativo, $llaveActivacion, $rutaMSI, $tipoAmbiente, $WinIso)
-    #$tipoAmbienteCheck = ValidarTipoAmbiente -tipoAmbiente $tipoAmbiente -sistemaOperativo $sistemaOperativo -WinIso $WinIso
+    $tipoAmbienteCheck = ValidarTipoAmbiente -tipoAmbiente $tipoAmbiente -sistemaOperativo $sistemaOperativo -WinIso $WinIso
     switch -regex ($sistemaOperativo) {
         "Windows 10" { $rutaMSICheck = ValidarRutaMSI -rutaMSI $rutaMSI }
         "Windows .*" { 
@@ -66,7 +66,7 @@ function ValidarServicios { param ( $sistemaOperativo, $maquinaVirtual, $interfa
             $manejadorbdCheck = ValidarManejadorBD -manejadorbd $maquinaVirtual.Servicios.ManejadorBD -so $sistemaOperativo
             $DHCPCheck = ValidarISCDHCP -dhcp $maquinaVirtual.Servicios.DHCP -interfaces $interfaces
             $DNSCheck = ValidarBindDNS -dns $maquinaVirtual.Servicios.DNS -interfaces $interfaces
-            #$iptablesCheck = ValidarIptables -iptables $maquinaVirtual.Servicios.Iptables
+            $iptablesCheck = ValidarIptables -iptables $maquinaVirtual.Servicios.Iptables
         }
     }
     $servicios = [ordered] @{"AdministracionRemota" = $adminRemotaCheck; "PuertoSSH" = $puertoCheck; "CertificateServices" = $certServicesCheck; `

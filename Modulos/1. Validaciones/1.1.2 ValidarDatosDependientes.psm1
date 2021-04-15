@@ -51,7 +51,6 @@ function ValidarTipoAmbiente { param ($campo = "TipoAmbiente", $tipoAmbiente, $s
          }
         "(CentOS.*|RHEL.*)" { return ValidarCatalogos -catalogo $ambientesRHELCentOS -campo $campo -valor $tipoAmbiente -obligatorio $true -so $sistemaOperativo }
         "Ubuntu.*" { return ValidarCatalogos -catalogo $ambientesUbuntu -campo $campo -valor $tipoAmbiente -obligatorio $true -so $sistemaOperativo }
-        "Debian.*" { return ValidarCatalogos -catalogo $ambientesDebian -campo $campo -valor $tipoAmbiente -obligatorio $true -so $sistemaOperativo}
     }
 }
 
