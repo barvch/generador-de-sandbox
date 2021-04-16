@@ -78,8 +78,7 @@
                             {
                                 "Tipo": "A",
                                 "Hostname": "misitio.local",
-                                "IP": "10.23.1.2",
-                                "PTR": true   
+                                "IP": "10.23.1.2"  
                             },
                             {
                                 "Tipo": "CNAME",

@@ -28,7 +28,7 @@ function ValidarXML { param ($rutaXML)
 }
 
 function ValidarTipoAmbiente { param ($campo = "TipoAmbiente", $tipoAmbiente, $sistemaOperativo, $WinIso)
-    $tipoAmbiente = ValidarArregloDato -campo $campo -valor $tipoAmbiente -tipoDato "String" -obligatorio $true
+    #$tipoAmbiente = ValidarArregloDato -campo $campo -valor $tipoAmbiente -tipoDato "String" -obligatorio $true
     switch -regex ($sistemaOperativo) {
         "Windows.*" { 
             $MountResult = Mount-DiskImage -ImagePath $WinIso -StorageType ISO -PassThru

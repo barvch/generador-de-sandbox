@@ -195,7 +195,7 @@ function CrearISOCentos {
     Copy-Item ".\Recursos\unattend\CentOS\isolinux.cfg" "$directorio\isolinux\isolinux.cfg" -Force
     
     # Se establece el orden de booteo para ver reflejados todos los cambios 
-    $cambio = "linuxefi /images/pxeboot/vmlinuz  inst.stage2=hd:sr0 inst.ks=cdrom:/ks.cfg quiet"
+    $cambio = "linuxefi /images/pxeboot/vmlinuz  inst.stage2=hd:sr0 inst.ks=cdrom:/ks.cfg quiet enforcing=0"
     (Get-Content "$directorio\EFI\BOOT\grub.cfg").replace("menuentry 'Install CentOS Linux 8' --class fedora --class gnu-linux --class gnu --class os", "menuentry 'Kickstart Installation' --class fedora --class gnu-linux --class gnu --class os") | Set-Content "$directorio\EFI\BOOT\grub.cfg"
     (Get-Content "$directorio\EFI\BOOT\grub.cfg").replace('linuxefi /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=CentOS-8-3-2011-x86_64-dvd quiet', $cambio) | Set-Content "$directorio\EFI\BOOT\grub.cfg"
     (Get-Content "$directorio\EFI\BOOT\grub.cfg").replace('set default="1"', 'set default="0"') | Set-Content "$directorio\EFI\BOOT\grub.cfg"

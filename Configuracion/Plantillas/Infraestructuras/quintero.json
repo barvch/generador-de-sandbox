@@ -181,14 +181,14 @@
         },
         {
             "SistemaOperativo": "Windows Server 2019",
-            "Hostname": "iabastaaaaaa",
+            "Hostname": "contoso",
             "TipoAmbiente": "Windows Server 2019 Standard Evaluation (Desktop Experience)",
             "DiscosVirtuales": [20],
             "Procesadores": 2,
             "RutaISO": "E:\\SanboxTest\\WindowsServer2019_SERVER_EVAL_x64FRE_en-us_1.iso",
             "MemoriaRAM": {
                 "Tipo": "Static",
-                "Memoria": 1.0
+                "Memoria": 2.0
             },
             "Credenciales": {
                 "Usuario": "usuario",
@@ -210,30 +210,6 @@
             ],
             "Servicios": {
                 "AdministracionRemota": "RDP",
-                "DNS": [
-                    {
-                        "Tipo": "Forward",
-                        "Nombre": "ZonaUno",
-                        "Backup": "",
-                        "Registros": [
-                            {
-                                "Tipo": "A",
-                                "Hostname": "misitio.local",
-                                "IP": "192.168.100.220"  
-                            },
-                            {
-                                "Tipo": "A",
-                                "Hostname": "misitiodos.local",
-                                "IP": "192.168.100.220"  
-                            },
-                            {
-                                "Tipo": "A",
-                                "Hostname": "misitiotres.local",
-                                "IP": "192.168.100.220"  
-                            }
-                        ]
-                    }
-                ],
                 "IIS": [
                     {
                         "Nombre": "MiSitio.local",
@@ -256,15 +232,39 @@
                         ]
                     },
                     {
-                        "Nombre": "MiSitioOtro.local",
-                        "Directorio": "MiSitioOtro",
+                        "Nombre": "MiSitioDos.local",
+                        "Directorio": "MiSitioDos",
                         "Bindings": [
                             {
                                 "Dominio": "misitiotres.local",
                                 "Interfaz": "SalidaInternet",
                                 "Protocolo": "http",
-                                "Puerto": 80,
+                                "Puerto": 1234,
                                 "WebDAV": true
+                            }
+                        ]
+                    }
+                ],
+                "DNS": [
+                    {
+                        "Tipo": "Forward",
+                        "Nombre": "ZonaUno",
+                        "Backup": "",
+                        "Registros": [
+                            {
+                                "Tipo": "A",
+                                "Hostname": "misitio.local",
+                                "IP": "192.168.100.220"  
+                            },
+                            {
+                                "Tipo": "A",
+                                "Hostname": "misitiodos.local",
+                                "IP": "192.168.100.220"  
+                            },
+                            {
+                                "Tipo": "A",
+                                "Hostname": "misitiotres.local",
+                                "IP": "192.168.100.220"  
                             }
                         ]
                     }

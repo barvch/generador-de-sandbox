@@ -9,7 +9,7 @@ $activeDirectory = $servicio.ActiveDirectory
 $certServices = $servicio.CertificateServices
 $iis = $servicio.IIS
 $dhcp = $servicio.DHCP
-$dns = $servicio.DNS
+$dnsServicio = $servicio.DNS
 $cont = 0
 Write-Host "Configurando interfaces..." -ForegroundColor Yellow
 foreach ($interfaz in $maquina.Interfaces) {
@@ -60,7 +60,7 @@ switch -regex ($so) {
             Install-WindowsFeature -Name "DHCP" -IncludeManagementTools
             Add-DHCPServerSecurityGroup
          }
-        if($dns){ Install-WindowsFeature -Name "DNS" -IncludeManagementTools }
+        if($dnsServicio){ Install-WindowsFeature -Name "DNS" -IncludeManagementTools }
         if($activeDirectory){ Install-WindowsFeature -Name "AD-Domain-Services" -IncludeManagementTools }
      }
 }

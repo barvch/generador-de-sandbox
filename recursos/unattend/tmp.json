@@ -1,12 +1,12 @@
 {
-    "SistemaOperativo":  "FortiOS 6",
-    "Hostname":  "fortiserver",
+    "SistemaOperativo":  "CentOS 8",
+    "Hostname":  "niniobombastic",
     "DiscosVirtuales":  20,
-    "Procesadores":  1,
-    "RutaISO":  null,
+    "Procesadores":  2,
+    "RutaISO":  "E:\\SanboxTest\\CentOS-8.3.2011-x86_64-dvd1.iso",
     "MemoriaRAM":  {
                        "Tipo":  "Static",
-                       "Memoria":  1.0
+                       "Memoria":  2.0
                    },
     "Credenciales":  {
                          "Usuario":  "usuario",
@@ -21,103 +21,50 @@
                                              },
                            "Tipo":  "Static",
                            "Nombre":  "SalidaInternet",
-                           "IP":  "192.168.100.202",
+                           "IP":  "192.168.100.205",
                            "MascaraRed":  "255.255.255.0",
-                           "Gateway":  "",
-                           "DNS":  "",
-                           "Administrativa":  true
-                       },
-                       {
-                           "VirtualSwitch":  {
-                                                 "Nombre":  "Interno",
-                                                 "Tipo":  "Internal",
-                                                 "AdaptadorRed":  "Ethernet"
-                                             },
-                           "Tipo":  "Static",
-                           "Nombre":  "Interno",
-                           "IP":  "192.168.117.14",
-                           "MascaraRed":  "255.255.255.0",
-                           "Gateway":  "",
-                           "DNS":  "",
-                           "Administrativa":  false
-                       },
-                       {
-                           "VirtualSwitch":  {
-                                                 "Nombre":  "InternoDos",
-                                                 "Tipo":  "Internal",
-                                                 "AdaptadorRed":  "Ethernet"
-                                             },
-                           "Tipo":  "Static",
-                           "Nombre":  "InternoDos",
-                           "IP":  "192.168.1.15",
-                           "MascaraRed":  "255.255.255.0",
-                           "Gateway":  "",
-                           "DNS":  "",
-                           "Administrativa":  false
-                       },
-                       {
-                           "VirtualSwitch":  {
-                                                 "Nombre":  "Privado",
-                                                 "Tipo":  "Private",
-                                                 "AdaptadorRed":  "Ethernet"
-                                             },
-                           "Tipo":  "Static",
-                           "Nombre":  "Privado",
-                           "IP":  "192.168.11.17",
-                           "MascaraRed":  "255.255.255.0",
-                           "Gateway":  "",
-                           "DNS":  "",
-                           "Administrativa":  false
-                       },
-                       {
-                           "VirtualSwitch":  {
-                                                 "Nombre":  "PrivadoDos",
-                                                 "Tipo":  "Private",
-                                                 "AdaptadorRed":  "Ethernet"
-                                             },
-                           "Tipo":  "Static",
-                           "Nombre":  "PrivadoDos",
-                           "IP":  "192.168.12.18",
-                           "MascaraRed":  "255.255.255.0",
-                           "Gateway":  "",
-                           "DNS":  "",
-                           "Administrativa":  false
-                       },
-                       {
-                           "VirtualSwitch":  {
-                                                 "Nombre":  "PrivadoTres",
-                                                 "Tipo":  "Private",
-                                                 "AdaptadorRed":  "Ethernet"
-                                             },
-                           "Tipo":  "Static",
-                           "Nombre":  "PrivadoTres",
-                           "IP":  "192.168.13.19",
-                           "MascaraRed":  "255.255.255.0",
-                           "Gateway":  "",
-                           "DNS":  "",
-                           "Administrativa":  false
+                           "Gateway":  "192.168.100.1",
+                           "DNS":  ""
                        }
                    ],
     "DatosDependientes":  {
-                              "TipoAmbiente":  null,
+                              "TipoAmbiente":  "Gnome",
                               "LlaveActivacion":  null,
                               "RutaMSI":  null,
                               "ArchivoXML":  null,
-                              "Backup":  "",
-                              "VHDRuta":  "E:\\SanboxTest\\fortios.vhd",
-                              "RutaLicencia":  ""
+                              "Backup":  null,
+                              "VHDRuta":  null,
+                              "RutaLicencia":  null
                           },
     "Servicios":  {
                       "AdministracionRemota":  "SSH",
-                      "PuertoSSH":  null,
+                      "PuertoSSH":  22,
                       "CertificateServices":  null,
                       "WindowsDefender":  null,
                       "ActiveDirectory":  null,
                       "IIS":  null,
-                      "DHCP":  null,
-                      "DNS":  null,
-                      "ServidorWeb":  null,
-                      "ManejadorBD":  null,
+                      "DHCP":  {
+
+                               },
+                      "DNS":  {
+
+                              },
+                      "ServidorWeb":  {
+                                          "Servidor":  "httpd",
+                                          "Sitios":  [
+                                                         {
+                                                             "Nombre":  "prueba",
+                                                             "Dominio":  "prueba.local",
+                                                             "Interfaz":  "192.168.100.205",
+                                                             "Puerto":  443,
+                                                             "Protocolo":  "https",
+                                                             "Drupal":  true
+                                                         }
+                                                     ]
+                                      },
+                      "ManejadorBD":  {
+
+                                      },
                       "Iptables":  null
                   }
 }

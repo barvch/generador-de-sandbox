@@ -438,6 +438,10 @@ then
 			setsebool -P httpd_unified on
 			setsebool -P httpd_builtin_scripting on
 		fi
+		elif [[ $servidor =~ nginx ]] && [[ $sistemaOperativo =~  Kali.* ]]
+		then
+			systemctl stop apache2 && systemctl disable apache2
+		fi
 		systemctl enable $servidor
 		systemctl restart $servidor
 	fi
