@@ -297,12 +297,14 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
         + <details>
             <summary>FortiOS 6.</summary>
             
-            - InterfazAdministrativa. Static interface name. 
-                
-                > **NOTE**: The interface must be set into *Generic Values* section. Data such as IP address, netmask, DNS and gateway are consulted from the interface's name. 
+            - RutaBackup. Optional.
+            
+            - LicenciaRuta. Optional.
 
-            - ArchivoBackup. FortiOS backup file location.
-
+            - RutaVHD.
+            	
+            - Administrativa. This value must be set into interfaces field.
+            
             **Example:**
 
             ```JSON
@@ -311,8 +313,25 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
                 "MaquinasVirtuales": [
                     {
                         "Generic Values": "Data",
-                        "InterfazAdministrativa": "Internet",
-                        "ArchivoBackup": "C:\\Sandbox\\fortios.qcow2"
+                        "Interfaces": [
+                            {
+                                "VirtualSwitch": {
+                                    "Nombre": "InternetSwitch",
+                                    "Tipo": "External",
+                                    "AdaptadorRed": "Ethernet"
+                                },
+                                "Tipo": "Static",
+                                "Nombre": "Internet",
+                                "Administrativa": true,
+                                "IP": "192.168.100.210",
+                                "MascaraRed": "24",
+                                "Gateway": "192.168.100.1",
+                                "DNS": "8.8.8.8"
+                            }
+                        ]
+                        "RutaBackup": "C:\\Sandbox\\fortios.qcow2",
+                        "RutaVHD": "C:\\Sandbox\\fortios.vhd",
+                        "LicenciaRuta": "C:\\Sandbox\\fortiosLicense.txt"
                     }
                 ]
              }
