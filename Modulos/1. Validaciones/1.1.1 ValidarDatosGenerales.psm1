@@ -144,13 +144,11 @@ function ValidarInterfaces { param ($interfaces, $hostname, $os)
             $nombres += $interfacesNombreCheck
             if($os -eq "FortiOS 6"){
                 $interfazCheck = [ordered] @{"VirtualSwitch" = [ordered] @{"Nombre" = $VSNombreCheck; "Tipo" = $VSTipoCheck; "AdaptadorRed" = $adaptadorRedCheck}; "Tipo" = $tipoInterfazCheck;"Nombre" = $interfacesNombreCheck; "IP" = $ipCheck; "MascaraRed" = $mascaraCheck;"Gateway" = $gatewayCheck; "DNS" = $dnsCheck; "Administrativa" = $interfaz.Administrativa}
-            }
-            else{
+            } else {
                 $interfazCheck = [ordered] @{"VirtualSwitch" = [ordered] @{"Nombre" = $VSNombreCheck; "Tipo" = $VSTipoCheck; "AdaptadorRed" = $adaptadorRedCheck}; "Tipo" = $tipoInterfazCheck;"Nombre" = $interfacesNombreCheck; "IP" = $ipCheck; "MascaraRed" = $mascaraCheck;"Gateway" = $gatewayCheck; "DNS" = $dnsCheck}
             }
             $interfacesCheck += $interfazCheck
-            
-            $ips += (ValidarRango -ipInicio $ipCheck -mascara $mascaraCheck -campo "$interfacesNombreCheck.IP" -unico $true)
+            #$ips += (ValidarRango -ipInicio $ipCheck -mascara $mascaraCheck -campo "$interfacesNombreCheck.IP" -unico $true)
         }
         ValidarNombreUnico -campo "Interfaces.Nombre" -arreglo $nombres
         ValidarNombreUnico -campo "Interfaces.IP" -arreglo $ips -imprimeIP $true
