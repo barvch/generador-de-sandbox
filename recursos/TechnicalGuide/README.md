@@ -66,8 +66,8 @@ There are two types of validations:
     >       + If no data is provided, the value is set by DomainMode field.
     >       + Same values as DomainMode.
     
-    * [Generic and Dependent Values].
-    * [Services]. 
+* [Generic and Dependent Values].
+* [Services]. 
 
 2. **Data type**. They are all validations related with all virtual machines and services properties, for example:
 
@@ -87,7 +87,7 @@ There are two types of validations:
     >   - [O] ]NetBIOS. String.
     >   - [M] DomainMode and [O] ForestMode. String.
 
-    * [Data Type Validation].
+* [Data Type Validation].
 
 [About Tool]: <../UserGuide#about-tool>
 [Generic and Dependent Values]: <./Files/InputValues.pdf>
