@@ -99,9 +99,9 @@ s needed. The list is the following:
 * Debian 10 Buster
 * Kali Linux 20.04
 * Ubuntu Family
+* Windows Server 2019 if IIS Service is configured.
 
 Specifications foreach system can be found bellow:
-
 
 ### Buster & Kali
 
@@ -127,6 +127,13 @@ After the system reboots, by default all interfaces are down; to enable an inter
 ifup eth0
 ```
 
+### Windows Server 2019
+
+If a site it's not configured properly, it's neccesary run the configuration script manually. Open Powershell with administrative permissions and run the following command:
+
+```Powershell
+.\C:\sources\$OEM$\$1\ConfigurarServiciosWindows.ps1
+```
 
 [here]: <https://docs.google.com/spreadsheets/d/13qQsPp08ocH_j-whSafJKate7DskU9h4aBCn-lr3qTU/edit#gid=0s>
 [Linux Subsystem for Windows]: <https://docs.microsoft.com/en-us/windows/wsl/install-win10> 
