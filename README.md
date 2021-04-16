@@ -133,6 +133,7 @@ If a site it's not configured properly, it's neccesary run the configuration scr
 
 ```Powershell
 cd "C:\sources\`$OEM$\`$1" 
+
 .\ConfigurarServiciosWindows.ps1
 ```
 
