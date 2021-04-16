@@ -57,7 +57,7 @@ There are two types of validations:
     **Example:**
     
     > * *Hostname*. Mandatory:
-    >   - Must start with an alphabetic character.
+    >   - Must start and end with an alphabetic character.
     > * *DiscosVirtuales*. Mandatory:
     >   - The minumum value accepted must be 15.
     >   - The host must validate that there is enough available space.
@@ -72,25 +72,22 @@ There are two types of validations:
     >       + If no data is provided, the value is set by DomainMode field.
     >       + Same values as DomainMode.
 
-2. **Data type**. They are all validations related with all virtual machines and services properties, for example:
+2. **Data type**. They are all validations related with all virtual machines and services properties:
 
     * [Data Type Validation].
 
     **Example:**
         
     > * *Hostname*:
-    >   - alfaNum1. Non-Windows distributions.
-    >   - alfaNum5. Windows distributions.
-    >   - longitud1 (5 to 20 characters length).
+    >   - String: alfaNum1. Non-Windows distributions, longitud1 (5 to 20 characters length).
+    >   - String: alfaNum5. Windows distributions, longitud1 (5 to 20 characters length).
     >   - In case of containing non-alphanumeric characters, these must not be consecutive.
     > * *DiscosVirtuales*. Int array.
-    > * *LlaveActivacion*.
-    >   - llaveActivacion (Windows Activation Key format validation).
-    >   - longitud4 (29 characters length).
+    > * *LlaveActivacion*. String: llaveActivacion (Windows Activation Key format validation), longitud4 (29 characters length).
     > * *ActiveDirectory*:
-    >   - Domain. dominio (domain format validation).
-    >   - NetBIOS. alfaNum1, longitud6 (5 to 15 characters length).
-    >   - DomainMode and ForestMode. Catalog.
+    >   - Domain. String: dominio (domain format validation).
+    >   - NetBIOS. String: alfaNum1, longitud6 (5 to 15 characters length).
+    >   - DomainMode and ForestMode. String.
 
 [About Tool]: <../UserGuide#about-tool>
 [Generic and Dependent Values]: <./Files/InputValues.pdf>
