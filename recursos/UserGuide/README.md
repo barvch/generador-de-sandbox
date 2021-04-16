@@ -47,6 +47,8 @@ The workflow of the tool is the following:
 * **Custom ISO creation**. In this step, the ISO file specified by user is mounted in host and unattended files are customized and loaded within. The tool for the ISO creation depends of each operating system:
 
     - *Windows*: DISM.
+        
+        >**NOTE**: In windows distributions, the tool mounts the ISO and gets its drive letter, immediately, assigns the next letter to its VHD. It may cause an error if the host has only one subsecuent available drive.    
     
     - *Linux/Unix and FortiOS*: mkisofs.
     
@@ -395,7 +397,7 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
             <summary>Active Directory.</summary>
             
             ###
-            This service is only available for Windows Server 2019.
+            This service is only available for Windows Server 2019 and if is set, the tool doesn't allow configure other service.
             
             - Domain.
             
@@ -903,6 +905,8 @@ In some cases, in order to get the full configuration ready in the VMs, human in
 * Debian 10 Buster.
 * Kali Linux 20.04.
 * Ubuntu Family.
+* CentOS 8.
+* Windows Server 2019 if IIS Service is configured.
 
 Specifications foreach system can be found bellow:
 
@@ -928,6 +932,22 @@ After the system reboots, by default all interfaces are down; to enable an inter
 
 ```sh
 ifup eth0
+```
+
+### CentOS 8
+
+Run SELinux in permissive mode for service configuration.
+
+```Bash
+setenforce 0
+```
+
+### Windows Server 2019
+
+If a site it's not configured properly, it's neccesary run the configuration script manually. Open Powershell with administrative permissions and run the following command:
+
+```Powershell
+.\C:\sources\$OEM$\$1\ConfigurarServiciosWindows.ps1
 ```
 
 ### Tutorials and examples
