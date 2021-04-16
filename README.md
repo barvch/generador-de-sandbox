@@ -132,7 +132,7 @@ ifup eth0
 If a site it's not configured properly, it's neccesary run the configuration script manually. Open Powershell with administrative permissions and run the following command:
 
 ```Powershell
-cd "C:\sources\`$OEM$\`$1" 
+cd 'C:\sources\$OEM$\$1'
 
 .\ConfigurarServiciosWindows.ps1
 ```
