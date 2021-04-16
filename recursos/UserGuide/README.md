@@ -328,7 +328,7 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
                                 "Gateway": "192.168.100.1",
                                 "DNS": "8.8.8.8"
                             }
-                        ]
+                        ],
                         "RutaBackup": "C:\\Sandbox\\fortios.qcow2",
                         "RutaVHD": "C:\\Sandbox\\fortios.vhd",
                         "LicenciaRuta": "C:\\Sandbox\\fortiosLicense.txt"
