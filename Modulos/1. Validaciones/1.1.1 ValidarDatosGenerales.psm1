@@ -150,7 +150,7 @@ function ValidarInterfaces { param ($interfaces, $hostname, $os)
             }
             $interfacesCheck += $interfazCheck
             
-            #$ips += (ValidarRango -ipInicio $ipCheck -mascara $mascaraCheck -campo "$interfacesNombreCheck.IP" -unico $true)
+            $ips += (ValidarRango -ipInicio $ipCheck -mascara $mascaraCheck -campo "$interfacesNombreCheck.IP" -unico $true)
         }
         ValidarNombreUnico -campo "Interfaces.Nombre" -arreglo $nombres
         ValidarNombreUnico -campo "Interfaces.IP" -arreglo $ips -imprimeIP $true

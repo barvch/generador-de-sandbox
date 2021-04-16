@@ -974,6 +974,10 @@ If a site it's not configured properly, it's neccesary run the configuration scr
 
 ### Tutorials and examples
 
+* In the following video, it is shown from scratch, [how to create a valid input file], in which, an infaestructure of two virtual machines is developed.
+
+* In the following video, it shows [how to use the tool] to perform the creation of the infrastructure created in the previous video
+
 [Download the Linux kernel update package]: <https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi>
 [minimum system requirements]: <#minimum-system-requirements>
 [The input file]: <#the-input-file>
@@ -981,3 +985,6 @@ If a site it's not configured properly, it's neccesary run the configuration scr
 [Workflow]: <../TechnicalGuide#workflow>
 [Post-Installation instructions]: <#post-installation-instructions>
 [input files]: </Configuracion/Plantillas>
+[how to create a valid input file]: <https://drive.google.com/file/d/1F-kv7awZ0BfdEEHCnjH5ICOtm8Yp7JoA/view?usp=sharing>
+[how to use the tool]: <https://drive.google.com/file/d/1rf91jSrD6FEsrO-s-RIStoBLzxlkfeel/view?usp=sharing>
+
