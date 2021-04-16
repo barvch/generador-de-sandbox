@@ -49,9 +49,15 @@ Every step will describe its own functions, for information about step's behavio
 
 There are two types of validations: 
 
-1. **Attribute**. They are all virtual machines and services properties, for example:
+1. **Attribute**. They are all virtual machines and services properties.
     
-    > * *Hostname*. Must start with an alphabetic character.
+    * [Generic and Dependent Values].
+    * [Services]. 
+    
+    **Example:**
+    
+    > * *Hostname*. 
+    >   - Must start with an alphabetic character.
     > * *DiscosVirtuales*:
     >   - The minumum value accepted must be 15.
     >   - The host must validate that there is enough available space.
@@ -65,15 +71,17 @@ There are two types of validations:
     >   - ForestMode. 
     >       + If no data is provided, the value is set by DomainMode field.
     >       + Same values as DomainMode.
-    
-* [Generic and Dependent Values].
-* [Services]. 
 
 2. **Data type**. They are all validations related with all virtual machines and services properties, for example:
 
-    [M] - Mandatory
-    [O] - Optional
+    * [Data Type Validation].
 
+    **Example:**
+        
+    > [M] - Mandatory.
+    > 
+    > [O] - Optional.
+    >
     > * *[M] Hostname*:
     >   - String.
     >   - 5 to 20 characters length.
@@ -86,8 +94,6 @@ There are two types of validations:
     >   - [M] Domain. String.
     >   - [O] ]NetBIOS. String.
     >   - [M] DomainMode and [O] ForestMode. String.
-
-* [Data Type Validation].
 
 [About Tool]: <../UserGuide#about-tool>
 [Generic and Dependent Values]: <./Files/InputValues.pdf>
