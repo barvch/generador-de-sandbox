@@ -51,6 +51,8 @@ The workflow of the tool is the following:
         >**NOTE**: In windows distributions, the tool mounts the ISO and gets its drive letter, immediately, assigns the next letter to its VHD. It may cause an error if the host has only one subsecuent available drive.    
     
     - *Linux/Unix and FortiOS*: mkisofs.
+
+    - *FortiOS*: If you want to create a VM with FortiOS 6, the first thing you should do is extract the virgin vhd provided by Fortigate. You can find this vhd within the following path within the repository: /resources/ Fortigate-VM.zip. Once the file has been decompressed, the disk is located at /Virtual Hard Disks/fortios.vhd and must be copied on the host and copy this path into the RutaVHD field inside the configuracion.json file.
     
     <details>
         <summary>Data that are set within unattended files</summary>
@@ -968,6 +970,7 @@ If a site it's not configured properly, it's neccesary run the configuration scr
 ```Powershell
 .\C:\sources\$OEM$\$1\ConfigurarServiciosWindows.ps1
 ```
+> The command will trigger many errors but they are normal because it will try to overwrite some settings without success.
 
 ### Tutorials and examples
 

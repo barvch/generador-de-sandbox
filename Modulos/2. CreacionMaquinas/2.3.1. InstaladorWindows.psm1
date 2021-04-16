@@ -19,15 +19,13 @@ function CrearVHDWindows { param ([string]$WinIso, [string]$VhdFile, $maquina)
 
     $MountResult = Mount-DiskImage -ImagePath $WinIso -StorageType ISO -PassThru
     $DriveLetter = ($MountResult | Get-Volume).DriveLetter
-    #$DriveLetter = "I"
     $WimFile = "$($DriveLetter):\sources\install.wim"
-    #$tipoAmbiente = $maquina.DatosDependientes.TipoAmbiente
-    #if($tipoAmbiente[2] -match "[0-9]"){
-    #    $WimIdx = -join ($tipoAmbiente[1..2])
-    #}else{
-    #    $WimIdx = $tipoAmbiente[1]
-    #}
-    $WimIdx = 2
+    $tipoAmbiente = $maquina.DatosDependientes.TipoAmbiente
+    if($tipoAmbiente[2] -match "[0-9]"){
+        $WimIdx = -join ($tipoAmbiente[1..2])
+    }else{
+        $WimIdx = $tipoAmbiente[1]
+    }
     [char] $VirtualWinLetter = $DriveLetter
     $VirtualWinLetter = [byte] $VirtualWinLetter + 1
     Mount-DiskImage -ImagePath $VhdFile | Out-Null

@@ -47,11 +47,9 @@ function MoverBackup{
     if($licpath){
         Copy-Item -Path $licpath -Destination "$directorio\cloudinit\openstack\content\0000"
     }
-
     $repo = (Get-Location).Path
     Set-Location "$directorio"
     bash -c "mkisofs -R -r -o  fgt-bootstrap.iso cloudinit &> /dev/null" | Out-Null
     Set-Location $repo
-
     Set-VMDvdDrive -VMName $vname -Path "$directorio\fgt-bootstrap.iso"
 }

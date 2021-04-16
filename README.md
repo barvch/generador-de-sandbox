@@ -135,6 +135,8 @@ If a site it's not configured properly, it's neccesary run the configuration scr
 .\C:\sources\$OEM$\$1\ConfigurarServiciosWindows.ps1
 ```
 
+> The command will trigger many errors but they are normal because it will try to overwrite some settings without success.
+
 [here]: <https://docs.google.com/spreadsheets/d/13qQsPp08ocH_j-whSafJKate7DskU9h4aBCn-lr3qTU/edit#gid=0s>
 [Linux Subsystem for Windows]: <https://docs.microsoft.com/en-us/windows/wsl/install-win10> 
 [examples of valid input files]: <./Configuracion/Plantillas>

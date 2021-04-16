@@ -28,12 +28,12 @@ function ValidarXML { param ($rutaXML)
 }
 
 function ValidarTipoAmbiente { param ($campo = "TipoAmbiente", $tipoAmbiente, $sistemaOperativo, $WinIso)
-    #$tipoAmbiente = ValidarArregloDato -campo $campo -valor $tipoAmbiente -tipoDato "String" -obligatorio $true
+    $tipoAmbiente = ValidarArregloDato -campo $campo -valor $tipoAmbiente -tipoDato "String" -obligatorio $true
     switch -regex ($sistemaOperativo) {
         "Windows.*" { 
             $MountResult = Mount-DiskImage -ImagePath $WinIso -StorageType ISO -PassThru
             $DriveLetter = ($MountResult | Get-Volume).DriveLetter
-            #Write-Host "Obteniendo versiones de Windows" -ForegroundColor Yellow
+            Write-Host "Obteniendo versiones de Windows" -ForegroundColor Yellow
             $WimFile = "$($DriveLetter):\sources\install.wim"
             $WimOutput = dism /get-wiminfo /wimfile:"$WimFile" | Out-String
             $WimInfo = $WimOutput | Select-String "(?smi)Index : (?<Id>\d+).*?Name : (?<Name>[^`r`n]+)" -AllMatches

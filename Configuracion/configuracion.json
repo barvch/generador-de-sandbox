@@ -181,7 +181,7 @@
         },
         {
             "SistemaOperativo": "Windows Server 2019",
-            "Hostname": "iabastaaaaaa",
+            "Hostname": "Contoso",
             "TipoAmbiente": "Windows Server 2019 Standard Evaluation (Desktop Experience)",
             "DiscosVirtuales": [20],
             "Procesadores": 2,
@@ -263,7 +263,7 @@
                                 "Dominio": "misitiotres.local",
                                 "Interfaz": "SalidaInternet",
                                 "Protocolo": "http",
-                                "Puerto": 80,
+                                "Puerto": 1234,
                                 "WebDAV": true
                             }
                         ]
