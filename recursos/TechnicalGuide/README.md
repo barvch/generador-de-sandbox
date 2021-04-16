@@ -47,9 +47,47 @@ Every step will describe its own functions, for information about step's behavio
 
 ## Input Data
 
-* [Generic and Dependent Values].
-* [Services].
-* [Data Type Validation].
+There are two types of validations: 
+
+1. **Attribute**. They are all virtual machines and services properties, for example:
+    
+    > * *Hostname*. Must start with an alphabetic character.
+    > * *DiscosVirtuales*:
+    >   - The minumum value accepted must be 15.
+    >   - The host must validate that there is enough available space.
+    > * *LlaveActivacion*. The field must have the following format: XXXXX-XXXXX-XXXXX-XXXXX-XXXXX.
+    > * *ActiveDirectory*. This service is only available for Windows Server 2019 and if is set, the tool doesn't allow configure other service.
+    >   - Domain. The field must have the following format: contoso.domain.local.
+    >   - NetBIOS. If no data is provided, the value is set by Domain prefix.
+    >   - DomainMode. 
+    >       + The functional level of the DomainMode field cannot be lower than the functional level of the ForestMode field.
+    >       + Values: Win2008, Win2008R2, Win2012, Win2012R2, Win2016.
+    >   - ForestMode. 
+    >       + If no data is provided, the value is set by DomainMode field.
+    >       + Same values as DomainMode.
+    
+    * [Generic and Dependent Values].
+    * [Services]. 
+
+2. **Data type**. They are all validations related with all virtual machines and services properties, for example:
+
+    [M] - Mandatory
+    [O] - Optional
+
+    > * *[M] Hostname*:
+    >   - String.
+    >   - 5 to 20 characters length.
+    >   - In case of containing non-alphanumeric characters, these must not be consecutive.
+    > * *[M] DiscosVirtuales*. Int array.
+    > * *[O] LlaveActivacion*.
+    >   - String.
+    >   - 29 characters length.
+    > * *[O] ActiveDirectory*:
+    >   - [M] Domain. String.
+    >   - [O] ]NetBIOS. String.
+    >   - [M] DomainMode and [O] ForestMode. String.
+
+    * [Data Type Validation].
 
 [About Tool]: <../UserGuide#about-tool>
 [Generic and Dependent Values]: <./Files/InputValues.pdf>
