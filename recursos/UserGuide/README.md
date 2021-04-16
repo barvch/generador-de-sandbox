@@ -933,6 +933,14 @@ After the system reboots, by default all interfaces are down; to enable an inter
 ifup eth0
 ```
 
+### CentOS 8
+
+Run SELinux in permissive mode for service configuration.
+
+```Bash
+setenforce 0
+```
+
 ### Windows Server 2019
 
 If a site it's not configured properly, it's neccesary run the configuration script manually. Open Powershell with administrative permissions and run the following command:
