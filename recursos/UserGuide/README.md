@@ -905,7 +905,6 @@ In some cases, in order to get the full configuration ready in the VMs, human in
 * Debian 10 Buster.
 * Kali Linux 20.04.
 * Ubuntu Family.
-* CentOS 8.
 * Windows Server 2019 if IIS Service is configured.
 
 Specifications foreach system can be found bellow:
@@ -932,14 +931,6 @@ After the system reboots, by default all interfaces are down; to enable an inter
 
 ```sh
 ifup eth0
-```
-
-### CentOS 8
-
-Run SELinux in permissive mode for service configuration.
-
-```Bash
-setenforce 0
 ```
 
 ### Windows Server 2019
