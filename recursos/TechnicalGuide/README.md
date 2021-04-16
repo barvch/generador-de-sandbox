@@ -56,13 +56,13 @@ There are two types of validations:
     
     **Example:**
     
-    > * *Hostname*. 
+    > * *Hostname*. Mandatory:
     >   - Must start with an alphabetic character.
-    > * *DiscosVirtuales*:
+    > * *DiscosVirtuales*. Mandatory:
     >   - The minumum value accepted must be 15.
     >   - The host must validate that there is enough available space.
-    > * *LlaveActivacion*. The field must have the following format: XXXXX-XXXXX-XXXXX-XXXXX-XXXXX.
-    > * *ActiveDirectory*. This service is only available for Windows Server 2019 and if is set, the tool doesn't allow configure other service.
+    > * *LlaveActivacion*. Optional. The field must have the following format: XXXXX-XXXXX-XXXXX-XXXXX-XXXXX.
+    > * *ActiveDirectory*. Optional. This service is only available for Windows Server 2019 and if is set, the tool doesn't allow configure other service.
     >   - Domain. The field must have the following format: contoso.domain.local.
     >   - NetBIOS. If no data is provided, the value is set by Domain prefix.
     >   - DomainMode. 
@@ -78,22 +78,19 @@ There are two types of validations:
 
     **Example:**
         
-    > [M] - Mandatory.
-    > 
-    > [O] - Optional.
-    >
-    > * *[M] Hostname*:
-    >   - String.
-    >   - 5 to 20 characters length.
+    > * *Hostname*:
+    >   - alfaNum1. Non-Windows distributions.
+    >   - alfaNum5. Windows distributions.
+    >   - longitud1 (5 to 20 characters length).
     >   - In case of containing non-alphanumeric characters, these must not be consecutive.
-    > * *[M] DiscosVirtuales*. Int array.
-    > * *[O] LlaveActivacion*.
-    >   - String.
-    >   - 29 characters length.
-    > * *[O] ActiveDirectory*:
-    >   - [M] Domain. String.
-    >   - [O] ]NetBIOS. String.
-    >   - [M] DomainMode and [O] ForestMode. String.
+    > * *DiscosVirtuales*. Int array.
+    > * *LlaveActivacion*.
+    >   - llaveActivacion (Windows Activation Key format validation).
+    >   - longitud4 (29 characters length).
+    > * *ActiveDirectory*:
+    >   - Domain. dominio (domain format validation).
+    >   - NetBIOS. alfaNum1, longitud6 (5 to 15 characters length).
+    >   - DomainMode and ForestMode. Catalog.
 
 [About Tool]: <../UserGuide#about-tool>
 [Generic and Dependent Values]: <./Files/InputValues.pdf>
