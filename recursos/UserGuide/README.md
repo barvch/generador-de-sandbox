@@ -905,6 +905,7 @@ In some cases, in order to get the full configuration ready in the VMs, human in
 * Debian 10 Buster.
 * Kali Linux 20.04.
 * Ubuntu Family.
+* CentOS 8.
 * Windows Server 2019 if IIS Service is configured.
 
 Specifications foreach system can be found bellow:
