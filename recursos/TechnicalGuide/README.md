@@ -37,7 +37,7 @@ Welcome to the technical guide of this tool!. The intention of this guide is gui
         + *ServiciosLinux*. Services installation and configuration script and templates used for Linux/Unix services.
     - **Validaciones**. Files used for data validation.
         + *catalogos.ps1*. System catalogs.
-        + [obtenerValidaciones.psm1]. Data type validations.
+        + obtenerValidaciones.psm1. Data type validation.
 
 ## Workflow 
 
@@ -49,9 +49,10 @@ Every step will describe its own functions, for information about step's behavio
 
 * [Generic and Dependent Values].
 * [Services].
+* [Data Type Validation].
 
 [About Tool]: <../UserGuide#about-tool>
 [Generic and Dependent Values]: <./Files/InputValues.pdf>
 [Services]: <./Files/Services.pdf>
 [Workflow]: <./Files/Workflow.pdf>
-[obtenerValidaciones.psm1]: </recursos/Validaciones/obtenerValidaciones.psm1>
+[Data Type Validation]: <./Files/DataTypeValidation.pdf>
