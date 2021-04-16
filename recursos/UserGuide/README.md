@@ -354,7 +354,16 @@ The **/Configuracion/configuracion.json** file is the core of the tool and works
             ```
             
             > If not data is provide for remote administration, this is automatically configured for each SO.
-        
+            
+             * FortiOS 6. 
+
+                The following auth methods are configured automatically: 
+                
+                > * ssh.
+                > * ping.
+                > * http.
+                > * https.
+            
         + <details>
             <summary>Only-Installation Services.</summary>
         
